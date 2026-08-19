@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assalam Mebel - Toko & Custom Mebel Kayu Solid Premium</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -312,8 +317,8 @@
             <div>
                 <!-- Header Sidebar (Judul + Garis 3) -->
                 <div class="sidebar-header">
-                    <a href="{{ route('customer.beranda') }}" class="sidebar-brand text-decoration-none">
-                        ASSALAM<br>MEBEL
+                    <a href="{{ route('customer.beranda') }}" class="sidebar-brand text-decoration-none d-flex align-items-center gap-2">
+                        <img src="{{ asset('logo.png') }}" alt="Assalam Mebel" style="max-height: 42px; width: auto; object-fit: contain;">
                     </a>
                     <!-- Tombol Garis 3 untuk Menutup -->
                     <button class="btn-toggle-sidebar" id="closeBtn" title="Tutup Sidebar">

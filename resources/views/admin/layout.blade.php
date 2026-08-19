@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - ASSALAM MEBEL</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -172,9 +177,9 @@
     <!-- SIDEBAR ADMIN -->
     <div class="admin-sidebar" id="adminSidebar">
         <div class="brand-box d-flex align-items-center justify-content-between">
-            <div class="brand-title text-start">
-                ASSALAM<br>MEBEL ADMIN
-            </div>
+            <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center gap-2 text-decoration-none">
+                <img src="{{ asset('logo.png') }}" alt="Assalam Mebel Admin" style="max-height: 44px; width: auto; object-fit: contain;">
+            </a>
             <button class="btn btn-sm btn-light border d-lg-none" id="closeAdminSidebar">
                 <i class="fa-solid fa-xmark"></i>
             </button>

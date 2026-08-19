@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - ASSALAM MEBEL</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome untuk Icon -->
@@ -91,7 +96,12 @@
     <div class="auth-image"></div>
     
     <div class="auth-form">
-        <h3 class="brand-title mb-4">Selamat Datang Kembali</h3>
+        <div class="text-center mb-3">
+            <a href="{{ route('customer.beranda') }}">
+                <img src="{{ asset('logo.png') }}" alt="Assalam Mebel" style="max-height: 65px; width: auto; object-fit: contain;">
+            </a>
+        </div>
+        <h3 class="brand-title mb-4 text-center">Selamat Datang Kembali</h3>
         
         <!-- FORM DIARAHKAN KE ROUTE LOGIN DENGAN METHOD POST -->
         <form action="{{ route('login.authenticate') }}" method="POST">

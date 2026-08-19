@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - ASSALAM MEBEL</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -160,6 +165,9 @@
 
     <div class="auth-form">
         <div class="text-center mb-4">
+            <a href="{{ route('customer.beranda') }}">
+                <img src="{{ asset('logo.png') }}" alt="Assalam Mebel" class="mb-2" style="max-height: 60px; width: auto; object-fit: contain;">
+            </a>
             <h3 class="brand-title">Buat Akun Baru</h3>
             <p class="text-muted small">Silakan lengkapi data diri Anda</p>
         </div>
