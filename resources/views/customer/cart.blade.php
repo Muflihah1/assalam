@@ -146,7 +146,12 @@
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="cart-img-box">
                                         @if(!empty($item['image']))
-                                            <img src="{{ \Illuminate\Support\Facades\Storage::url($item['image']) }}" alt="{{ $item['name'] }}">
+                                            @php
+                                                $imgSrc = (str_starts_with($item['image'], 'http://') || str_starts_with($item['image'], 'https://'))
+                                                    ? $item['image']
+                                                    : \Illuminate\Support\Facades\Storage::url($item['image']);
+                                            @endphp
+                                            <img src="{{ $imgSrc }}" alt="{{ $item['name'] }}">
                                         @else
                                             <i class="fa-solid fa-couch fa-2x" style="color: var(--primary-color);"></i>
                                         @endif

@@ -65,6 +65,11 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .product-card:hover .product-img-holder img {
+        transform: scale(1.06);
     }
 
     /* BUTTON STYLES */
@@ -150,8 +155,8 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="product-card p-3">
                         <div class="product-img-holder mb-3">
-                            @if($item->foto)
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($item->foto) }}" alt="{{ $item->nama }}">
+                            @if($item->foto_url)
+                                <img src="{{ $item->foto_url }}" alt="{{ $item->nama }}" loading="lazy">
                             @else
                                 <div class="text-center p-3 text-muted">
                                     <i class="fa-solid fa-couch fa-3x mb-1" style="color: var(--primary-color);"></i>

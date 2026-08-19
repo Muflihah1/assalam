@@ -125,9 +125,19 @@
                 <div class="d-flex gap-3 align-items-center">
                     <div class="product-img-box">
                         @if($item->customDesign && $item->customDesign->sketch_image)
-                            <img src="{{ \Illuminate\Support\Facades\Storage::url($item->customDesign->sketch_image) }}" alt="Foto Mebel">
+                            @php
+                                $sketchImg = (str_starts_with($item->customDesign->sketch_image, 'http://') || str_starts_with($item->customDesign->sketch_image, 'https://'))
+                                    ? $item->customDesign->sketch_image
+                                    : \Illuminate\Support\Facades\Storage::url($item->customDesign->sketch_image);
+                            @endphp
+                            <img src="{{ $sketchImg }}" alt="Foto Mebel">
                         @elseif($item->items && $item->items->first() && $item->items->first()->image)
-                            <img src="{{ \Illuminate\Support\Facades\Storage::url($item->items->first()->image) }}" alt="Foto Produk">
+                            @php
+                                $itemImg = (str_starts_with($item->items->first()->image, 'http://') || str_starts_with($item->items->first()->image, 'https://'))
+                                    ? $item->items->first()->image
+                                    : \Illuminate\Support\Facades\Storage::url($item->items->first()->image);
+                            @endphp
+                            <img src="{{ $itemImg }}" alt="Foto Produk">
                         @else
                             <i class="fa-solid fa-couch fa-2x" style="color: var(--primary-color);"></i>
                         @endif

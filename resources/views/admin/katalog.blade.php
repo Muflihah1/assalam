@@ -51,8 +51,8 @@
             <div class="admin-card p-3 h-100 d-flex flex-column justify-content-between">
                 <div>
                     <div class="img-box-katalog mb-3">
-                        @if($item->foto)
-                            <img src="{{ \Illuminate\Support\Facades\Storage::url($item->foto) }}" alt="{{ $item->nama }}">
+                        @if($item->foto_url)
+                            <img src="{{ $item->foto_url }}" alt="{{ $item->nama }}">
                         @else
                             <div class="text-muted text-center">
                                 <i class="fa-solid fa-couch fa-3x mb-1" style="color: var(--primary-color);"></i>

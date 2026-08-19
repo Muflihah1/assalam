@@ -26,7 +26,7 @@
     .product-img-holder {
         border: 1.5px solid var(--light-border);
         border-radius: 14px;
-        height: 200px;
+        height: 220px;
         background-color: #fdfaf6;
         display: flex;
         align-items: center;
@@ -39,6 +39,11 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .product-card:hover .product-img-holder img {
+        transform: scale(1.06);
     }
 
     /* Buttons Style */
@@ -114,8 +119,8 @@
             <div class="col-lg-4 col-md-6">
                 <div class="product-card">
                     <div class="product-img-holder mb-3">
-                        @if($item->foto)
-                            <img src="{{ \Illuminate\Support\Facades\Storage::url($item->foto) }}" alt="{{ $item->nama }}">
+                        @if($item->foto_url)
+                            <img src="{{ $item->foto_url }}" alt="{{ $item->nama }}" loading="lazy">
                         @else
                             <div class="text-center p-3 text-muted">
                                 <i class="fa-solid fa-couch fa-2x mb-1" style="color: var(--primary-color);"></i>
@@ -156,9 +161,9 @@
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content modal-content-custom p-4 shadow-lg">
                         <div class="modal-body text-center p-0">
-                            <div class="product-img-holder mb-3" style="height: 220px;">
-                                @if($item->foto)
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($item->foto) }}" alt="{{ $item->nama }}">
+                            <div class="product-img-holder mb-3" style="height: 240px;">
+                                @if($item->foto_url)
+                                    <img src="{{ $item->foto_url }}" alt="{{ $item->nama }}">
                                 @else
                                     <span class="fw-bold fs-5 text-dark">{{ $item->nama }}</span>
                                 @endif
