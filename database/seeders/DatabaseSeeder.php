@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             ShippingCostSeeder::class,
             ProdukSeeder::class,
             OrderSeeder::class,
+            WaTemplateSeeder::class,
+            WaMessageLogSeeder::class,
         ]);
     }
 }

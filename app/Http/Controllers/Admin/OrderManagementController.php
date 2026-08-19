@@ -68,6 +68,13 @@ class OrderManagementController extends Controller
             // Update step 2 & 3
             OrderProgress::where('order_id', $order->id)->where('step_number', 2)->update(['status' => 'Selesai', 'completed_at' => now()]);
             OrderProgress::where('order_id', $order->id)->where('step_number', 3)->update(['status' => 'Sedang Berjalan']);
+
+            // Trigger Notifikasi WhatsApp
+            try {
+                app(\App\Services\WhatsAppNotificationService::class)->sendDPVerified($order);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::info("WA Notification trigger error: " . $e->getMessage());
+            }
         }
 
         return back()->with('success', 'Status pembayaran DP dan antrean pesanan #' . $order->order_number . ' berhasil diperbarui!');
@@ -154,6 +161,18 @@ class OrderManagementController extends Controller
             'admin_notes' => $request->catatan,
             'production_status' => $currentStepNum == 8 ? 'Selesai' : ($currentStepNum >= 4 ? 'Dalam Pengerjaan' : 'Antrean Produksi')
         ]);
+
+        // Trigger Notifikasi WhatsApp Otomatis
+        try {
+            $waService = app(\App\Services\WhatsAppNotificationService::class);
+            if ($currentStepNum == 8) {
+                $waService->sendOrderFinished($order);
+            } else {
+                $waService->sendProgressUpdated($order, $request->tahap, $request->catatan);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::info("WA Notification trigger error: " . $e->getMessage());
+        }
 
         return back()->with('success', 'Progres produksi pesanan #' . $order->order_number . ' tahap "' . $request->tahap . '" berhasil diperbarui!');
     }

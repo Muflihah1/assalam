@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\StudioSettingController;
 use App\Http\Controllers\Customer\CartController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 use App\Http\Controllers\Customer\AccountController as CustomerAccountController;
+use App\Http\Controllers\Admin\WhatsAppGatewayController;
 use App\Models\Produk;
 
 /*
@@ -116,4 +117,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/pengaturan/whatsapp', [SettingController::class, 'updateWhatsapp'])->name('pengaturan.whatsapp');
     Route::post('/pengaturan/shipping', [SettingController::class, 'storeShipping'])->name('pengaturan.shipping.store');
     Route::put('/pengaturan/shipping/{id}', [SettingController::class, 'updateShipping'])->name('pengaturan.shipping.update');
+
+    // Manajemen WhatsApp Gateway Terpadu (laravel-whatsapp sidecar, QR/Pairing, Templates, Message Logs & Retry)
+    Route::get('/whatsapp', [WhatsAppGatewayController::class, 'index'])->name('whatsapp.index');
+    Route::get('/whatsapp/status', [WhatsAppGatewayController::class, 'getStatus'])->name('whatsapp.status');
+    Route::get('/whatsapp/qr', [WhatsAppGatewayController::class, 'getQrCode'])->name('whatsapp.qr');
+    Route::post('/whatsapp/pairing-code', [WhatsAppGatewayController::class, 'requestPairingCode'])->name('whatsapp.pairing');
+    Route::put('/whatsapp/templates/{id}', [WhatsAppGatewayController::class, 'updateTemplate'])->name('whatsapp.templates.update');
+    Route::post('/whatsapp/logs/{id}/retry', [WhatsAppGatewayController::class, 'retryLog'])->name('whatsapp.logs.retry');
+    Route::post('/whatsapp/logs/retry-all', [WhatsAppGatewayController::class, 'retryAllFailed'])->name('whatsapp.logs.retry_all');
+    Route::post('/whatsapp/send-test', [WhatsAppGatewayController::class, 'sendTestMessage'])->name('whatsapp.send_test');
 });

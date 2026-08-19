@@ -211,6 +211,11 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a href="{{ route('admin.whatsapp.index') }}" class="nav-link {{ request()->routeIs('admin.whatsapp*') ? 'active' : '' }}">
+                    <i class="fa-brands fa-whatsapp text-success"></i> WhatsApp Gateway
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="{{ route('admin.pengaturan') }}" class="nav-link {{ request()->routeIs('admin.pengaturan*') ? 'active' : '' }}">
                     <i class="fa-solid fa-sliders"></i> Pengaturan
                 </a>

@@ -128,6 +128,13 @@ class OrderController extends Controller
             ]);
         }
 
+        // Trigger Notifikasi WhatsApp Otomatis
+        try {
+            app(\App\Services\WhatsAppNotificationService::class)->sendOrderCreated($order);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::info("WA Notification trigger error: " . $e->getMessage());
+        }
+
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
@@ -185,6 +192,13 @@ class OrderController extends Controller
                 'status' => 'Selesai',
                 'completed_at' => now()
             ]);
+        }
+
+        // Trigger Notifikasi WhatsApp Otomatis
+        try {
+            app(\App\Services\WhatsAppNotificationService::class)->sendPaymentCompleted($order);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::info("WA Notification trigger error: " . $e->getMessage());
         }
 
         return redirect()->route('customer.riwayat')->with('success', 'Terima kasih atas konfirmasi Anda! Pesanan telah selesai.');

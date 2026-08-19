@@ -209,7 +209,14 @@ class CartController extends Controller
             ]);
         }
 
-        // 4. Kosongkan keranjang belanja
+        // 4. Trigger Notifikasi WhatsApp Otomatis
+        try {
+            app(\App\Services\WhatsAppNotificationService::class)->sendOrderCreated($order);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::info("WA Notification trigger error: " . $e->getMessage());
+        }
+
+        // 5. Kosongkan keranjang belanja
         session()->forget('cart');
 
         return redirect()->route('customer.progress')->with('success', 'Pesanan #' . $order->order_number . ' berhasil dibuat! Silakan pantau pengerjaan dan pengiriman di timeline progres.');
