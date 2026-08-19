@@ -87,7 +87,6 @@ class AdminController extends Controller
             'nama' => $request->nama,
             'deskripsi' => $request->deskripsi,
             'harga' => $request->harga,
-            'foto' => $path,
         ];
 
         if ($request->hasFile('foto')) {

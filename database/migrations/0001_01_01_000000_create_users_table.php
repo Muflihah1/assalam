@@ -12,12 +12,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            timestamp('email_verified_at')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            
-            // TAMBAHKAN BARIS INI: Untuk membedakan pelanggan dan admin
+            $table->string('whatsapp_number')->nullable();
+            $table->text('alamat')->nullable();
             $table->string('role')->default('customer'); 
-            
             $table->rememberToken();
             $table->timestamps();
         });

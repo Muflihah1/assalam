@@ -28,13 +28,31 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
- protected $fillable = [
-    'name',
-    'whatsapp_number', 
-    'email',
-    'password',
-    'alamat',
-];
+    protected $fillable = [
+        'name',
+        'whatsapp_number', 
+        'email',
+        'password',
+        'alamat',
+        'role',
+    ];
+
+    /**
+     * Check if user is administrator
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Orders placed by user
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -58,3 +76,4 @@ class User extends Authenticatable
         ];
     }
 }
+
