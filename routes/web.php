@@ -30,9 +30,35 @@ Route::get('/beranda', function () {
     return view('customer.beranda', compact('produks'));
 })->name('customer.beranda');
 
-Route::get('/katalog', function () {
-    $katalogs = Produk::latest()->get();
-    return view('customer.katalog', compact('katalogs'));
+Route::get('/katalog', function (\Illuminate\Http\Request $request) {
+    $query = Produk::query();
+    $rawKeyword = $request->input('keyword', $request->input('q', $request->input('kategori', $request->input('category', ''))));
+    $keyword = trim($rawKeyword);
+
+    if ($keyword !== '') {
+        $terms = array_filter(preg_split('/\s+/', $keyword));
+        $query->where(function ($sub) use ($terms, $keyword) {
+            // Cocokkan frasa penuh langsung pada nama atau deskripsi
+            $sub->where('nama', 'like', "%{$keyword}%")
+                ->orWhere('deskripsi', 'like', "%{$keyword}%");
+
+            // Atau cocokkan semua token kata kunci (misal: "meja jati", "kursi santai", "lemari minimalis")
+            $sub->orWhere(function ($allTermsQuery) use ($terms) {
+                foreach ($terms as $term) {
+                    $allTermsQuery->where(function ($termQ) use ($term) {
+                        $termQ->where('nama', 'like', "%{$term}%")
+                              ->orWhere('deskripsi', 'like', "%{$term}%");
+                        if (is_numeric($term)) {
+                            $termQ->orWhere('harga', 'like', "%{$term}%");
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    $katalogs = $query->latest()->get();
+    return view('customer.katalog', compact('katalogs', 'keyword'));
 })->name('customer.katalog');
 
 // Studio Desain Interaktif (Bebas Dieksplorasi Tamu/Publik)
@@ -70,6 +96,7 @@ Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(functi
 
     // Pelacakan Progres & Riwayat Pesanan
     Route::get('/progress', [CustomerOrderController::class, 'progress'])->name('progress');
+    Route::post('/progress/{id}/upload-dp', [CustomerOrderController::class, 'uploadDP'])->name('progress.upload_dp');
     Route::post('/progress/{id}/pay-remaining', [CustomerOrderController::class, 'payRemaining'])->name('progress.pay_remaining');
     Route::post('/progress/{id}/confirm-completed', [CustomerOrderController::class, 'confirmCompleted'])->name('progress.confirm_completed');
 
@@ -98,9 +125,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/katalog/{id}', [AdminController::class, 'updateKatalog'])->name('katalog.update');
     Route::delete('/katalog/{id}', [AdminController::class, 'destroyKatalog'])->name('katalog.destroy');
 
-    // Manajemen Pesanan Masuk & Verifikasi DP
+    // Manajemen Pesanan Masuk & Verifikasi DP / Konfirmasi
     Route::get('/pesanan-masuk', [OrderManagementController::class, 'pesananMasuk'])->name('pesanan.masuk');
+    Route::post('/pesanan-masuk/{id}/confirm', [OrderManagementController::class, 'confirmOrder'])->name('pesanan.confirm');
+    Route::post('/pesanan-masuk/{id}/reject', [OrderManagementController::class, 'rejectOrder'])->name('pesanan.reject');
     Route::post('/pesanan-masuk/{id}/verify-dp', [OrderManagementController::class, 'verifyDP'])->name('pesanan.verify_dp');
+    Route::post('/pesanan-masuk/{id}/verify-pelunasan', [OrderManagementController::class, 'verifyPelunasan'])->name('pesanan.verify_pelunasan');
     
     // Manajemen Progres Produksi
     Route::get('/progres-produksi/{id?}', [OrderManagementController::class, 'progresProduksi'])->name('progres.produksi');
@@ -114,6 +144,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Pengaturan Admin (Profil, Gateway WhatsApp, Ongkir)
     Route::get('/pengaturan', [SettingController::class, 'index'])->name('pengaturan');
     Route::post('/pengaturan/profil', [SettingController::class, 'updateProfile'])->name('pengaturan.profile');
+    Route::post('/pengaturan/password', [SettingController::class, 'updatePassword'])->name('pengaturan.password');
     Route::post('/pengaturan/whatsapp', [SettingController::class, 'updateWhatsapp'])->name('pengaturan.whatsapp');
     Route::post('/pengaturan/shipping', [SettingController::class, 'storeShipping'])->name('pengaturan.shipping.store');
     Route::put('/pengaturan/shipping/{id}', [SettingController::class, 'updateShipping'])->name('pengaturan.shipping.update');

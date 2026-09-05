@@ -24,32 +24,50 @@ class SettingController extends Controller
         $admin = Auth::user();
 
         $request->validate([
-            'username' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:50|alpha_dash|unique:users,username,' . $admin->id,
             'email' => 'required|email|max:255|unique:users,email,' . $admin->id,
-            'current_password' => 'nullable|required_with:password',
-            'password' => 'nullable|min:6|confirmed',
         ], [
-            'current_password.required_with' => 'Password lama wajib diisi jika ingin mengubah password.',
-            'password.min' => 'Password baru minimal harus 6 karakter.',
+            'name.required' => 'Nama administrator wajib diisi.',
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username ini sudah digunakan.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.unique' => 'Email ini sudah digunakan oleh akun lain.',
         ]);
 
-        $admin->name = $request->username;
-        $admin->email = $request->email;
+        $admin->update([
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => $request->email,
+        ]);
 
-        // Jika kolom password lama diisi
-        if ($request->filled('current_password')) {
-            // Cek apakah password lama cocok dengan database
-            if (!Hash::check($request->current_password, $admin->password)) {
-                return back()->withErrors(['current_password' => 'Password lama yang Anda masukkan salah!']);
-            }
+        return back()->with('success', 'Profil administrator berhasil diperbarui!');
+    }
 
-            // Jika cocok, update ke password baru
-            $admin->password = Hash::make($request->password);
+    public function updatePassword(Request $request)
+    {
+        /** @var \App\Models\User $admin */
+        $admin = Auth::user();
+
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|min:6|confirmed',
+        ], [
+            'current_password.required' => 'Password lama wajib diisi.',
+            'password.required' => 'Password baru wajib diisi.',
+            'password.min' => 'Password baru minimal harus 6 karakter.',
+            'password.confirmed' => 'Konfirmasi password baru tidak sesuai.',
+        ]);
+
+        if (!Hash::check($request->current_password, $admin->password)) {
+            return back()->withErrors(['current_password' => 'Password lama yang Anda masukkan tidak sesuai!']);
         }
 
-        $admin->save();
+        $admin->update([
+            'password' => Hash::make($request->password),
+        ]);
 
-        return back()->with('success', 'Profil dan password berhasil diperbarui!');
+        return back()->with('success', 'Kata sandi administrator berhasil diperbarui!');
     }
 
     public function updateWhatsapp(Request $request)

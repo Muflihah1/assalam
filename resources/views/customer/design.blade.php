@@ -160,22 +160,39 @@
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 pb-3 border-bottom gap-3" style="border-color: var(--light-border) !important;">
         <div>
             <span class="badge px-3 py-1 rounded-pill fw-bold mb-2" style="background-color: rgba(217, 119, 6, 0.12); color: var(--accent-gold); font-size: 0.75rem;">
-                INTERACTIVE 3D & CUSTOM WORKBENCH
+                INTERACTIVE & CUSTOM WORKBENCH
             </span>
             <h2 class="fw-bold mb-1 text-dark">Studio Custom Desain Mebel</h2>
             <p class="text-muted small mb-0">Rancang ukuran presisi, jenis kayu solid grade A, dan tone warna finishing eksklusif langsung dari perangkat Anda.</p>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <div class="p-2.5 px-3 rounded-4 d-flex align-items-center gap-2" style="background-color: var(--wood-bg); border: 1px solid var(--wood-border);">
-                <div style="width: 10px; height: 10px; border-radius: 50%; background-color: #10b981; box-shadow: 0 0 6px #10b981;"></div>
-                <span class="text-dark fw-bold small">Live Calculator Aktif</span>
-            </div>
         </div>
     </div>
 
     <!-- FORM CUSTOM UTAMA -->
     <form id="formCustomMebel" action="{{ route('customer.design.order') }}" method="POST" enctype="multipart/form-data">
         @csrf
+
+        @if(isset($selectedProduct) && $selectedProduct)
+            <div class="mb-4 p-3 rounded-4 d-flex align-items-center justify-content-between flex-wrap gap-3" style="background: linear-gradient(135deg, rgba(217, 119, 6, 0.12) 0%, rgba(93, 64, 55, 0.08) 100%); border: 1.5px solid var(--accent-gold);">
+                <div class="d-flex align-items-center gap-3">
+                    @if($selectedProduct->foto_url)
+                        <img src="{{ $selectedProduct->foto_url }}" alt="{{ $selectedProduct->nama }}" style="width: 70px; height: 70px; border-radius: 14px; object-fit: cover; border: 2px solid #ffffff;">
+                    @endif
+                    <div>
+                        <span class="badge px-2.5 py-1 rounded-pill fw-bold bg-warning text-dark mb-1" style="font-size: 0.7rem;">MODEL DASAR DARI KATALOG</span>
+                        <h6 class="fw-bold text-dark mb-0">{{ $selectedProduct->nama }}</h6>
+                        <small class="text-muted">Harga Dasar Katalog: <strong class="text-dark">Rp {{ number_format($selectedProduct->harga, 0, ',', '.') }}</strong></small>
+                    </div>
+                </div>
+                <div>
+                    <a href="{{ route('customer.design') }}" class="btn btn-sm btn-outline-dark rounded-pill px-3" title="Kustomisasi bebas tanpa referensi">
+                        <i class="fa-solid fa-xmark me-1"></i> Batal Referensi
+                    </a>
+                </div>
+            </div>
+            <input type="hidden" name="product_id" value="{{ $selectedProduct->id }}">
+        @endif
+
+        <div id="validationAlert" class="alert alert-danger d-none rounded-4 mb-4 shadow-sm"></div>
 
         <div class="row g-4">
             <!-- SISI KIRI: FORM PARAMETER -->
@@ -192,12 +209,12 @@
                     <div class="mb-4">
                         <label class="form-label-custom">Kategori Furniture</label>
                         <select class="form-select form-select-custom" name="category" id="inputKategori" onchange="hitungHargaReal()">
-                            <option value="Sofa & Kursi Tamu Mewah" selected>🛋️ Sofa & Kursi Tamu Mewah</option>
-                            <option value="Meja Makan Minimalis Modern">🪑 Meja Makan Minimalis Modern</option>
-                            <option value="Lemari & Wardrobe Custom">🚪 Lemari & Wardrobe Custom</option>
-                            <option value="Tempat Tidur Estetik">🛏️ Tempat Tidur Estetik</option>
-                            <option value="Pintu Rumah & Gebyok">🚪 Pintu Rumah & Gebyok</option>
-                            <option value="Credenza & Buffet TV">📺 Credenza & Buffet TV</option>
+                            <option value="Sofa & Kursi Tamu Mewah" selected>Sofa & Kursi Tamu Mewah</option>
+                            <option value="Meja Makan Minimalis Modern">Meja Makan Minimalis Modern</option>
+                            <option value="Lemari & Wardrobe Custom">Lemari & Wardrobe Custom</option>
+                            <option value="Tempat Tidur Estetik">Tempat Tidur Estetik</option>
+                            <option value="Pintu Rumah & Gebyok">Pintu Rumah & Gebyok</option>
+                            <option value="Credenza & Buffet TV">Credenza & Buffet TV</option>
                         </select>
                     </div>
 
@@ -235,9 +252,9 @@
                     <div class="mb-4">
                         <label class="form-label-custom">Pilihan Material Kayu Utama</label>
                         <select class="form-select form-select-custom" name="wood_material" id="inputMaterial" onchange="hitungHargaReal()">
-                            <option value="Kayu Jati Perhutani (Grade A)" selected>🪵 Kayu Jati Perhutani (Grade A - Anti Rayap & Tahan Puluhan Tahun)</option>
-                            <option value="Kayu Mahoni Oven Premium">🪵 Kayu Mahoni Oven Premium (Serat Halus & Sangat Rapih)</option>
-                            <option value="Kayu Sungkai Solid">🪵 Kayu Sungkai Solid (Serat Cerah & Estetik Modern)</option>
+                            <option value="Kayu Jati Perhutani (Grade A)" selected>Kayu Jati Perhutani (Grade A - Anti Rayap & Tahan Puluhan Tahun)</option>
+                            <option value="Kayu Mahoni Oven Premium">Kayu Mahoni Oven Premium (Serat Halus & Sangat Rapih)</option>
+                            <option value="Kayu Sungkai Solid">Kayu Sungkai Solid (Serat Cerah & Estetik Modern)</option>
                         </select>
                     </div>
 
@@ -267,13 +284,13 @@
                             <input type="hidden" name="tone_percent" id="tone_percent_input" value="100">
 
                             <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="swatch-group-title m-0">🎨 Custom Color Picker</span>
+                                <span class="swatch-group-title m-0"><i class="fa-solid fa-palette text-warning me-1"></i> Custom Color Picker</span>
                                 <div class="custom-color-picker-wrapper" title="Klik untuk pilih warna kustom bebas">
                                     <input type="color" class="custom-color-input" id="customColorPicker" value="#d97706" onchange="selectCustomColor(this.value)">
                                 </div>
                             </div>
 
-                            <div class="swatch-group-title">🪵 Tone Kayu Natural & Klasik</div>
+                            <div class="swatch-group-title"><i class="fa-solid fa-tree text-warning me-1"></i> Tone Kayu Natural & Klasik</div>
                             <div class="color-swatch-container">
                                 <button type="button" class="color-swatch-btn" style="background-color: #fde68a;" onclick="selectBaseColor('#fde68a', 'Light Pine', this)" title="Light Pine"></button>
                                 <button type="button" class="color-swatch-btn active" style="background-color: #d97706;" onclick="selectBaseColor('#d97706', 'Amber Gold', this)" title="Amber Gold"></button>
@@ -283,7 +300,7 @@
                                 <button type="button" class="color-swatch-btn" style="background-color: #2c221e;" onclick="selectBaseColor('#2c221e', 'Espresso Dark', this)" title="Espresso Dark"></button>
                             </div>
 
-                            <div class="swatch-group-title">🎨 Tone Modern Solid</div>
+                            <div class="swatch-group-title"><i class="fa-solid fa-swatchbook text-warning me-1"></i> Tone Modern Solid</div>
                             <div class="color-swatch-container">
                                 <button type="button" class="color-swatch-btn" style="background-color: #ffffff;" onclick="selectBaseColor('#ffffff', 'Duco Pure White', this)" title="Duco White"></button>
                                 <button type="button" class="color-swatch-btn" style="background-color: #cbd5e1;" onclick="selectBaseColor('#cbd5e1', 'Light Grey', this)" title="Light Grey"></button>
@@ -315,7 +332,6 @@
                         <h5 class="fw-bold text-dark mb-0">
                             <i class="fa-solid fa-receipt me-2" style="color: var(--accent-gold);"></i>Ringkasan & Estimasi
                         </h5>
-                        <span class="badge bg-success bg-opacity-10 text-success fw-bold px-2.5 py-1 rounded-pill small">Valid Real-Time</span>
                     </div>
 
                     <div class="d-flex justify-content-between mb-3">
@@ -391,7 +407,9 @@
 
                     <div class="d-flex justify-content-center gap-3">
                         <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-3 fw-bold" data-bs-dismiss="modal">Kembali</button>
-                        <button type="submit" class="btn btn-orange px-5 py-2">Konfirmasi & Simpan Pesanan 🚀</button>
+                        <button type="submit" class="btn btn-orange px-5 py-2">
+                            <i class="fa-solid fa-check me-1"></i> Konfirmasi & Simpan Pesanan
+                        </button>
                     </div>
                 </div>
             </div>
@@ -478,13 +496,49 @@
     }
 
     function bukaModalReview() {
-        document.getElementById('rev_kategori').innerText = document.getElementById('inputKategori').value;
-        let p = document.getElementById('inputPanjang').value;
-        let l = document.getElementById('inputLebar').value;
-        let t = document.getElementById('inputTinggi').value;
+        let alertBox = document.getElementById('validationAlert');
+        alertBox.classList.add('d-none');
+        alertBox.innerHTML = '';
+
+        let errors = [];
+        let kategori = document.getElementById('inputKategori').value.trim();
+        let p = parseFloat(document.getElementById('inputPanjang').value);
+        let l = parseFloat(document.getElementById('inputLebar').value);
+        let t = parseFloat(document.getElementById('inputTinggi').value);
+        let material = document.getElementById('inputMaterial').value.trim();
+        let warna = document.getElementById('color_name_input').value.trim();
+        let hex = document.getElementById('final_color_hex_input').value.trim();
+
+        if (!kategori) {
+            errors.push('Kategori mebel wajib dipilih.');
+        }
+        if (isNaN(p) || p < 30 || p > 400) {
+            errors.push('Panjang furniture harus antara 30 cm - 400 cm.');
+        }
+        if (isNaN(l) || l < 20 || l > 300) {
+            errors.push('Lebar furniture harus antara 20 cm - 300 cm.');
+        }
+        if (isNaN(t) || t < 20 || t > 300) {
+            errors.push('Tinggi furniture harus antara 20 cm - 300 cm.');
+        }
+        if (!material) {
+            errors.push('Material kayu utama wajib dipilih.');
+        }
+        if (!warna || !hex) {
+            errors.push('Warna finishing mebel wajib dipilih.');
+        }
+
+        if (errors.length > 0) {
+            alertBox.innerHTML = '<strong class="d-block mb-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Mohon lengkapi bagian desain yang belum valid:</strong><ul class="mb-0 ps-3">' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
+            alertBox.classList.remove('d-none');
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        document.getElementById('rev_kategori').innerText = kategori;
         document.getElementById('rev_dimensi').innerText = `${p} x ${l} x ${t} cm`;
-        document.getElementById('rev_material').innerText = document.getElementById('inputMaterial').value;
-        document.getElementById('rev_warna').innerText = document.getElementById('color_name_input').value + " (" + document.getElementById('final_color_hex_input').value + ")";
+        document.getElementById('rev_material').innerText = material;
+        document.getElementById('rev_warna').innerText = warna + " (" + hex + ")";
         document.getElementById('rev_total').innerText = document.getElementById('displayTotalPesanan').innerText;
         document.getElementById('rev_dp').innerText = document.getElementById('displayDP').innerText;
 

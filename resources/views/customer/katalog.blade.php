@@ -113,6 +113,68 @@
         </div>
     </div>
 
+    <!-- KOTAK PENCARIAN KATALOG -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 p-3" style="background-color: var(--light-card); border: 1.5px solid var(--light-border) !important;">
+        <form action="{{ route('customer.katalog') }}" method="GET" class="row g-2 align-items-center">
+            <div class="col-md-9 col-lg-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="keyword" value="{{ request('keyword', request('q', $keyword ?? '')) }}" class="form-control border-start-0 ps-0" placeholder="Cari nama mebel, model, atau kata kunci (contoh: Sofa, Meja, Kursi, Lemari)...">
+                </div>
+            </div>
+            <div class="col-md-3 col-lg-2 d-flex gap-2">
+                <button type="submit" class="btn btn-dark w-100 rounded-3 fw-bold" style="background-color: var(--primary-color); border: none;">
+                    <i class="fa-solid fa-magnifying-glass me-1"></i> Cari
+                </button>
+                @if(request('keyword') || request('q') || !empty($keyword))
+                    <a href="{{ route('customer.katalog') }}" class="btn btn-outline-secondary rounded-3" title="Reset Pencarian">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                @endif
+            </div>
+        </form>
+
+        <!-- FILTER KATEGORI CEPAT -->
+        <div class="d-flex gap-2 overflow-auto pt-3 border-top mt-3" style="scrollbar-width: none;">
+            @php
+                $activeKw = strtolower($keyword ?? '');
+                $quickCategories = [
+                    '' => ['label' => 'Semua', 'icon' => 'fa-cubes'],
+                    'Sofa' => ['label' => 'Sofa', 'icon' => 'fa-couch'],
+                    'Meja' => ['label' => 'Meja', 'icon' => 'fa-table'],
+                    'Kursi' => ['label' => 'Kursi', 'icon' => 'fa-chair'],
+                    'Lemari' => ['label' => 'Lemari', 'icon' => 'fa-door-closed'],
+                    'Tempat Tidur' => ['label' => 'Tempat Tidur', 'icon' => 'fa-bed'],
+                    'Pintu' => ['label' => 'Pintu', 'icon' => 'fa-door-open'],
+                    'Credenza' => ['label' => 'Credenza / TV', 'icon' => 'fa-tv'],
+                    'Jati' => ['label' => 'Kayu Jati', 'icon' => 'fa-tree'],
+                ];
+            @endphp
+            @foreach($quickCategories as $key => $cat)
+                @php
+                    $isSelected = ($key === '' && empty($keyword)) || (!empty($key) && str_contains($activeKw, strtolower($key)));
+                @endphp
+                <a href="{{ $key === '' ? route('customer.katalog') : route('customer.katalog', ['keyword' => $key]) }}"
+                   class="btn btn-sm rounded-pill px-3 py-1.5 text-nowrap fw-bold d-flex align-items-center gap-1.5"
+                   style="{{ $isSelected ? 'background-color: var(--primary-color); border: 1.5px solid var(--primary-color); color: #ffffff;' : 'background-color: #ffffff; border: 1.5px solid var(--light-border); color: var(--text-main);' }}">
+                    <i class="fa-solid {{ $cat['icon'] }} small"></i>
+                    <span>{{ $cat['label'] }}</span>
+                </a>
+            @endforeach
+        </div>
+
+        @if(!empty($keyword))
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top flex-wrap gap-2">
+                <div class="small text-muted">
+                    <i class="fa-solid fa-filter me-1 text-primary"></i> Menampilkan hasil pencarian untuk: <strong>"{{ $keyword }}"</strong> ({{ $katalogs->count() }} produk ditemukan)
+                </div>
+                <a href="{{ route('customer.katalog') }}" class="small text-decoration-none fw-bold" style="color: var(--primary-color);">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Tampilkan Semua Produk
+                </a>
+            </div>
+        @endif
+    </div>
+
     <!-- GRID PRODUK DINAMIS -->
     <div class="row g-4">
         @forelse($katalogs as $item)
@@ -149,8 +211,8 @@
                                 <i class="fa-solid fa-circle-info"></i>
                             </button>
                         </div>
-                        <a href="{{ route('customer.design') }}" class="btn btn-outline-dark-theme text-decoration-none text-center">
-                            <i class="fa-solid fa-pen-ruler me-1"></i> Kustomisasi Model Ini 🎨
+                        <a href="{{ route('customer.design', ['product_id' => $item->id]) }}" class="btn btn-outline-dark-theme text-decoration-none text-center">
+                            <i class="fa-solid fa-pen-ruler me-1"></i> Kustomisasi Model Ini
                         </a>
                     </div>
                 </div>
@@ -188,7 +250,7 @@
                             </form>
                             
                             <div class="text-center pt-2 border-top">
-                                <a href="{{ route('customer.design') }}" class="small text-decoration-none fw-bold" style="color: var(--primary-color);">
+                                <a href="{{ route('customer.design', ['product_id' => $item->id]) }}" class="small text-decoration-none fw-bold" style="color: var(--primary-color);">
                                     Atau kustomisasi ukuran & bahan di Studio Custom →
                                 </a>
                             </div>
@@ -199,8 +261,21 @@
         @empty
             <div class="col-12 text-center py-5">
                 <div class="product-card py-5">
-                    <i class="fa-solid fa-box-open fa-3x text-muted mb-3"></i>
-                    <p class="text-muted mb-0">Belum ada produk katalog yang ditambahkan.</p>
+                    <i class="fa-solid fa-couch fa-3x text-muted mb-3" style="color: var(--secondary-color) !important;"></i>
+                    @if(!empty($keyword))
+                        <h5 class="fw-bold text-dark mb-2">Produk Tidak Ditemukan</h5>
+                        <p class="text-muted small mb-4">Tidak ada produk katalog yang cocok dengan kata kunci "<strong>{{ $keyword }}</strong>".</p>
+                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                            <a href="{{ route('customer.katalog') }}" class="btn btn-outline-dark rounded-3 px-4 py-2 small fw-bold">
+                                <i class="fa-solid fa-rotate-left me-1"></i> Tampilkan Semua Produk
+                            </a>
+                            <a href="{{ route('customer.design') }}" class="btn btn-dark rounded-3 px-4 py-2 small fw-bold" style="background-color: var(--primary-color); border: none;">
+                                <i class="fa-solid fa-pen-ruler me-1"></i> Rancang di Studio Custom
+                            </a>
+                        </div>
+                    @else
+                        <p class="text-muted mb-0">Belum ada produk katalog yang ditambahkan.</p>
+                    @endif
                 </div>
             </div>
         @endforelse

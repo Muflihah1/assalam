@@ -17,12 +17,17 @@ class OrderManagementController extends Controller
      */
     public function dashboard()
     {
-        $newOrdersCount = Order::where('production_status', 'Menunggu Konfirmasi')->orWhere('payment_status', 'Menunggu Pembayaran DP')->count();
+        $newOrdersCount = Order::where(function ($q) {
+            $q->where('order_status', 'Menunggu Konfirmasi')
+              ->orWhere('production_status', 'Menunggu Konfirmasi')
+              ->orWhere('payment_status', 'Menunggu Verifikasi DP');
+        })->count();
+
         $inProductionCount = Order::whereIn('production_status', ['Antrean Produksi', 'Dalam Pengerjaan'])->count();
         $totalCustomersCount = User::where('role', 'customer')->count();
         
-        $recentOrders = Order::with(['user', 'customDesign'])->latest()->take(5)->get();
-        $inProgressOrders = Order::with('customDesign')->whereIn('production_status', ['Antrean Produksi', 'Dalam Pengerjaan'])->latest()->take(6)->get();
+        $recentOrders = Order::with(['user', 'customDesign.produk'])->latest()->take(5)->get();
+        $inProgressOrders = Order::with(['customDesign.produk'])->whereIn('production_status', ['Antrean Produksi', 'Dalam Pengerjaan'])->latest()->take(6)->get();
 
         return view('admin.dashboard', compact(
             'newOrdersCount', 
@@ -36,48 +41,172 @@ class OrderManagementController extends Controller
     /**
      * Pesanan Masuk & Verifikasi
      */
-    public function pesananMasuk()
+    public function pesananMasuk(Request $request)
     {
-        $listPesananMasuk = Order::with(['user', 'customDesign', 'progresses'])->latest()->get();
+        $query = Order::with(['user', 'customDesign.produk', 'progresses']);
+
+        if ($request->filled('q')) {
+            $search = trim($request->q);
+            $terms = array_filter(preg_split('/\s+/', $search));
+            $query->where(function ($sub) use ($search, $terms) {
+                // Pencarian exact phrase
+                $sub->where('order_number', 'like', "%{$search}%")
+                    ->orWhere('recipient_name', 'like', "%{$search}%")
+                    ->orWhere('recipient_phone', 'like', "%{$search}%")
+                    ->orWhere('order_status', 'like', "%{$search}%")
+                    ->orWhere('payment_status', 'like', "%{$search}%")
+                    ->orWhere('production_status', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($u) use ($search) {
+                        $u->where('name', 'like', "%{$search}%")
+                          ->orWhere('username', 'like', "%{$search}%")
+                          ->orWhere('whatsapp_number', 'like', "%{$search}%")
+                          ->orWhere('email', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('customDesign', function ($cd) use ($search) {
+                        $cd->where('category', 'like', "%{$search}%")
+                           ->orWhere('wood_material', 'like', "%{$search}%")
+                           ->orWhere('color_name', 'like', "%{$search}%");
+                    });
+
+                // Cocokkan per kata kunci
+                foreach ($terms as $term) {
+                    $sub->orWhere('order_number', 'like', "%{$term}%")
+                        ->orWhere('recipient_name', 'like', "%{$term}%")
+                        ->orWhere('recipient_phone', 'like', "%{$term}%");
+                }
+            });
+        }
+
+        $listPesananMasuk = $query->latest()->get();
         return view('admin.pesanan_masuk', compact('listPesananMasuk'));
     }
 
     /**
-     * Verifikasi Pembayaran DP & Ubah Status
+     * 1. Konfirmasi & Terima Pesanan oleh Admin
+     */
+    public function confirmOrder(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+
+        $order->update([
+            'order_status' => 'Diterima',
+            'production_status' => 'Diterima',
+            'payment_status' => 'Menunggu Pembayaran DP',
+            'current_stage' => 'Validasi Pembayaran',
+            'admin_notes' => 'Pesanan telah diperiksa dan diterima oleh admin. Silakan lakukan pembayaran DP.',
+        ]);
+
+        // Tandai step 1 (Konfirmasi Pesanan) selesai
+        OrderProgress::where('order_id', $order->id)->where('step_number', 1)->update([
+            'status' => 'Selesai',
+            'completed_at' => now(),
+            'notes' => 'Pesanan diterima & disetujui oleh admin'
+        ]);
+
+        // Aktifkan step 2 (Validasi Pembayaran)
+        OrderProgress::where('order_id', $order->id)->where('step_number', 2)->update([
+            'status' => 'Sedang Berjalan',
+            'notes' => 'Menunggu pembayaran uang muka (DP) dari pelanggan'
+        ]);
+
+        // Trigger Notifikasi WhatsApp
+        try {
+            app(\App\Services\WhatsAppNotificationService::class)->sendOrderConfirmed($order);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::info("WA Notification trigger error: " . $e->getMessage());
+        }
+
+        return back()->with('success', 'Pesanan #' . $order->order_number . ' BERHASIL DITERIMA! Pelanggan sekarang dapat melakukan pembayaran DP.');
+    }
+
+    /**
+     * 2. Tolak Pesanan oleh Admin beserta Alasan
+     */
+    public function rejectOrder(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+
+        $request->validate([
+            'rejection_reason' => 'required|string|min:3|max:1000',
+        ], [
+            'rejection_reason.required' => 'Alasan penolakan pesanan wajib diisi.',
+            'rejection_reason.min' => 'Alasan penolakan minimal 3 karakter.',
+        ]);
+
+        $order->update([
+            'order_status' => 'Ditolak',
+            'production_status' => 'Ditolak',
+            'payment_status' => 'Ditolak',
+            'rejection_reason' => $request->rejection_reason,
+            'admin_notes' => 'Pesanan ditolak: ' . $request->rejection_reason,
+        ]);
+
+        // Update progress step 1 menjadi Dibatalkan
+        OrderProgress::where('order_id', $order->id)->where('step_number', 1)->update([
+            'status' => 'Dibatalkan',
+            'notes' => 'Pesanan ditolak oleh admin: ' . $request->rejection_reason
+        ]);
+
+        // Trigger Notifikasi WhatsApp
+        try {
+            app(\App\Services\WhatsAppNotificationService::class)->sendOrderRejected($order, $request->rejection_reason);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::info("WA Notification trigger error: " . $e->getMessage());
+        }
+
+        return back()->with('success', 'Pesanan #' . $order->order_number . ' BERHASIL DITOLAK. Alasan penolakan telah disimpan dan diberitahukan ke pelanggan.');
+    }
+
+    /**
+     * 3. Verifikasi Pembayaran DP & Masuk Antrean Produksi
      */
     public function verifyDP(Request $request, $id)
     {
         $order = Order::findOrFail($id);
-        
-        $request->validate([
-            'status_progres' => 'required|string',
+
+        $order->update([
+            'order_status' => 'Diproses',
+            'payment_status' => 'DP Terverifikasi',
+            'production_status' => 'Dalam Pengerjaan',
+            'current_stage' => 'Pesanan Diterima',
+            'admin_notes' => 'Pembayaran DP telah diverifikasi. Pesanan masuk ke tahap pengerjaan.',
         ]);
 
-        if (str_contains($request->status_progres, 'Ditolak')) {
-            $order->update([
-                'payment_status' => 'Ditolak',
-                'production_status' => 'Menunggu Konfirmasi',
-            ]);
-        } else {
-            $order->update([
-                'payment_status' => 'DP Terverifikasi',
-                'production_status' => 'Dalam Pengerjaan',
-                'current_stage' => 'Pesanan Diterima',
-            ]);
+        // Update step 2 & 3
+        OrderProgress::where('order_id', $order->id)->where('step_number', 2)->update([
+            'status' => 'Selesai', 
+            'completed_at' => now(),
+            'notes' => 'Pembayaran DP diverifikasi oleh admin'
+        ]);
+        OrderProgress::where('order_id', $order->id)->where('step_number', 3)->update([
+            'status' => 'Sedang Berjalan',
+            'notes' => 'Pesanan masuk antrean pengerjaan pengrajin'
+        ]);
 
-            // Update step 2 & 3
-            OrderProgress::where('order_id', $order->id)->where('step_number', 2)->update(['status' => 'Selesai', 'completed_at' => now()]);
-            OrderProgress::where('order_id', $order->id)->where('step_number', 3)->update(['status' => 'Sedang Berjalan']);
-
-            // Trigger Notifikasi WhatsApp
-            try {
-                app(\App\Services\WhatsAppNotificationService::class)->sendDPVerified($order);
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::info("WA Notification trigger error: " . $e->getMessage());
-            }
+        // Trigger Notifikasi WhatsApp
+        try {
+            app(\App\Services\WhatsAppNotificationService::class)->sendDPVerified($order);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::info("WA Notification trigger error: " . $e->getMessage());
         }
 
-        return back()->with('success', 'Status pembayaran DP dan antrean pesanan #' . $order->order_number . ' berhasil diperbarui!');
+        return back()->with('success', 'Pembayaran DP pesanan #' . $order->order_number . ' BERHASIL DIVERIFIKASI! Pesanan masuk ke pengerjaan.');
+    }
+
+    /**
+     * 4. Verifikasi Pembayaran Pelunasan
+     */
+    public function verifyPelunasan(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+
+        $order->update([
+            'payment_status' => 'Lunas',
+            'remaining_payment' => 0,
+            'admin_notes' => 'Pelunasan sisa tagihan telah diverifikasi oleh admin. Pembayaran lunas.',
+        ]);
+
+        return back()->with('success', 'Pelunasan pesanan #' . $order->order_number . ' BERHASIL DIVERIFIKASI! Status pembayaran lunas.');
     }
 
     /**
@@ -180,9 +309,41 @@ class OrderManagementController extends Controller
     /**
      * Riwayat Pemesanan Admin
      */
-    public function riwayat()
+    public function riwayat(Request $request)
     {
-        $listRiwayat = Order::with(['user', 'customDesign', 'progresses'])->latest()->get();
+        $query = Order::with(['user', 'customDesign', 'progresses']);
+
+        if ($request->filled('q')) {
+            $search = trim($request->q);
+            $terms = array_filter(preg_split('/\s+/', $search));
+            $query->where(function ($sub) use ($search, $terms) {
+                $sub->where('order_number', 'like', "%{$search}%")
+                    ->orWhere('recipient_name', 'like', "%{$search}%")
+                    ->orWhere('recipient_phone', 'like', "%{$search}%")
+                    ->orWhere('order_status', 'like', "%{$search}%")
+                    ->orWhere('production_status', 'like', "%{$search}%")
+                    ->orWhere('payment_status', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($u) use ($search) {
+                        $u->where('name', 'like', "%{$search}%")
+                          ->orWhere('username', 'like', "%{$search}%")
+                          ->orWhere('whatsapp_number', 'like', "%{$search}%")
+                          ->orWhere('email', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('customDesign', function ($cd) use ($search) {
+                        $cd->where('category', 'like', "%{$search}%")
+                           ->orWhere('wood_material', 'like', "%{$search}%")
+                           ->orWhere('color_name', 'like', "%{$search}%");
+                    });
+
+                foreach ($terms as $term) {
+                    $sub->orWhere('order_number', 'like', "%{$term}%")
+                        ->orWhere('recipient_name', 'like', "%{$term}%")
+                        ->orWhere('recipient_phone', 'like', "%{$term}%");
+                }
+            });
+        }
+
+        $listRiwayat = $query->latest()->get();
         return view('admin.riwayat', compact('listRiwayat'));
     }
 

@@ -276,6 +276,21 @@
             </div>
         @endif
 
+        @if($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <strong class="small">Periksa kembali data yang dimasukkan:</strong>
+                </div>
+                <ul class="mb-0 ps-3 small">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <!-- Konten Halaman Dinamis -->
         @yield('content')
     </div>

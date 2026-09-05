@@ -122,21 +122,21 @@
             @endif
 
             <div class="mb-3">
-                <label class="form-label small">Email Address</label>
+                <label class="form-label small">Email atau Username</label>
                 <div class="input-group">
-                    <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
-                    <input type="email" name="email" class="form-control" placeholder="example@mail.com" required>
+                    <span class="input-group-text"><i class="fa-regular fa-user"></i></span>
+                    <input type="text" name="email" class="form-control" placeholder="Email atau username Anda" value="{{ old('email') }}" required autofocus>
                 </div>
             </div>
 
             <div class="mb-3">
-                <label class="form-label small">Password</label>
+                <label class="form-label small fw-bold text-dark">Kata Sandi</label>
                 <div class="input-group">
-                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                    <input type="password" id="loginPassword" name="password" class="form-control" placeholder="••••••••" required>
-                    <span class="input-group-text toggle-password" onclick="togglePasswordVisibility('loginPassword', 'eyeIconLogin')">
-                        <i class="fa-regular fa-eye-slash" id="eyeIconLogin"></i>
-                    </span>
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
+                    <input type="password" id="loginPassword" name="password" class="form-control border-start-0 border-end-0" placeholder="Masukkan password Anda" required>
+                    <button type="button" class="btn btn-outline-secondary border-start-0 bg-white toggle-password" onclick="togglePasswordVisibility('loginPassword', 'eyeIconLogin')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                        <i class="fa-solid fa-eye-slash text-muted" id="eyeIconLogin"></i>
+                    </button>
                 </div>
             </div>
 
@@ -148,8 +148,9 @@
                 <a href="#" class="text-decoration-none text-muted">Lupa Password?</a>
             </div>
 
-            <!-- TOMBOL DIUBAH MENJADI TYPE SUBMIT AGAR FORM BISA DIKIRIM -->
-            <button type="submit" class="btn btn-login w-100 mb-3">LOGIN SEKARANG</button>
+            <button type="submit" class="btn btn-login w-100 mb-3">
+                <i class="fa-solid fa-right-to-bracket me-2"></i> MASUK SEKARANG
+            </button>
 
             <div class="text-center small">
                 Belum punya akun? <a href="{{ route('register') }}" class="text-dark fw-bold text-decoration-none">Daftar Sekarang</a>
@@ -162,18 +163,27 @@
     function togglePasswordVisibility(inputId, iconId) {
         const input = document.getElementById(inputId);
         const icon = document.getElementById(iconId);
+        if (!input) return;
 
         if (input.type === "password") {
             input.type = "text";
-            icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye");
+            if (icon) {
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+                icon.classList.remove("text-muted");
+                icon.style.color = "var(--primary-color)";
+            }
         } else {
             input.type = "password";
-            icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash");
+            if (icon) {
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+                icon.classList.add("text-muted");
+                icon.style.color = "";
+            }
         }
     }
 </script>
 
 </body>
-</html>s
+</html>

@@ -64,12 +64,19 @@
                         <form action="{{ route('admin.pengaturan.profile') }}" method="POST">
                             @csrf
                             <div class="mb-3">
-                                <label class="form-label text-muted small fw-bold">Nama Admin:</label>
-                                <input type="text" name="username" class="form-control rounded-3" value="{{ Auth::user()->name ?? 'Administrator' }}" required>
+                                <label class="form-label text-muted small fw-bold">Nama Lengkap:</label>
+                                <input type="text" name="name" class="form-control rounded-3" value="{{ old('name', Auth::user()->name ?? 'Administrator') }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Username:</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted">@</span>
+                                    <input type="text" name="username" class="form-control rounded-end-3" value="{{ old('username', Auth::user()->username ?? 'admin') }}" required>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label text-muted small fw-bold">Alamat Email:</label>
-                                <input type="email" name="email" class="form-control rounded-3" value="{{ Auth::user()->email ?? 'admin@assalammebel.com' }}" required>
+                                <input type="email" name="email" class="form-control rounded-3" value="{{ old('email', Auth::user()->email ?? 'admin@assalammebel.com') }}" required>
                             </div>
                             <button type="submit" class="btn btn-dark rounded-3 px-4" style="background-color: var(--primary-color); border: none;">
                                 <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Perubahan Profil
@@ -83,19 +90,34 @@
                         <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">
                             <i class="fa fa-lock me-2" style="color: var(--primary-color);"></i> Perbarui Kata Sandi
                         </h6>
-                        <form action="{{ route('admin.pengaturan.profile') }}" method="POST">
+                        <form action="{{ route('admin.pengaturan.password') }}" method="POST">
                             @csrf
                             <div class="mb-3">
                                 <label class="form-label text-muted small fw-bold">Password Lama:</label>
-                                <input type="password" name="current_password" class="form-control rounded-3" placeholder="Masukkan password lama">
+                                <div class="input-group">
+                                    <input type="password" id="adminCurrentPass" name="current_password" class="form-control rounded-start-3 border-end-0" placeholder="Masukkan password lama" required>
+                                    <button type="button" class="btn btn-outline-secondary border bg-white rounded-end-3" onclick="togglePasswordVisibility('adminCurrentPass', 'eyeAdminCurr')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                                        <i class="fa-solid fa-eye-slash text-muted" id="eyeAdminCurr"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label text-muted small fw-bold">Password Baru:</label>
-                                <input type="password" name="password" class="form-control rounded-3" placeholder="Min. 6 karakter">
+                                <div class="input-group">
+                                    <input type="password" id="adminNewPass" name="password" class="form-control rounded-start-3 border-end-0" placeholder="Min. 6 karakter" required>
+                                    <button type="button" class="btn btn-outline-secondary border bg-white rounded-end-3" onclick="togglePasswordVisibility('adminNewPass', 'eyeAdminNew')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                                        <i class="fa-solid fa-eye-slash text-muted" id="eyeAdminNew"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label text-muted small fw-bold">Konfirmasi Password Baru:</label>
-                                <input type="password" name="password_confirmation" class="form-control rounded-3" placeholder="Ulangi password baru">
+                                <div class="input-group">
+                                    <input type="password" id="adminConfPass" name="password_confirmation" class="form-control rounded-start-3 border-end-0" placeholder="Ulangi password baru" required>
+                                    <button type="button" class="btn btn-outline-secondary border bg-white rounded-end-3" onclick="togglePasswordVisibility('adminConfPass', 'eyeAdminConf')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                                        <i class="fa-solid fa-eye-slash text-muted" id="eyeAdminConf"></i>
+                                    </button>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-outline-dark rounded-3 px-4">
                                 <i class="fa-solid fa-key me-1"></i> Ganti Password
@@ -264,4 +286,29 @@
 </div>
 @endforeach
 
+<script>
+    function togglePasswordVisibility(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (!input) return;
+
+        if (input.type === "password") {
+            input.type = "text";
+            if (icon) {
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+                icon.classList.remove("text-muted");
+                icon.style.color = "var(--primary-color)";
+            }
+        } else {
+            input.type = "password";
+            if (icon) {
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+                icon.classList.add("text-muted");
+                icon.style.color = "";
+            }
+        }
+    }
+</script>
 @endsection

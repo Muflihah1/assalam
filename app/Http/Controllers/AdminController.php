@@ -45,10 +45,33 @@ class AdminController extends Controller
         return view('admin.dashboard');
     }
 
-    public function katalog()
+    public function katalog(Request $request)
     {
-        $listProduk = Produk::all();
-        return view('admin.katalog', compact('listProduk'));
+        $query = Produk::query();
+        $q = trim($request->input('q', $request->input('keyword', '')));
+
+        if ($q !== '') {
+            $terms = array_filter(preg_split('/\s+/', $q));
+            $query->where(function ($sub) use ($terms, $q) {
+                $sub->where('nama', 'like', "%{$q}%")
+                    ->orWhere('deskripsi', 'like', "%{$q}%");
+
+                $sub->orWhere(function ($allTermsQuery) use ($terms) {
+                    foreach ($terms as $term) {
+                        $allTermsQuery->where(function ($termQ) use ($term) {
+                            $termQ->where('nama', 'like', "%{$term}%")
+                                  ->orWhere('deskripsi', 'like', "%{$term}%");
+                            if (is_numeric($term)) {
+                                $termQ->orWhere('harga', 'like', "%{$term}%");
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        $listProduk = $query->latest()->get();
+        return view('admin.katalog', compact('listProduk', 'q'));
     }
 
     public function storeKatalog(Request $request)

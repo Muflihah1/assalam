@@ -123,15 +123,29 @@
     <section class="hero-section mb-5">
         <div class="row align-items-center">
             <div class="col-lg-10 mb-2">
-                <span class="badge badge-dark-custom mb-3">✨ Toko & Custom Mebel Kayu Solid Terpercaya</span>
+                <span class="badge badge-dark-custom mb-3"><i class="fa-solid fa-award text-warning me-1"></i> Toko & Custom Mebel Kayu Solid Terpercaya</span>
                 <h1 class="hero-title mb-3">Wujudkan Furniture Impian Presisi Sesuai Ruangan Anda</h1>
                 <p class="text-white-50 fs-5 mb-4">Jelajahi koleksi mebel siap beli atau rancang mebel impian Anda dengan ukuran presisi, jenis kayu solid perhutani, dan pilihan warna tone eksklusif.</p>
+                
+                <!-- KOTAK PENCARIAN CEPAT DI HERO BANNER -->
+                <form action="{{ route('customer.katalog') }}" method="GET" class="mb-4" style="max-width: 580px;">
+                    <div class="input-group shadow-lg rounded-pill overflow-hidden bg-white p-1">
+                        <span class="input-group-text bg-transparent border-0 ps-3 text-muted">
+                            <i class="fa-solid fa-magnifying-glass" style="color: var(--primary-color);"></i>
+                        </span>
+                        <input type="text" name="keyword" class="form-control border-0 shadow-none ps-2" placeholder="Cari sofa, meja makan jati, lemari duco, dipan..." style="background: transparent;">
+                        <button type="submit" class="btn btn-dark px-4 rounded-pill fw-bold" style="background-color: var(--primary-color); border: none;">
+                            Cari Mebel
+                        </button>
+                    </div>
+                </form>
+
                 <div class="d-flex gap-3 flex-wrap">
                     <a href="{{ route('customer.katalog') }}" class="btn btn-outline-dark-theme px-4 py-3 rounded-3" style="background: rgba(255,255,255,0.12); color: white; border-color: rgba(255,255,255,0.3);">
                         <i class="fa-solid fa-basket-shopping me-1"></i> Jelajahi Katalog Produk
                     </a>
                     <a href="{{ route('customer.design') }}" class="btn btn-orange px-4 py-3 rounded-3 shadow-lg" style="background-color: var(--accent-orange);">
-                        <i class="fa-solid fa-pen-ruler me-1"></i> Buka Studio Custom 🎨
+                        <i class="fa-solid fa-pen-ruler me-1"></i> Buka Studio Custom
                     </a>
                 </div>
             </div>
@@ -177,7 +191,7 @@
                                     <i class="fa-solid fa-cart-plus me-1"></i> + Keranjang
                                 </button>
                             </form>
-                            <a href="{{ route('customer.design') }}" class="btn btn-outline-dark-theme text-decoration-none" title="Kustomisasi Produk">
+                            <a href="{{ route('customer.design', ['product_id' => $item->id]) }}" class="btn btn-outline-dark-theme text-decoration-none" title="Kustomisasi Produk">
                                 <i class="fa-solid fa-pen-ruler"></i> Custom
                             </a>
                         </div>
@@ -200,7 +214,7 @@
                 <h2 class="fw-bold mb-3" style="color: var(--primary-color);">Punya Sketsa atau Konsep Furniture Sendiri?</h2>
                 <p class="fs-6 mb-4" style="color: var(--text-main);">Rancang bentuk, ukuran, dan bahan furniture impianmu secara interaktif di Studio Custom Assalam Mebel!</p>
                 <a href="{{ route('customer.design') }}" class="btn btn-orange btn-lg px-5 py-3 text-decoration-none fw-bold rounded-3 shadow-lg">
-                    Buka Studio Custom Sekarang 🚀
+                    <i class="fa-solid fa-pen-ruler me-1"></i> Buka Studio Custom Sekarang
                 </a>
             </div>
         </div>

@@ -342,7 +342,7 @@
                     <li>
                         <a href="{{ route('customer.design') }}" class="{{ request()->routeIs('customer.design') ? 'active' : '' }}">
                             <i class="fa-solid fa-pen-ruler"></i>
-                            <span>Your Design 🎨</span>
+                            <span>Studio Custom</span>
                         </a>
                     </li>
                     <li>
@@ -430,12 +430,11 @@
                 <i class="fa-solid fa-bars"></i>
             </button>
 
-            <!-- KOTAK PENCARIAN -->
-            <div class="search-bar d-none d-sm-block">
-                <form action="{{ route('customer.katalog') }}" method="GET">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" name="keyword" class="form-control" placeholder="Cari model mebel impian..." value="{{ request('keyword') }}">
-                </form>
+            <!-- Brand Tagline Badge -->
+            <div class="d-none d-md-flex align-items-center gap-2">
+                <span class="badge px-3 py-2 rounded-pill fw-bold" style="background-color: rgba(93, 64, 55, 0.08); color: var(--primary-color); font-size: 0.82rem;">
+                    <i class="fa-solid fa-award text-warning me-1"></i> Toko & Custom Mebel Kayu Solid Premium
+                </span>
             </div>
 
             <!-- Icon Kanan Topbar (Keranjang + Auth / Profile) -->
@@ -480,6 +479,21 @@
             @if(session('error'))
                 <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm" role="alert">
                     <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if(isset($errors) && $errors->any())
+                <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <strong class="small">Periksa kembali data yang dimasukkan:</strong>
+                    </div>
+                    <ul class="mb-0 ps-3 small">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif

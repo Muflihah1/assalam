@@ -11,6 +11,7 @@ class CustomDesign extends Model
 
     protected $fillable = [
         'order_id',
+        'product_id',
         'category',
         'length_cm',
         'width_cm',
@@ -26,5 +27,10 @@ class CustomDesign extends Model
     public function order()
     {
         return $this->belongsTo(Order::class, 'order_id');
+    }
+
+    public function produk()
+    {
+        return $this->belongsTo(Produk::class, 'product_id');
     }
 }

@@ -121,10 +121,22 @@
                             <input type="text" name="name" class="form-control form-control-custom" value="{{ old('name', Auth::user()->name) }}" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label text-dark small fw-bold">Nomor Telepon / WhatsApp</label>
-                            <input type="tel" name="whatsapp_number" class="form-control form-control-custom" value="{{ old('whatsapp_number', Auth::user()->whatsapp_number) }}" required>
+                            <label class="form-label text-dark small fw-bold">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted border-end-0">@</span>
+                                <input type="text" name="username" class="form-control form-control-custom border-start-0 ps-1" value="{{ old('username', Auth::user()->username) }}" required placeholder="username_anda">
+                            </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
+                            <label class="form-label text-dark small fw-bold">Nomor Telepon / WhatsApp</label>
+                            <input type="tel" name="whatsapp_number" class="form-control form-control-custom" 
+                                   value="{{ old('whatsapp_number', Auth::user()->whatsapp_number) }}" 
+                                   inputmode="numeric"
+                                   oninput="this.value = this.value.replace(/[^0-9+]/g, '')"
+                                   placeholder="Contoh: 08123456789 atau 62812345678" required>
+                            <div class="form-text small">Mendukung awalan 08 atau 62 (hanya angka).</div>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label text-dark small fw-bold">Alamat Email</label>
                             <input type="email" name="email" class="form-control form-control-custom" value="{{ old('email', Auth::user()->email) }}" required>
                         </div>
@@ -153,15 +165,30 @@
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label text-dark small fw-bold">Password Saat Ini</label>
-                            <input type="password" name="current_password" class="form-control form-control-custom" placeholder="Password lama" required>
+                            <div class="input-group">
+                                <input type="password" id="custCurrentPass" name="current_password" class="form-control form-control-custom border-end-0" placeholder="Password lama" required>
+                                <button type="button" class="btn btn-outline-secondary border bg-white" onclick="togglePasswordVisibility('custCurrentPass', 'eyeCustCurr')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                                    <i class="fa-solid fa-eye-slash text-muted" id="eyeCustCurr"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label text-dark small fw-bold">Password Baru</label>
-                            <input type="password" name="password" class="form-control form-control-custom" placeholder="Min. 6 karakter" required>
+                            <div class="input-group">
+                                <input type="password" id="custNewPass" name="password" class="form-control form-control-custom border-end-0" placeholder="Min. 6 karakter" required>
+                                <button type="button" class="btn btn-outline-secondary border bg-white" onclick="togglePasswordVisibility('custNewPass', 'eyeCustNew')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                                    <i class="fa-solid fa-eye-slash text-muted" id="eyeCustNew"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label text-dark small fw-bold">Konfirmasi Password Baru</label>
-                            <input type="password" name="password_confirmation" class="form-control form-control-custom" placeholder="Ulangi password" required>
+                            <div class="input-group">
+                                <input type="password" id="custConfPass" name="password_confirmation" class="form-control form-control-custom border-end-0" placeholder="Ulangi password" required>
+                                <button type="button" class="btn btn-outline-secondary border bg-white" onclick="togglePasswordVisibility('custConfPass', 'eyeCustConf')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                                    <i class="fa-solid fa-eye-slash text-muted" id="eyeCustConf"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -200,4 +227,30 @@
         </div>
     </div>
 </div>
+
+<script>
+    function togglePasswordVisibility(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (!input) return;
+
+        if (input.type === "password") {
+            input.type = "text";
+            if (icon) {
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+                icon.classList.remove("text-muted");
+                icon.style.color = "var(--primary-color)";
+            }
+        } else {
+            input.type = "password";
+            if (icon) {
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+                icon.classList.add("text-muted");
+                icon.style.color = "";
+            }
+        }
+    }
+</script>
 @endsection

@@ -34,43 +34,64 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'whatsapp_number' => 'required|string|max:20',
-            'email' => 'required|string|email|max:255|unique:users',
+            'username' => 'required|string|alpha_dash|min:3|max:50|unique:users,username',
+            'whatsapp_number' => ['required', 'string', 'regex:/^(\+?62|0)8[1-9][0-9]{7,12}$/'],
+            'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:6',
             'alamat' => 'required|string',
         ], [
-            'email.unique' => 'Alamat email ini sudah terdaftar. Silakan gunakan email lain.',
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username ini sudah digunakan. Silakan pilih username lain.',
+            'username.alpha_dash' => 'Username hanya boleh berisi huruf, angka, tanda hubung (-), dan garis bawah (_).',
+            'username.min' => 'Username minimal terdiri dari 3 karakter.',
+            'whatsapp_number.required' => 'Nomor WhatsApp wajib diisi.',
+            'whatsapp_number.regex' => 'Format nomor WhatsApp tidak valid. Masukkan nomor berawalan 08 atau 62 (contoh: 081234567890 atau 628123456789) tanpa huruf.',
             'email.required' => 'Alamat email wajib diisi.',
+            'email.unique' => 'Alamat email ini sudah terdaftar. Silakan gunakan email lain.',
             'password.required' => 'Kata sandi wajib diisi.',
             'password.min' => 'Kata sandi minimal harus 6 karakter.',
             'name.required' => 'Nama lengkap wajib diisi.',
-            'whatsapp_number.required' => 'Nomor WhatsApp wajib diisi.',
             'alamat.required' => 'Alamat lengkap wajib diisi.',
         ]);
 
-        $user = User::create([
+        // Normalisasi nomor telepon ke format internasional 628...
+        $cleanPhone = preg_replace('/[^0-9]/', '', $request->whatsapp_number);
+        if (str_starts_with($cleanPhone, '08')) {
+            $cleanPhone = '62' . substr($cleanPhone, 1);
+        }
+
+        User::create([
             'name' => $request->name,
-            'whatsapp_number' => $request->whatsapp_number,
+            'username' => strtolower($request->username),
+            'whatsapp_number' => $cleanPhone,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'alamat' => $request->alamat,
             'role' => 'customer',
         ]);
 
-        // Otomatis login setelah registrasi untuk pengalaman berbelanja yang mulus
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('customer.beranda'))->with('success', 'Selamat datang ' . $user->name . '! Akun Anda berhasil didaftarkan.');
+        // Alur registrasi yang benar: Alihkan ke halaman login tanpa auto-login
+        return redirect()->route('login')->with('success', 'Pendaftaran akun berhasil! Silakan masuk menggunakan email atau username Anda.');
     }
 
-    // Proses Login (Pengecekan Role Admin & Pelanggan)
+    // Proses Login (Mendukung Login via Email ATAU Username)
     public function authenticate(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+        $request->validate([
+            'email' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ], [
+            'email.required' => 'Email atau username wajib diisi.',
+            'password.required' => 'Kata sandi wajib diisi.',
         ]);
+
+        $loginInput = $request->input('email');
+        $field = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $credentials = [
+            $field => $loginInput,
+            'password' => $request->input('password'),
+        ];
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
@@ -80,12 +101,12 @@ class AuthController extends Controller
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             } else {
-                return redirect()->intended(route('customer.beranda'))->with('success', 'Selamat datang kembali, ' . $user->name . '!');
+                return redirect()->intended(route('customer.beranda'))->with('success', 'Selamat datang kembali, ' . ($user->username ?? $user->name) . '!');
             }
         }
 
         return back()->withErrors([
-            'email' => 'Email atau password yang Anda masukkan salah.',
+            'email' => 'Email/Username atau password yang Anda masukkan salah.',
         ])->onlyInput('email');
     }
 

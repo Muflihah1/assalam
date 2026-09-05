@@ -123,7 +123,7 @@
                     <i class="fa-solid fa-basket-shopping me-1"></i> Buka Katalog Mebel
                 </a>
                 <a href="{{ route('customer.design') }}" class="btn btn-orange px-4 py-2.5 rounded-3">
-                    <i class="fa-solid fa-pen-ruler me-1"></i> Studio Custom Desain 🎨
+                    <i class="fa-solid fa-pen-ruler me-1"></i> Studio Custom Desain
                 </a>
             </div>
         </div>
@@ -301,7 +301,7 @@
                             </div>
 
                             <button type="submit" class="btn btn-orange w-100 py-3 shadow-sm">
-                                <i class="fa-solid fa-lock me-1"></i> Checkout & Bayar DP Sekarang 🚀
+                                <i class="fa-solid fa-shield-halved me-1"></i> Checkout & Bayar DP Sekarang
                             </button>
                         </form>
                     @else

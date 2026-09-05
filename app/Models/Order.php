@@ -25,6 +25,8 @@ class Order extends Model
         'shipping_address',
         'dp_receipt_proof',
         'final_receipt_proof',
+        'order_status',
+        'rejection_reason',
         'admin_notes',
         'customer_notes',
     ];

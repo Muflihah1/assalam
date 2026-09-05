@@ -104,13 +104,15 @@
             <div class="input-group">
                 <span class="input-group-text bg-light border-2 border-end-0 rounded-start-3"><i class="fa-solid fa-lock text-muted"></i></span>
                 <input type="password" id="adminPassword" name="password" class="form-control border-start-0 border-end-0" placeholder="••••••••" required>
-                <span class="input-group-text bg-light border-2 border-start-0 rounded-end-3 toggle-password" onclick="togglePasswordVisibility('adminPassword', 'eyeIconAdmin')">
-                    <i class="fa-regular fa-eye-slash text-muted" id="eyeIconAdmin"></i>
-                </span>
+                <button type="button" class="btn btn-outline-secondary bg-light border-2 border-start-0 rounded-end-3" onclick="togglePasswordVisibility('adminPassword', 'eyeIconAdmin')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                    <i class="fa-solid fa-eye-slash text-muted" id="eyeIconAdmin"></i>
+                </button>
             </div>
         </div>
 
-        <button type="submit" class="btn btn-admin w-100 mb-3">MASUK SEBAGAI ADMIN</button>
+        <button type="submit" class="btn btn-admin w-100 mb-3">
+            <i class="fa-solid fa-shield-halved me-2"></i> MASUK SEBAGAI ADMIN
+        </button>
         
         <div class="text-center">
             <a href="{{ route('login') }}" class="text-muted small text-decoration-none"><i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Login Pelanggan</a>
@@ -122,15 +124,24 @@
     function togglePasswordVisibility(inputId, iconId) {
         const input = document.getElementById(inputId);
         const icon = document.getElementById(iconId);
+        if (!input) return;
 
         if (input.type === "password") {
             input.type = "text";
-            icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye");
+            if (icon) {
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+                icon.classList.remove("text-muted");
+                icon.style.color = "var(--primary-color)";
+            }
         } else {
             input.type = "password";
-            icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash");
+            if (icon) {
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+                icon.classList.add("text-muted");
+                icon.style.color = "";
+            }
         }
     }
 </script>

@@ -15,6 +15,7 @@ class AdminSeeder extends Seeder
             ['email' => 'admin@assalammebel.com'],
             [
                 'name' => 'Administrator Assalam',
+                'username' => 'admin_assalam',
                 'password' => Hash::make('password123'),
                 'whatsapp_number' => '085234567890',
                 'alamat' => 'Jl. Raya Mebel Assalam No. 12, Sumenep, Madura',
@@ -27,6 +28,7 @@ class AdminSeeder extends Seeder
             ['email' => 'budi@gmail.com'],
             [
                 'name' => 'Budi Santoso',
+                'username' => 'budisantoso',
                 'password' => Hash::make('password123'),
                 'whatsapp_number' => '081234567890',
                 'alamat' => 'Jl. Pemuda No. 45, Kecamatan Genteng, Kota Surabaya, Jawa Timur',
@@ -39,6 +41,7 @@ class AdminSeeder extends Seeder
             ['email' => 'rina.wijaya@gmail.com'],
             [
                 'name' => 'Rina Wijaya',
+                'username' => 'rinawijaya',
                 'password' => Hash::make('password123'),
                 'whatsapp_number' => '085987654321',
                 'alamat' => 'Jl. Diponegoro No. 88, Kota Malang, Jawa Timur',
@@ -51,6 +54,7 @@ class AdminSeeder extends Seeder
             ['email' => 'ahmad.fauzi@gmail.com'],
             [
                 'name' => 'Ahmad Fauzi',
+                'username' => 'ahmadfauzi',
                 'password' => Hash::make('password123'),
                 'whatsapp_number' => '087811223344',
                 'alamat' => 'Jl. Panglima Sudirman No. 10, Kabupaten Sumenep, Jawa Timur',

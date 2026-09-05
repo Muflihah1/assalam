@@ -1,0 +1,65 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: assalam_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-assalam}
+      MYSQL_USER: ${DB_USERNAME:-assalam_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "${FORWARD_DB_PORT:-3308}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - assalam_net
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -proot --silent"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        UID: 1000
+        GID: 1000
+    container_name: assalam_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    ports:
+      - "${APP_PORT:-8002}:8000"
+      - "${VITE_PORT:-5175}:5173"
+      - "${WHATSAPP_PORT:-3002}:3000"
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-assalam}
+      DB_USERNAME: ${DB_USERNAME:-assalam_user}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      SERVER_HOST: "0.0.0.0"
+      WHATSAPP_WEB_HOST: "0.0.0.0"
+      WHATSAPP_WEB_CHROME_PATH: "/usr/bin/chromium"
+      PUPPETEER_EXECUTABLE_PATH: "/usr/bin/chromium"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - assalam_net
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  assalam_net:
+    driver: bridge

@@ -83,6 +83,50 @@ class WhatsAppNotificationService
     }
 
     /**
+     * Kirim notifikasi konfirmasi penerimaan pesanan oleh Admin
+     */
+    public function sendOrderConfirmed(Order $order): ?WaMessageLog
+    {
+        $phone = $order->recipient_phone ?? $order->user?->whatsapp_number;
+        if (!$phone) return null;
+
+        $productName = $order->customDesign ? $order->customDesign->category : ($order->items->first()->product_name ?? 'Mebel Assalam');
+        $nama = $order->recipient_name ?? $order->user?->name ?? 'Pelanggan';
+
+        $message = "Halo {$nama}! Pesanan mebel Anda #{$order->order_number} ({$productName}) telah DIKONFIRMASI & DISETUJUI oleh Admin Assalam Mebel. Silakan lakukan pembayaran DP sebesar Rp " . number_format($order->dp_amount, 0, ',', '.') . " pada tautan: " . url('/customer/progress');
+
+        return $this->sendMessage(
+            recipientPhone: $phone,
+            recipientName: $nama,
+            messageBody: $message,
+            templateCode: 'order_confirmed',
+            orderId: $order->id
+        );
+    }
+
+    /**
+     * Kirim notifikasi penolakan pesanan oleh Admin
+     */
+    public function sendOrderRejected(Order $order, string $reason): ?WaMessageLog
+    {
+        $phone = $order->recipient_phone ?? $order->user?->whatsapp_number;
+        if (!$phone) return null;
+
+        $productName = $order->customDesign ? $order->customDesign->category : ($order->items->first()->product_name ?? 'Mebel Assalam');
+        $nama = $order->recipient_name ?? $order->user?->name ?? 'Pelanggan';
+
+        $message = "Halo {$nama}, mohon maaf pesanan #{$order->order_number} ({$productName}) tidak dapat kami terima saat ini dengan alasan: \"{$reason}\". Silakan cek detail di: " . url('/customer/riwayat');
+
+        return $this->sendMessage(
+            recipientPhone: $phone,
+            recipientName: $nama,
+            messageBody: $message,
+            templateCode: 'order_rejected',
+            orderId: $order->id
+        );
+    }
+
+    /**
      * Kirim notifikasi verifikasi pembayaran DP
      */
     public function sendDPVerified(Order $order): ?WaMessageLog

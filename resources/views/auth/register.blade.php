@@ -11,6 +11,8 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -192,29 +194,40 @@
                     <input type="text" name="name" class="form-control" placeholder="John Doe" value="{{ old('name') }}" required>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Nomor WhatsApp</label>
-                    <input type="text" name="whatsapp_number" class="form-control" placeholder="0812..." value="{{ old('whatsapp_number') }}" required>
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" placeholder="johndoe" value="{{ old('username') }}" pattern="[a-zA-Z0-9_\-]+" title="Hanya huruf, angka, tanda hubung, dan garis bawah" required>
                 </div>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Email Address</label>
-                <input type="email" name="email" class="form-control" placeholder="anda@email.com" value="{{ old('email') }}" required>
             </div>
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Password</label>
-                    <div class="password-container">
-                        <input type="password" name="password" id="password" class="form-control" placeholder="********" required>
-                        <i class="bi bi-eye-slash toggle-password" onclick="togglePasswordVisibility('password', this)"></i>
+                    <label class="form-label">Nomor WhatsApp</label>
+                    <input type="tel" name="whatsapp_number" id="whatsapp_number" class="form-control" inputmode="numeric" placeholder="081234567890 / 62812..." value="{{ old('whatsapp_number') }}" oninput="this.value = this.value.replace(/[^0-9+]/g, '')" required>
+                    <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">Hanya angka, format 08 atau 62 (contoh: 081234567890)</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Alamat Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="anda@email.com" value="{{ old('email') }}" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Password <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="password" name="password" id="password" class="form-control border-end-0" placeholder="Minimal 6 karakter" required>
+                        <button type="button" class="btn btn-outline-secondary border-start-0 bg-white" onclick="togglePasswordVisibility('password', 'eyePassword')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                            <i class="fa-solid fa-eye-slash text-muted" id="eyePassword"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Konfirmasi Password</label>
-                    <div class="password-container">
-                        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="*********" required>
-                        <i class="bi bi-eye-slash toggle-password" onclick="togglePasswordVisibility('password_confirmation', this)"></i>
+                    <label class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control border-end-0" placeholder="Ulangi password" required>
+                        <button type="button" class="btn btn-outline-secondary border-start-0 bg-white" onclick="togglePasswordVisibility('password_confirmation', 'eyePasswordConf')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                            <i class="fa-solid fa-eye-slash text-muted" id="eyePasswordConf"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -224,9 +237,8 @@
                 <textarea name="alamat" class="form-control" rows="2" placeholder="Jl. Mebel No. 1..." required>{{ old('alamat') }}</textarea>
             </div>
 
-            <!-- TOMBOL DIUBAH MENJADI TYPE SUBMIT -->
             <button type="submit" class="btn btn-daftar w-100 py-3 mb-3">
-                DAFTAR SEKARANG
+                <i class="fa-solid fa-user-plus me-2"></i> DAFTAR SEKARANG
             </button>
 
             <div class="text-center">
@@ -237,16 +249,27 @@
 </div>
 
 <script>
-    function togglePasswordVisibility(fieldId, iconElement) {
+    function togglePasswordVisibility(fieldId, iconId) {
         const inputField = document.getElementById(fieldId);
+        const iconElement = document.getElementById(iconId);
+        if (!inputField) return;
+
         if (inputField.type === "password") {
             inputField.type = "text";
-            iconElement.classList.remove("bi-eye-slash");
-            iconElement.classList.add("bi-eye");
+            if (iconElement) {
+                iconElement.classList.remove("fa-eye-slash");
+                iconElement.classList.add("fa-eye");
+                iconElement.classList.remove("text-muted");
+                iconElement.style.color = "var(--primary-color)";
+            }
         } else {
             inputField.type = "password";
-            iconElement.classList.remove("bi-eye");
-            iconElement.classList.add("bi-eye-slash");
+            if (iconElement) {
+                iconElement.classList.remove("fa-eye");
+                iconElement.classList.add("fa-eye-slash");
+                iconElement.classList.add("text-muted");
+                iconElement.style.color = "";
+            }
         }
     }
 </script>

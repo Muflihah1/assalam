@@ -105,6 +105,39 @@
         </div>
     </div>
 
+    <!-- KOTAK PENCARIAN RIWAYAT PELANGGAN -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 p-3" style="background-color: var(--light-card); border: 1.5px solid var(--wood-border) !important;">
+        <form action="{{ route('customer.riwayat') }}" method="GET" class="row g-2 align-items-center">
+            <div class="col-md-9 col-lg-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="q" value="{{ request('q') }}" class="form-control border-start-0 ps-0" placeholder="Cari no. pesanan (#...), model mebel, bahan kayu, atau warna...">
+                </div>
+            </div>
+            <div class="col-md-3 col-lg-2 d-flex gap-2">
+                <button type="submit" class="btn btn-dark w-100 rounded-3 fw-bold" style="background-color: var(--primary-color); border: none;">
+                    <i class="fa-solid fa-magnifying-glass me-1"></i> Cari
+                </button>
+                @if(request('q'))
+                    <a href="{{ route('customer.riwayat') }}" class="btn btn-outline-secondary rounded-3" title="Reset Pencarian">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                @endif
+            </div>
+        </form>
+
+        @if(request('q'))
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top flex-wrap gap-2">
+                <div class="small text-muted">
+                    <i class="fa-solid fa-filter me-1 text-primary"></i> Menampilkan hasil pencarian untuk: <strong>"{{ request('q') }}"</strong> ({{ $orders->count() }} pesanan ditemukan)
+                </div>
+                <a href="{{ route('customer.riwayat') }}" class="small text-decoration-none fw-bold" style="color: var(--primary-color);">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Tampilkan Semua Riwayat
+                </a>
+            </div>
+        @endif
+    </div>
+
     <!-- LIST PESANAN DINAMIS -->
     @forelse($orders as $item)
         <div class="history-card">
@@ -114,12 +147,28 @@
                     <span class="fw-bold text-dark small">{{ $item->created_at->format('d M Y') }}</span>
                     <span class="text-muted small">| #{{ $item->order_number }}</span>
                 </div>
-                @if($item->production_status === 'Selesai')
-                    <span class="badge-status-done"><i class="fa-solid fa-circle-check me-1"></i> Pesanan Selesai</span>
-                @else
-                    <span class="badge-status-process"><i class="fa-solid fa-spinner fa-spin me-1"></i> {{ $item->production_status }}</span>
-                @endif
+                <div>
+                    @if($item->order_status === 'Ditolak')
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1.5 rounded-pill fw-bold small">
+                            <i class="fa-solid fa-xmark me-1"></i> Pesanan Ditolak
+                        </span>
+                    @elseif($item->order_status === 'Menunggu Konfirmasi')
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1.5 rounded-pill fw-bold small">
+                            <i class="fa-regular fa-clock me-1"></i> Menunggu Konfirmasi Admin
+                        </span>
+                    @elseif($item->production_status === 'Selesai')
+                        <span class="badge-status-done"><i class="fa-solid fa-circle-check me-1"></i> Pesanan Selesai</span>
+                    @else
+                        <span class="badge-status-process"><i class="fa-solid fa-spinner fa-spin me-1"></i> {{ $item->production_status }}</span>
+                    @endif
+                </div>
             </div>
+
+            @if($item->order_status === 'Ditolak' && $item->rejection_reason)
+                <div class="alert alert-danger py-2 px-3 small rounded-3 mb-3">
+                    <strong><i class="fa-solid fa-circle-exclamation me-1"></i> Alasan Penolakan Admin:</strong> {{ $item->rejection_reason }}
+                </div>
+            @endif
 
             <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between">
                 <div class="d-flex gap-3 align-items-center">
@@ -172,12 +221,20 @@
         </div>
     @empty
         <div class="history-card text-center py-5">
-            <i class="fa-solid fa-clock-rotate-left fa-3x text-muted mb-3"></i>
-            <h5 class="fw-bold text-dark mb-2">Belum Ada Riwayat Pesanan</h5>
-            <p class="text-muted small mb-4">Anda belum pernah melakukan pemesanan mebel sebelumnya.</p>
-            <a href="{{ route('customer.design') }}" class="btn btn-dark px-4 py-2 rounded-3 fw-bold">
-                Mulai Pesanan Custom Sekarang 🎨
-            </a>
+            <i class="fa-solid {{ request('q') ? 'fa-magnifying-glass' : 'fa-clock-rotate-left' }} fa-3x text-muted mb-3"></i>
+            @if(request('q'))
+                <h5 class="fw-bold text-dark mb-2">Pesanan Tidak Ditemukan</h5>
+                <p class="text-muted small mb-4">Tidak ada riwayat pesanan yang cocok dengan pencarian "<strong>{{ request('q') }}</strong>".</p>
+                <a href="{{ route('customer.riwayat') }}" class="btn btn-outline-dark px-4 py-2 rounded-3 fw-bold small">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Tampilkan Semua Riwayat
+                </a>
+            @else
+                <h5 class="fw-bold text-dark mb-2">Belum Ada Riwayat Pesanan</h5>
+                <p class="text-muted small mb-4">Anda belum pernah melakukan pemesanan mebel sebelumnya.</p>
+                <a href="{{ route('customer.design') }}" class="btn btn-dark px-4 py-2 rounded-3 fw-bold" style="background-color: var(--primary-color); border: none;">
+                    <i class="fa-solid fa-pen-ruler me-1"></i> Mulai Pesanan Custom Sekarang
+                </a>
+            @endif
         </div>
     @endforelse
 

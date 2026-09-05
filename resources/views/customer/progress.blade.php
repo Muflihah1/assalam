@@ -134,16 +134,74 @@
             </a>
         </div>
     @else
+        <!-- ALERT STATUS PESANAN (KONFIRMASI / TOLAK / PEMBAYARAN DP) -->
+        @if($order->order_status === 'Menunggu Konfirmasi')
+            <div class="alert alert-warning border-0 rounded-4 p-3 mb-3 shadow-sm d-flex align-items-center gap-3">
+                <i class="fa-solid fa-hourglass-half fa-2x text-warning"></i>
+                <div>
+                    <h6 class="fw-bold mb-1 text-dark">Pesanan Sedang Menunggu Konfirmasi Admin</h6>
+                    <p class="small text-muted mb-0">Pesanan custom Anda telah kami terima dan sedang ditinjau oleh tim kami. Anda akan menerima notifikasi dan instruksi pembayaran DP setelah pesanan disetujui.</p>
+                </div>
+            </div>
+        @elseif($order->order_status === 'Ditolak')
+            <div class="alert alert-danger border-0 rounded-4 p-3 mb-3 shadow-sm">
+                <div class="d-flex align-items-start gap-3">
+                    <i class="fa-solid fa-circle-xmark fa-2x text-danger mt-1"></i>
+                    <div class="flex-grow-1">
+                        <h6 class="fw-bold mb-1 text-danger">Pesanan Tidak Dapat Diterima</h6>
+                        <p class="small mb-2 text-dark"><strong>Alasan Penolakan dari Admin:</strong> {{ $order->rejection_reason ?? 'Kapasitas produksi / stok bahan kayu saat ini tidak mencukupi.' }}</p>
+                        <a href="{{ route('customer.design') }}" class="btn btn-sm btn-outline-danger rounded-3 fw-bold">
+                            <i class="fa-solid fa-pen-ruler me-1"></i> Ajukan Desain Baru
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @elseif($order->order_status === 'Diterima' && $order->payment_status === 'Menunggu Pembayaran DP')
+            <div class="alert alert-info border-0 rounded-4 p-3 mb-3 shadow-sm d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="fa-solid fa-circle-check fa-2x text-info"></i>
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark">Pesanan Diterima! Silakan Bayar Uang Muka (DP)</h6>
+                        <p class="small text-muted mb-0">Admin telah menyetujui pesanan Anda. Silakan bayar DP sebesar <strong>Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</strong> untuk memulai produksi.</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary rounded-3 fw-bold px-3 py-2" onclick="bukaModalUploadDP()" style="background-color: var(--primary-color); border: none;">
+                    <i class="fa-solid fa-upload me-1"></i> Unggah Bukti Transfer DP
+                </button>
+            </div>
+        @elseif($order->payment_status === 'Menunggu Verifikasi DP')
+            <div class="alert alert-warning border-0 rounded-4 p-3 mb-3 shadow-sm d-flex align-items-center gap-3">
+                <i class="fa-solid fa-spinner fa-spin fa-2x text-warning"></i>
+                <div>
+                    <h6 class="fw-bold mb-1 text-dark">Bukti Pembayaran DP Sedang Diverifikasi</h6>
+                    <p class="small text-muted mb-0">Bukti transfer DP Anda telah tersimpan dan sedang diverifikasi oleh admin. Begitu disetujui, pengerjaan mebel akan segera dimulai.</p>
+                </div>
+            </div>
+        @elseif($order->payment_status === 'Menunggu Verifikasi Pelunasan')
+            <div class="alert alert-info border-0 rounded-4 p-3 mb-3 shadow-sm d-flex align-items-center gap-3">
+                <i class="fa-solid fa-receipt fa-2x text-info"></i>
+                <div>
+                    <h6 class="fw-bold mb-1 text-dark">Bukti Pelunasan Sedang Diverifikasi</h6>
+                    <p class="small text-muted mb-0">Bukti transfer pelunasan Anda telah kami terima dan sedang diverifikasi oleh admin.</p>
+                </div>
+            </div>
+        @endif
+
         <!-- 1. SPESIFIKASI PELANGGAN DINAMIS -->
         <div class="wireframe-card">
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                 <h4 class="fw-bold text-dark mb-0" style="color: var(--primary-color);">
                     <i class="fa-solid fa-file-lines me-2"></i>Spesifikasi Pesanan #{{ $order->order_number }}
                 </h4>
-                <div>
+                <div class="d-flex gap-2">
                     <span class="badge px-3 py-2 rounded-pill fw-bold" style="background-color: rgba(93, 64, 55, 0.1); color: var(--primary-color); border: 1px solid var(--wood-border);">
-                        Status: {{ $order->production_status }}
+                        Progres: {{ $order->production_status }}
                     </span>
+                    @if($order->order_status === 'Ditolak')
+                        <span class="badge bg-danger px-3 py-2 rounded-pill fw-bold">Ditolak</span>
+                    @elseif($order->order_status === 'Menunggu Konfirmasi')
+                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold">Menunggu Konfirmasi</span>
+                    @endif
                 </div>
             </div>
             <div class="row g-3">
@@ -174,8 +232,10 @@
                 <div class="col-md-4 text-md-end">
                     <span class="text-muted small d-block">Total Nilai Pesanan:</span>
                     <h5 class="fw-bold text-dark mb-2">Rp {{ number_format($order->total_price, 0, ',', '.') }}</h5>
+                    <span class="text-muted small d-block">Wajib DP (50%):</span>
+                    <h6 class="fw-bold text-success mb-2">Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</h6>
                     <span class="text-muted small d-block">Status Pembayaran:</span>
-                    <span class="badge bg-success px-3 py-1.5 rounded-pill">{{ $order->payment_status }}</span>
+                    <span class="badge bg-secondary px-3 py-1.5 rounded-pill">{{ $order->payment_status }}</span>
                 </div>
             </div>
         </div>
@@ -204,6 +264,7 @@
                     @php
                         $isActive = $prog->status === 'Sedang Berjalan';
                         $isDone = $prog->status === 'Selesai';
+                        $isCancelled = $prog->status === 'Dibatalkan';
                         $imgUrl = null;
                         if (!empty($prog->media_files) && count($prog->media_files) > 0) {
                             $imgUrl = \Illuminate\Support\Facades\Storage::url($prog->media_files[0]);
@@ -213,11 +274,14 @@
                     @endphp
 
                     <div class="timeline-step-card {{ $isActive ? 'active-step' : '' }}" 
-                         onclick="bukaModalTimeline('{{ $prog->stage_name }}', '{{ $prog->completed_at ? $prog->completed_at->format('d M Y') : ($isActive ? 'Sedang Berjalan' : 'Pending') }}', '{{ $prog->status }}', '{{ $prog->notes ?? 'Belum ada catatan' }}', '{{ $imgUrl }}')">
+                         onclick="bukaModalTimeline('{{ $prog->stage_name }}', '{{ $prog->completed_at ? $prog->completed_at->format('d M Y') : ($isActive ? 'Sedang Berjalan' : ($isCancelled ? 'Dibatalkan' : 'Pending')) }}', '{{ $prog->status }}', '{{ $prog->notes ?? 'Belum ada catatan' }}', '{{ $imgUrl }}')">
                         <div class="upload-date-label">
                             @if($isDone)
                                 <i class="fa-solid fa-circle-check text-success"></i>
                                 <span class="text-success">{{ $prog->completed_at ? $prog->completed_at->format('d M') : 'Selesai' }}</span>
+                            @elseif($isCancelled)
+                                <i class="fa-solid fa-circle-xmark text-danger"></i>
+                                <span class="text-danger">Dibatalkan</span>
                             @elseif($isActive)
                                 <i class="fa-solid fa-spinner fa-spin text-warning"></i>
                                 <span class="text-warning">Proses</span>
@@ -239,13 +303,32 @@
             </div>
         </div>
 
-        <!-- 3. BOTTOM ACTION BOX (PELUNASAN & PESANAN SELESAI) -->
+        <!-- 3. BOTTOM ACTION BOX (PEMBAYARAN DP / PELUNASAN / KONFIRMASI SELESAI) -->
         <div class="row g-3">
-            <!-- BOX KIRI: SISA PELUNASAN -->
+            <!-- BOX KIRI: STATUS PEMBAYARAN & SISA PELUNASAN -->
             <div class="col-lg-7">
                 <div class="wireframe-card d-flex flex-column align-items-center justify-content-center py-4 mb-0 h-100 text-center">
-                    @if($order->remaining_payment > 0)
-                        <h4 class="fw-bold text-dark mb-3">Sisa Pelunasan: <span style="color: var(--accent-gold);">Rp {{ number_format($order->remaining_payment, 0, ',', '.') }}</span></h4>
+                    @if($order->order_status === 'Menunggu Konfirmasi')
+                        <i class="fa-solid fa-hourglass-start fa-2x text-warning mb-2"></i>
+                        <h5 class="fw-bold text-dark mb-1">Menunggu Persetujuan Admin</h5>
+                        <p class="text-muted small mb-0">Pembayaran uang muka (DP) dapat dilakukan setelah admin menyetujui pesanan Anda.</p>
+                    @elseif($order->order_status === 'Diterima' && $order->payment_status === 'Menunggu Pembayaran DP')
+                        <h5 class="fw-bold text-dark mb-1">Wajib Pembayaran DP:</h5>
+                        <h3 class="fw-bold mb-3" style="color: var(--primary-color);">Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</h3>
+                        <button class="btn btn-dark px-4 py-2 rounded-3 fw-bold" onclick="bukaModalUploadDP()" style="background-color: var(--primary-color); border: none;">
+                            <i class="fa-solid fa-upload me-1"></i> Unggah Bukti Transfer DP
+                        </button>
+                    @elseif($order->payment_status === 'Menunggu Verifikasi DP')
+                        <i class="fa-solid fa-file-invoice-dollar fa-2x text-warning mb-2"></i>
+                        <h5 class="fw-bold text-dark mb-1">Bukti DP Terkirim</h5>
+                        <p class="text-muted small mb-0">Menunggu verifikasi admin untuk memulai produksi.</p>
+                    @elseif($order->payment_status === 'Menunggu Verifikasi Pelunasan')
+                        <i class="fa-solid fa-clock-rotate-left fa-2x text-info mb-2"></i>
+                        <h5 class="fw-bold text-dark mb-1">Bukti Pelunasan Terkirim</h5>
+                        <p class="text-muted small mb-0">Admin sedang memverifikasi pembayaran pelunasan Anda.</p>
+                    @elseif($order->remaining_payment > 0)
+                        <h4 class="fw-bold text-dark mb-1">Sisa Pelunasan: <span style="color: var(--accent-gold);">Rp {{ number_format($order->remaining_payment, 0, ',', '.') }}</span></h4>
+                        <p class="text-muted small mb-3">Lakukan pelunasan sebelum pesanan dikirimkan ke alamat Anda.</p>
                         <button class="btn btn-orange-outline" onclick="bukaModalPelunasan()">
                             <i class="fa-solid fa-credit-card me-1"></i> Bayar Sisa Pelunasan
                         </button>
@@ -256,17 +339,85 @@
                 </div>
             </div>
 
-            <!-- BOX KANAN: PESANAN SELESAI -->
+            <!-- BOX KANAN: STATUS & KONFIRMASI PENERIMAAN MEBEL -->
             <div class="col-lg-5">
-                <div class="wireframe-card d-flex align-items-center justify-content-center py-4 mb-0 h-100">
+                <div class="wireframe-card d-flex flex-column align-items-center justify-content-center p-4 mb-0 h-100 text-center">
+                    @php
+                        $isPaidOff = ($order->payment_status === 'Lunas' || $order->remaining_payment <= 0);
+                        $isDeliveredOrShipped = in_array($order->current_stage, ['Pengiriman', 'Pesanan Selesai']) || in_array($order->production_status, ['Pengiriman', 'Selesai']);
+                        $isApproved = ($order->order_status === 'Diterima');
+                        $canConfirmCompleted = $isApproved && $isPaidOff && $isDeliveredOrShipped && ($order->production_status !== 'Selesai');
+                    @endphp
+
                     @if($order->production_status === 'Selesai')
-                        <button class="btn btn-success w-100 py-3 fs-5 shadow-sm fw-bold" disabled>
-                            <i class="fa-solid fa-check-double me-2"></i> Pesanan Selesai Diterima
-                        </button>
+                        <div class="py-2">
+                            <i class="fa-solid fa-circle-check text-success fa-3x mb-2"></i>
+                            <h5 class="fw-bold text-dark mb-1">Pesanan Telah Selesai</h5>
+                            <p class="text-muted small mb-3">Produk mebel custom telah diterima dan transaksi selesai tercatat di riwayat.</p>
+                            <button class="btn btn-success w-100 py-3 fs-6 shadow-sm fw-bold rounded-3" disabled>
+                                <i class="fa-solid fa-check-double me-2"></i> Pesanan Selesai Diterima
+                            </button>
+                        </div>
+                    @elseif($order->order_status === 'Ditolak')
+                        <div class="py-2">
+                            <i class="fa-solid fa-ban text-danger fa-3x mb-2"></i>
+                            <h5 class="fw-bold text-danger mb-1">Pesanan Dibatalkan</h5>
+                            <p class="small text-muted mb-0">{{ $order->rejection_reason ?? 'Pesanan tidak dapat diproses oleh admin.' }}</p>
+                        </div>
+                    @elseif($order->order_status === 'Menunggu Konfirmasi')
+                        <div class="py-2 w-100">
+                            <i class="fa-solid fa-hourglass-half text-warning fa-3x mb-2"></i>
+                            <h5 class="fw-bold text-dark mb-1">Menunggu Persetujuan Admin</h5>
+                            <p class="text-muted small mb-3">Admin sedang memeriksa kelayakan desain & bahan mebel Anda sebelum pesanan diproses.</p>
+                            <button class="btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold small" disabled style="opacity: 0.65;">
+                                <i class="fa-solid fa-lock me-1"></i> Konfirmasi Selesai Belum Tersedia
+                            </button>
+                        </div>
+                    @elseif($order->payment_status === 'Menunggu Pembayaran DP')
+                        <div class="py-2 w-100">
+                            <i class="fa-solid fa-receipt text-warning fa-3x mb-2"></i>
+                            <h5 class="fw-bold text-dark mb-1">Menunggu Pembayaran DP</h5>
+                            <p class="text-muted small mb-3">Silakan bayar uang muka (DP) 50% di panel sebelah kiri agar pesanan mulai dikerjakan pengrajin.</p>
+                            <button class="btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold small" disabled style="opacity: 0.65;">
+                                <i class="fa-solid fa-lock me-1"></i> Bayar DP Terlebih Dahulu
+                            </button>
+                        </div>
+                    @elseif($order->payment_status === 'Menunggu Verifikasi DP')
+                        <div class="py-2 w-100">
+                            <i class="fa-solid fa-spinner fa-spin text-info fa-3x mb-2"></i>
+                            <h5 class="fw-bold text-dark mb-1">Verifikasi Pembayaran DP</h5>
+                            <p class="text-muted small mb-3">Bukti transfer DP Anda sedang diverifikasi oleh admin sebelum masuk antrean workshop.</p>
+                            <button class="btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold small" disabled style="opacity: 0.65;">
+                                <i class="fa-solid fa-lock me-1"></i> Verifikasi DP Berjalan
+                            </button>
+                        </div>
+                    @elseif(!$isDeliveredOrShipped)
+                        <div class="py-2 w-100">
+                            <i class="fa-solid fa-hammer text-primary fa-3x mb-2"></i>
+                            <h5 class="fw-bold text-dark mb-1">Mebel Dalam Produksi</h5>
+                            <p class="text-muted small mb-3">Pesanan sedang dibuat di workshop (Tahap: <strong>{{ $order->current_stage }}</strong>). Tombol konfirmasi akan aktif setelah produk dikirim.</p>
+                            <button class="btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold small" disabled style="opacity: 0.65;">
+                                <i class="fa-solid fa-lock me-1"></i> Produksi Sedang Berjalan
+                            </button>
+                        </div>
+                    @elseif(!$isPaidOff)
+                        <div class="py-2 w-100">
+                            <i class="fa-solid fa-wallet text-warning fa-3x mb-2"></i>
+                            <h5 class="fw-bold text-dark mb-1">Menunggu Pelunasan Sisa</h5>
+                            <p class="text-muted small mb-3">Mebel telah siap/dikirim. Harap lunasi sisa tagihan di panel sebelah kiri sebelum mengonfirmasi penerimaan barang.</p>
+                            <button class="btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold small" disabled style="opacity: 0.65;">
+                                <i class="fa-solid fa-lock me-1"></i> Lunasi Sisa Tagihan Dahulu
+                            </button>
+                        </div>
                     @else
-                        <button class="btn btn-action-dark w-100 py-3 fs-5 shadow-sm" onclick="bukaModalSelesai()">
-                            <i class="fa-solid fa-box-check me-2"></i> Konfirmasi Pesanan Selesai
-                        </button>
+                        <div class="py-2 w-100">
+                            <i class="fa-solid fa-truck-ramp-box text-success fa-3x mb-2"></i>
+                            <h5 class="fw-bold text-dark mb-1">Mebel Dalam Pengiriman</h5>
+                            <p class="text-muted small mb-3">Periksa kondisi fisik mebel setelah tiba di lokasi Anda, lalu klik tombol di bawah untuk menyelesaikan pesanan.</p>
+                            <button class="btn btn-action-dark w-100 py-3 fs-5 shadow-sm fw-bold" onclick="bukaModalSelesai()" style="background-color: var(--primary-color); color: white; border: none;">
+                                <i class="fa-solid fa-box-open me-2"></i> Konfirmasi Pesanan Diterima
+                            </button>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -304,36 +455,95 @@
         </div>
     </div>
 
-    <!-- MODAL PELUNASAN FORM REAL -->
-    <div class="modal fade" id="modalPelunasan" tabindex="-1" aria-hidden="true">
+    <!-- MODAL UPLOAD BUKTI TRANSFER DP -->
+    <div class="modal fade" id="modalUploadDP" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 p-4 text-center border-0 shadow-lg" style="background-color: var(--light-card);">
-                <form action="{{ route('customer.progress.pay_remaining', $order->id) }}" method="POST">
+                <form action="{{ route('customer.progress.upload_dp', $order->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <h5 class="fw-bold text-dark mb-1">PEMBAYARAN SISA PELUNASAN</h5>
-                    <p class="text-muted small mb-3">Selesaikan sisa tagihan mebel sebelum barang dikirim.</p>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-money-bill-transfer text-success me-2"></i>Pembayaran Uang Muka (DP)</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <p class="text-muted small mb-3 text-start">Silakan lakukan transfer uang muka 50% untuk pesanan <strong>#{{ $order->order_number }}</strong>.</p>
 
-                    <p class="fw-bold fs-3 mb-3" style="color: var(--accent-gold);">Rp {{ number_format($order->remaining_payment, 0, ',', '.') }}</p>
-
-                    <div class="text-start mb-3">
-                        <label class="form-label fw-bold small text-dark">Pilih Metode Pembayaran:</label>
-                        <select class="form-select border-2">
-                            <option value="qris">QRIS (Semua E-Wallet & M-Banking)</option>
-                            <option value="transfer">Transfer Bank BCA (8830-1289-44)</option>
-                            <option value="dana">E-Wallet DANA</option>
-                        </select>
+                    <div class="p-3 border rounded-3 mb-3 bg-white text-start">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="small text-muted">Total Tagihan:</span>
+                            <strong class="text-dark">Rp {{ number_format($order->total_price, 0, ',', '.') }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small text-muted">Uang Muka Wajib (50%):</span>
+                            <strong class="text-success fs-5">Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</strong>
+                        </div>
+                        <hr class="my-2">
+                        <div class="small">
+                            <strong class="text-dark d-block mb-1">Transfer Bank / E-Wallet:</strong>
+                            <div class="text-muted mb-1"><i class="fa-solid fa-building-columns me-1"></i> Bank BCA: <strong>8830-1289-44</strong> (a.n PT Assalam Mebel)</div>
+                            <div class="text-muted"><i class="fa-solid fa-qrcode me-1"></i> QRIS Tersedia di toko / CS WhatsApp</div>
+                        </div>
                     </div>
 
-                    <div class="p-3 border rounded-4 mb-3 bg-white shadow-sm" style="border-color: var(--light-border) !important;">
-                        <div class="border p-2 rounded-3 mb-2 mx-auto bg-light d-flex align-items-center justify-content-center" style="width: 140px; height: 140px;">
-                            <span class="text-muted fw-bold small">[ QRIS CODE ]</span>
-                        </div>
-                        <span class="small text-muted">Scan QRIS menggunakan aplikasi M-Banking atau E-Wallet apa saja.</span>
+                    <div class="text-start mb-3">
+                        <label class="form-label fw-bold small text-dark">Unggah Foto Bukti Transfer DP <span class="text-danger">*</span></label>
+                        <input type="file" name="dp_receipt_proof" class="form-control rounded-3" accept="image/jpeg,image/png,image/jpg" required>
+                        <div class="form-text small">Format gambar JPG/PNG, ukuran berkas maksimal 3 MB.</div>
                     </div>
 
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-outline-secondary w-50 py-2 rounded-3 fw-bold" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn fw-bold w-50 py-2 rounded-3 text-white" style="background-color: var(--primary-color);">Konfirmasi Bayar</button>
+                        <button type="submit" class="btn fw-bold w-50 py-2 rounded-3 text-white" style="background-color: var(--primary-color);">
+                            <i class="fa-solid fa-upload me-1"></i> Kirim Bukti DP
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PELUNASAN FORM REAL -->
+    <div class="modal fade" id="modalPelunasan" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 p-4 text-center border-0 shadow-lg" style="background-color: var(--light-card);">
+                <form action="{{ route('customer.progress.pay_remaining', $order->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-receipt text-success me-2"></i>Pembayaran Sisa Pelunasan</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <p class="text-muted small mb-3 text-start">Selesaikan sisa tagihan mebel sebelum barang dikirimkan.</p>
+
+                    <div class="p-3 border rounded-3 mb-3 bg-white text-start">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="small text-muted">Sisa Tagihan:</span>
+                            <strong class="text-danger fs-4">Rp {{ number_format($order->remaining_payment, 0, ',', '.') }}</strong>
+                        </div>
+                        <hr class="my-2">
+                        <div class="small">
+                            <strong class="text-dark d-block mb-1">Transfer Bank / E-Wallet:</strong>
+                            <div class="text-muted mb-1"><i class="fa-solid fa-building-columns me-1"></i> Bank BCA: <strong>8830-1289-44</strong> (a.n PT Assalam Mebel)</div>
+                            <div class="text-muted"><i class="fa-solid fa-qrcode me-1"></i> QRIS: Silakan scan QRIS di bawah ini</div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 border rounded-4 mb-3 bg-white shadow-sm" style="border-color: var(--light-border) !important;">
+                        <div class="border p-2 rounded-3 mb-2 mx-auto bg-light d-flex align-items-center justify-content-center" style="width: 140px; height: 140px;">
+                            <i class="fa-solid fa-qrcode fa-5x text-secondary"></i>
+                        </div>
+                        <span class="small text-muted">Scan QRIS menggunakan aplikasi M-Banking atau E-Wallet apa saja.</span>
+                    </div>
+
+                    <div class="text-start mb-3">
+                        <label class="form-label fw-bold small text-dark">Unggah Foto Bukti Pelunasan <span class="text-danger">*</span></label>
+                        <input type="file" name="final_receipt_proof" class="form-control rounded-3" accept="image/jpeg,image/png,image/jpg" required>
+                        <div class="form-text small">Format JPG/PNG, maksimal 3 MB. Pembayaran akan diverifikasi oleh admin.</div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary w-50 py-2 rounded-3 fw-bold" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn fw-bold w-50 py-2 rounded-3 text-white" style="background-color: var(--primary-color);">
+                            <i class="fa-solid fa-upload me-1"></i> Kirim Bukti Pelunasan
+                        </button>
                     </div>
                 </form>
             </div>
@@ -370,6 +580,11 @@
         document.getElementById('modalTimelineImg').src = imgUrl || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop';
         
         let modal = new bootstrap.Modal(document.getElementById('modalTimelineDetail'));
+        modal.show();
+    }
+
+    function bukaModalUploadDP() {
+        let modal = new bootstrap.Modal(document.getElementById('modalUploadDP'));
         modal.show();
     }
 

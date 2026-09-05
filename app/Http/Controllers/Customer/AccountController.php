@@ -28,14 +28,30 @@ class AccountController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'whatsapp_number' => 'required|string|max:20',
+            'username' => 'required|string|max:50|alpha_dash|unique:users,username,' . $user->id,
+            'whatsapp_number' => ['required', 'string', 'regex:/^(\+?62|0)8[1-9][0-9]{7,12}$/'],
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'alamat' => 'nullable|string|max:500',
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username ini sudah digunakan oleh akun lain.',
+            'whatsapp_number.required' => 'Nomor WhatsApp wajib diisi.',
+            'whatsapp_number.regex' => 'Format nomor WhatsApp tidak valid. Gunakan awalan 08 atau 62 (contoh: 08123456789 atau 628123456789) tanpa huruf.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.unique' => 'Email ini sudah digunakan oleh akun lain.',
         ]);
+
+        // Normalisasi format nomor WA menjadi 628...
+        $phone = preg_replace('/[^0-9]/', '', $request->whatsapp_number);
+        if (str_starts_with($phone, '08')) {
+            $phone = '62' . substr($phone, 1);
+        }
 
         $user->update([
             'name' => $request->name,
-            'whatsapp_number' => $request->whatsapp_number,
+            'username' => $request->username,
+            'whatsapp_number' => $phone,
             'email' => $request->email,
             'alamat' => $request->alamat,
         ]);

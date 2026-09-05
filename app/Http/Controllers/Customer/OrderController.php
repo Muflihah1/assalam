@@ -17,11 +17,17 @@ class OrderController extends Controller
     /**
      * Show the custom design workbench studio (Public Access)
      */
-    public function design()
+    public function design(Request $request)
     {
         $settings = StudioSetting::pluck('value', 'key');
         $shippingCosts = ShippingCost::where('status', 'Aktif')->get();
-        return view('customer.design', compact('settings', 'shippingCosts'));
+        
+        $selectedProduct = null;
+        if ($request->filled('product_id')) {
+            $selectedProduct = \App\Models\Produk::find($request->product_id);
+        }
+
+        return view('customer.design', compact('settings', 'shippingCosts', 'selectedProduct'));
     }
 
     /**
@@ -34,17 +40,33 @@ class OrderController extends Controller
         }
 
         $request->validate([
-            'category' => 'required|string',
-            'length_cm' => 'required|numeric|min:10',
-            'width_cm' => 'required|numeric|min:10',
-            'height_cm' => 'required|numeric|min:10',
-            'wood_material' => 'required|string',
-            'color_name' => 'required|string',
-            'color_hex' => 'required|string',
-            'tone_percent' => 'nullable|numeric',
-            'sketch_image' => 'nullable|image|max:5120',
-            'notes' => 'nullable|string',
+            'product_id' => 'nullable|exists:produks,id',
+            'category' => 'required|string|max:100',
+            'length_cm' => 'required|numeric|min:30|max:400',
+            'width_cm' => 'required|numeric|min:20|max:300',
+            'height_cm' => 'required|numeric|min:20|max:300',
+            'wood_material' => 'required|string|max:100',
+            'color_name' => 'required|string|max:100',
+            'color_hex' => 'required|string|max:20',
+            'tone_percent' => 'nullable|numeric|min:40|max:160',
+            'sketch_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'notes' => 'nullable|string|max:1000',
             'payment_method' => 'nullable|string',
+        ], [
+            'category.required' => 'Kategori mebel wajib dipilih.',
+            'length_cm.required' => 'Panjang furniture wajib diisi.',
+            'length_cm.min' => 'Panjang minimal 30 cm.',
+            'length_cm.max' => 'Panjang maksimal 400 cm.',
+            'width_cm.required' => 'Lebar furniture wajib diisi.',
+            'width_cm.min' => 'Lebar minimal 20 cm.',
+            'width_cm.max' => 'Lebar maksimal 300 cm.',
+            'height_cm.required' => 'Tinggi furniture wajib diisi.',
+            'height_cm.min' => 'Tinggi minimal 20 cm.',
+            'height_cm.max' => 'Tinggi maksimal 300 cm.',
+            'wood_material.required' => 'Pilihan material kayu wajib ditentukan.',
+            'color_name.required' => 'Warna finishing mebel wajib dipilih.',
+            'sketch_image.image' => 'Berkas sketsa harus berupa gambar (JPG, PNG, WEBP).',
+            'sketch_image.max' => 'Ukuran sketsa gambar maksimal 5MB.',
         ]);
 
         $user = Auth::user();
@@ -58,7 +80,15 @@ class OrderController extends Controller
             $baseMaterialPrice = 3500000;
         }
 
-        $calculatedPrice = round(max(2500000, $baseMaterialPrice * max(0.8, $volume * 2)), -4);
+        // Jika ada referensi produk katalog, gunakan harga dasar produk tersebut sebagai patokan
+        if ($request->filled('product_id')) {
+            $refProduct = \App\Models\Produk::find($request->product_id);
+            if ($refProduct && $refProduct->harga > 0) {
+                $baseMaterialPrice = max($baseMaterialPrice, $refProduct->harga);
+            }
+        }
+
+        $calculatedPrice = round(max(2500000, $baseMaterialPrice * max(0.8, $volume * 1.8)), -4);
         $shippingCost = 50000;
         $totalPrice = $calculatedPrice + $shippingCost;
         $dpAmount = round($totalPrice * 0.5);
@@ -72,7 +102,7 @@ class OrderController extends Controller
 
         $orderNumber = 'ORD-' . strtoupper(Str::random(4)) . rand(1000, 9999);
 
-        // Buat Order
+        // Buat Order dengan alur status: Menunggu Konfirmasi dari Admin
         $order = Order::create([
             'order_number' => $orderNumber,
             'user_id' => $user->id,
@@ -81,18 +111,20 @@ class OrderController extends Controller
             'shipping_cost' => $shippingCost,
             'remaining_payment' => $remainingPayment,
             'payment_method' => $request->payment_method ?? 'qris',
-            'payment_status' => 'DP Terverifikasi',
-            'production_status' => 'Antrean Produksi',
+            'order_status' => 'Menunggu Konfirmasi',
+            'payment_status' => 'Menunggu Pembayaran DP',
+            'production_status' => 'Menunggu Konfirmasi',
             'current_stage' => 'Konfirmasi Pesanan',
             'recipient_name' => $user->name,
             'recipient_phone' => $user->whatsapp_number,
-            'shipping_address' => $user->alamat ?? 'Surabaya, Jawa Timur',
+            'shipping_address' => $user->alamat ?? 'Alamat belum diatur',
             'customer_notes' => $request->notes,
         ]);
 
-        // Buat Custom Design
+        // Buat Custom Design dengan relasi ke product_id katalog
         CustomDesign::create([
             'order_id' => $order->id,
+            'product_id' => $request->product_id,
             'category' => $request->category,
             'length_cm' => $request->length_cm,
             'width_cm' => $request->width_cm,
@@ -107,9 +139,9 @@ class OrderController extends Controller
 
         // Inisialisasi 8 tahapan progres produksi
         $stages = [
-            ['step' => 1, 'name' => 'Konfirmasi Pesanan', 'status' => 'Selesai', 'completed_at' => now()],
-            ['step' => 2, 'name' => 'Validasi Pembayaran', 'status' => 'Selesai', 'completed_at' => now()],
-            ['step' => 3, 'name' => 'Pesanan Diterima', 'status' => 'Sedang Berjalan', 'completed_at' => null],
+            ['step' => 1, 'name' => 'Konfirmasi Pesanan', 'status' => 'Sedang Berjalan', 'completed_at' => null],
+            ['step' => 2, 'name' => 'Validasi Pembayaran', 'status' => 'Pending', 'completed_at' => null],
+            ['step' => 3, 'name' => 'Pesanan Diterima', 'status' => 'Pending', 'completed_at' => null],
             ['step' => 4, 'name' => 'Menyiapkan Bahan', 'status' => 'Pending', 'completed_at' => null],
             ['step' => 5, 'name' => 'Perakitan', 'status' => 'Pending', 'completed_at' => null],
             ['step' => 6, 'name' => 'Penyelesaian', 'status' => 'Pending', 'completed_at' => null],
@@ -124,7 +156,7 @@ class OrderController extends Controller
                 'stage_name' => $stage['name'],
                 'status' => $stage['status'],
                 'completed_at' => $stage['completed_at'],
-                'notes' => $stage['step'] === 1 ? 'Pesanan berhasil dibuat oleh pelanggan' : null,
+                'notes' => $stage['step'] === 1 ? 'Menunggu peninjauan dan konfirmasi pesanan oleh admin' : null,
             ]);
         }
 
@@ -138,12 +170,12 @@ class OrderController extends Controller
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Pesanan custom berhasil diajukan!',
+                'message' => 'Pesanan custom berhasil diajukan! Mohon tunggu konfirmasi admin.',
                 'redirect' => route('customer.progress')
             ]);
         }
 
-        return redirect()->route('customer.progress')->with('success', 'Pesanan custom berhasil diajukan dan masuk ke tahap antrean produksi!');
+        return redirect()->route('customer.progress')->with('success', 'Pesanan custom berhasil diajukan! Pesanan Anda saat ini sedang menunggu konfirmasi admin.');
     }
 
     /**
@@ -152,7 +184,7 @@ class OrderController extends Controller
     public function progress()
     {
         $user = Auth::user();
-        $order = Order::with(['customDesign', 'progresses', 'items'])
+        $order = Order::with(['customDesign.produk', 'progresses', 'items'])
             ->where('user_id', $user->id)
             ->latest()
             ->first();
@@ -161,25 +193,80 @@ class OrderController extends Controller
     }
 
     /**
-     * Selesaikan pelunasan sisa tagihan
+     * Upload Bukti Pembayaran DP (Setelah Pesanan Diterima Admin)
+     */
+    public function uploadDP(Request $request, $id)
+    {
+        $order = Order::where('user_id', Auth::id())->findOrFail($id);
+
+        $request->validate([
+            'dp_receipt_proof' => 'required|image|mimes:jpeg,png,jpg|max:3072',
+        ], [
+            'dp_receipt_proof.required' => 'Bukti transfer DP wajib diunggah.',
+            'dp_receipt_proof.image' => 'Berkas bukti transfer harus berupa gambar (JPG, PNG).',
+            'dp_receipt_proof.max' => 'Ukuran berkas maksimal 3MB.',
+        ]);
+
+        $path = $request->file('dp_receipt_proof')->store('receipts', 'public');
+
+        $order->update([
+            'dp_receipt_proof' => $path,
+            'payment_status' => 'Menunggu Verifikasi DP',
+            'admin_notes' => 'Pelanggan telah mengunggah bukti pembayaran DP. Menunggu verifikasi admin.',
+        ]);
+
+        return back()->with('success', 'Bukti transfer DP berhasil diunggah! Admin akan segera memverifikasi pembayaran Anda.');
+    }
+
+    /**
+     * Unggah Bukti Pelunasan Sisa Tagihan (Aman & Tidak Auto Lunas)
      */
     public function payRemaining(Request $request, $id)
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
-        $order->update([
-            'remaining_payment' => 0,
-            'payment_status' => 'Lunas'
+
+        $request->validate([
+            'final_receipt_proof' => 'required|image|mimes:jpeg,png,jpg|max:3072',
+        ], [
+            'final_receipt_proof.required' => 'Bukti transfer pelunasan wajib diunggah.',
+            'final_receipt_proof.image' => 'Berkas bukti transfer harus berupa gambar (JPG, PNG).',
+            'final_receipt_proof.max' => 'Ukuran berkas maksimal 3MB.',
         ]);
 
-        return back()->with('success', 'Pelunasan berhasil diverifikasi!');
+        $path = $request->file('final_receipt_proof')->store('receipts', 'public');
+
+        $order->update([
+            'final_receipt_proof' => $path,
+            'payment_status' => 'Menunggu Verifikasi Pelunasan',
+            'admin_notes' => 'Pelanggan telah mengunggah bukti pelunasan. Menunggu verifikasi admin.',
+        ]);
+
+        return back()->with('success', 'Bukti transfer pelunasan berhasil diunggah! Pembayaran akan diverifikasi oleh admin.');
     }
 
     /**
-     * Konfirmasi pesanan selesai
+     * Konfirmasi pesanan selesai oleh pelanggan
      */
     public function confirmCompleted(Request $request, $id)
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
+
+        // 1. Validasi: Pesanan harus sudah disetujui admin
+        if ($order->order_status !== 'Diterima') {
+            return back()->with('error', 'Pesanan belum dapat diselesaikan karena belum disetujui oleh admin.');
+        }
+
+        // 2. Validasi: Pembayaran harus sudah lunas (DP dan sisa pelunasan)
+        if ($order->payment_status !== 'Lunas' && $order->remaining_payment > 0) {
+            return back()->with('error', 'Pesanan belum dapat diselesaikan karena tagihan pembayaran belum lunas. Silakan lakukan pembayaran DP atau pelunasan sisa terlebih dahulu.');
+        }
+
+        // 3. Validasi: Mebel harus sudah mencapai tahap pengiriman / selesai dikerjakan
+        $allowedStages = ['Pengiriman', 'Penyelesaian', 'Pesanan Selesai'];
+        if (!in_array($order->current_stage, $allowedStages) && !in_array($order->production_status, ['Pengiriman', 'Selesai'])) {
+            return back()->with('error', 'Pesanan belum dapat diselesaikan karena produk mebel masih dalam proses pengerjaan di workshop (' . $order->current_stage . ').');
+        }
+
         $order->update([
             'production_status' => 'Selesai',
             'current_stage' => 'Pesanan Selesai'
@@ -190,7 +277,8 @@ class OrderController extends Controller
         if ($step8) {
             $step8->update([
                 'status' => 'Selesai',
-                'completed_at' => now()
+                'completed_at' => now(),
+                'notes' => 'Pesanan telah diterima dengan baik dan diselesaikan oleh pelanggan.'
             ]);
         }
 
@@ -201,19 +289,33 @@ class OrderController extends Controller
             \Illuminate\Support\Facades\Log::info("WA Notification trigger error: " . $e->getMessage());
         }
 
-        return redirect()->route('customer.riwayat')->with('success', 'Terima kasih atas konfirmasi Anda! Pesanan telah selesai.');
+        return redirect()->route('customer.riwayat')->with('success', 'Terima kasih atas konfirmasi Anda! Pesanan telah selesai dan tercatat di riwayat transaksi.');
     }
 
     /**
      * Show order history
      */
-    public function riwayat()
+    public function riwayat(Request $request)
     {
         $user = Auth::user();
-        $orders = Order::with(['customDesign', 'progresses', 'items'])
-            ->where('user_id', $user->id)
-            ->latest()
-            ->get();
+        $query = Order::with(['customDesign', 'progresses', 'items'])
+            ->where('user_id', $user->id);
+
+        if ($request->filled('q')) {
+            $search = trim($request->q);
+            $query->where(function ($sub) use ($search) {
+                $sub->where('order_number', 'like', "%{$search}%")
+                    ->orWhere('order_status', 'like', "%{$search}%")
+                    ->orWhere('production_status', 'like', "%{$search}%")
+                    ->orWhereHas('customDesign', function ($cd) use ($search) {
+                        $cd->where('category', 'like', "%{$search}%")
+                           ->orWhere('wood_material', 'like', "%{$search}%")
+                           ->orWhere('color_name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $orders = $query->latest()->get();
 
         return view('customer.riwayat', compact('orders'));
     }

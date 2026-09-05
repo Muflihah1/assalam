@@ -35,6 +35,39 @@
         </div>
     </div>
 
+    <!-- KOTAK PENCARIAN RIWAYAT ADMIN -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 p-3" style="background-color: var(--light-card); border: 1.5px solid var(--light-border) !important;">
+        <form action="{{ route('admin.riwayat') }}" method="GET" class="row g-2 align-items-center">
+            <div class="col-md-9 col-lg-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="q" value="{{ request('q') }}" class="form-control border-start-0 ps-0" placeholder="Cari nomor pesanan, nama pemesan, kontak WA, kategori mebel, atau status...">
+                </div>
+            </div>
+            <div class="col-md-3 col-lg-2 d-flex gap-2">
+                <button type="submit" class="btn btn-dark w-100 rounded-3 fw-bold" style="background-color: var(--primary-color); border: none;">
+                    <i class="fa-solid fa-magnifying-glass me-1"></i> Cari
+                </button>
+                @if(request('q'))
+                    <a href="{{ route('admin.riwayat') }}" class="btn btn-outline-secondary rounded-3" title="Reset Pencarian">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                @endif
+            </div>
+        </form>
+
+        @if(request('q'))
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top flex-wrap gap-2">
+                <div class="small text-muted">
+                    <i class="fa-solid fa-filter me-1 text-primary"></i> Menampilkan hasil pencarian untuk: <strong>"{{ request('q') }}"</strong> ({{ $listRiwayat->count() }} transaksi ditemukan)
+                </div>
+                <a href="{{ route('admin.riwayat') }}" class="small text-decoration-none fw-bold" style="color: var(--primary-color);">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Tampilkan Semua Riwayat
+                </a>
+            </div>
+        @endif
+    </div>
+
     <!-- DAFTAR KARTU RIWAYAT REAL DARI DATABASE -->
     <div class="row g-3">
         @forelse($listRiwayat as $item)
@@ -116,9 +149,17 @@
         @empty
         <div class="col-12 text-center py-5">
             <div class="admin-card py-5">
-                <i class="fa-solid fa-clock-rotate-left fa-3x text-muted mb-3"></i>
-                <h5 class="fw-bold text-dark mb-1">Belum Ada Riwayat Pesanan</h5>
-                <p class="text-muted small mb-0">Pesanan yang masuk akan terekam secara otomatis di halaman ini.</p>
+                <i class="fa-solid {{ request('q') ? 'fa-magnifying-glass' : 'fa-clock-rotate-left' }} fa-3x text-muted mb-3"></i>
+                @if(request('q'))
+                    <h5 class="fw-bold text-dark mb-1">Riwayat Tidak Ditemukan</h5>
+                    <p class="text-muted small mb-3">Tidak ada riwayat transaksi yang cocok dengan pencarian "<strong>{{ request('q') }}</strong>".</p>
+                    <a href="{{ route('admin.riwayat') }}" class="btn btn-outline-dark btn-sm rounded-3 px-3">
+                        <i class="fa-solid fa-rotate-left me-1"></i> Reset Pencarian
+                    </a>
+                @else
+                    <h5 class="fw-bold text-dark mb-1">Belum Ada Riwayat Pesanan</h5>
+                    <p class="text-muted small mb-0">Pesanan yang masuk akan terekam secara otomatis di halaman ini.</p>
+                @endif
             </div>
         </div>
         @endforelse
