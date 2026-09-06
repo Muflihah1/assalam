@@ -15,9 +15,14 @@ class AdminSeeder extends Seeder
             ['email' => 'admin@assalammebel.com'],
             [
                 'name' => 'Administrator Assalam',
+<<<<<<< Updated upstream
                 'username' => 'admin_assalam',
                 'password' => Hash::make('password123'),
                 'whatsapp_number' => '085234567890',
+=======
+                'password' => Hash::make('Admin123'),
+                'whatsapp_number' => '087872859262',
+>>>>>>> Stashed changes
                 'alamat' => 'Jl. Raya Mebel Assalam No. 12, Sumenep, Madura',
                 'role' => 'admin',
             ]

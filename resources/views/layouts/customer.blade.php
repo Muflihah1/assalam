@@ -342,7 +342,11 @@
                     <li>
                         <a href="{{ route('customer.design') }}" class="{{ request()->routeIs('customer.design') ? 'active' : '' }}">
                             <i class="fa-solid fa-pen-ruler"></i>
+<<<<<<< Updated upstream
                             <span>Studio Custom</span>
+=======
+                            <span>Desain Anda</span>
+>>>>>>> Stashed changes
                         </a>
                     </li>
                     <li>

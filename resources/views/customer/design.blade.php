@@ -202,12 +202,12 @@
                         <h5 class="fw-bold text-dark mb-0">
                             <i class="fa-solid fa-sliders me-2" style="color: var(--accent-gold);"></i>Parameter Desain Furniture
                         </h5>
-                        <span class="text-muted small">Langkah 1 dari 2</span>
                     </div>
 
                     <!-- 1. Kategori & Model -->
                     <div class="mb-4">
                         <label class="form-label-custom">Kategori Furniture</label>
+<<<<<<< Updated upstream
                         <select class="form-select form-select-custom" name="category" id="inputKategori" onchange="hitungHargaReal()">
                             <option value="Sofa & Kursi Tamu Mewah" selected>Sofa & Kursi Tamu Mewah</option>
                             <option value="Meja Makan Minimalis Modern">Meja Makan Minimalis Modern</option>
@@ -215,6 +215,16 @@
                             <option value="Tempat Tidur Estetik">Tempat Tidur Estetik</option>
                             <option value="Pintu Rumah & Gebyok">Pintu Rumah & Gebyok</option>
                             <option value="Credenza & Buffet TV">Credenza & Buffet TV</option>
+=======
+                        <select class="form-select form-select-custom" name="category" id="inputKategori">
+                            <option value="" selected></option>
+                            <option value="Kursi">Kursi</option>
+                            <option value="Meja">Meja</option>
+                            <option value="Lemari">Lemari</option>
+                            <option value="Ukiran NU">Ukiran NU</option>
+                            <option value="Pintu Rumah">Pintu Rumah</option>
+                            <option value="Pondium Mimbar">Pondium Mimbar</option>
+>>>>>>> Stashed changes
                         </select>
                     </div>
 
@@ -227,21 +237,21 @@
                             <div class="col-4">
                                 <div class="dimension-label">Panjang (P)</div>
                                 <div class="input-group input-group-custom">
-                                    <input type="number" name="length_cm" id="inputPanjang" class="form-control form-control-custom" value="180" oninput="hitungHargaReal()" min="30" max="400" required>
+                                    <input type="number" name="length_cm" id="inputPanjang" class="form-control form-control-custom" value="0" min="30" max="400" required>
                                     <span class="input-group-text input-group-custom-text">cm</span>
                                 </div>
                             </div>
                             <div class="col-4">
                                 <div class="dimension-label">Lebar (L)</div>
                                 <div class="input-group input-group-custom">
-                                    <input type="number" name="width_cm" id="inputLebar" class="form-control form-control-custom" value="80" oninput="hitungHargaReal()" min="20" max="300" required>
+                                    <input type="number" name="width_cm" id="inputLebar" class="form-control form-control-custom" value="0" min="20" max="300" required>
                                     <span class="input-group-text input-group-custom-text">cm</span>
                                 </div>
                             </div>
                             <div class="col-4">
                                 <div class="dimension-label">Tinggi (T)</div>
                                 <div class="input-group input-group-custom">
-                                    <input type="number" name="height_cm" id="inputTinggi" class="form-control form-control-custom" value="75" oninput="hitungHargaReal()" min="20" max="300" required>
+                                    <input type="number" name="height_cm" id="inputTinggi" class="form-control form-control-custom" value="0" min="20" max="300" required>
                                     <span class="input-group-text input-group-custom-text">cm</span>
                                 </div>
                             </div>
@@ -251,10 +261,16 @@
                     <!-- 3. Material -->
                     <div class="mb-4">
                         <label class="form-label-custom">Pilihan Material Kayu Utama</label>
+<<<<<<< Updated upstream
                         <select class="form-select form-select-custom" name="wood_material" id="inputMaterial" onchange="hitungHargaReal()">
                             <option value="Kayu Jati Perhutani (Grade A)" selected>Kayu Jati Perhutani (Grade A - Anti Rayap & Tahan Puluhan Tahun)</option>
                             <option value="Kayu Mahoni Oven Premium">Kayu Mahoni Oven Premium (Serat Halus & Sangat Rapih)</option>
                             <option value="Kayu Sungkai Solid">Kayu Sungkai Solid (Serat Cerah & Estetik Modern)</option>
+=======
+                        <select class="form-select form-select-custom" name="wood_material" id="inputMaterial">
+                            <option value="Kayu Jati " selected>Kayu Jati</option>
+                            
+>>>>>>> Stashed changes
                         </select>
                     </div>
 
@@ -336,7 +352,7 @@
 
                     <div class="d-flex justify-content-between mb-3">
                         <span class="text-muted fw-medium">Estimasi Harga Mebel</span>
-                        <span class="fw-bold text-dark fs-6" id="displayHargaMebel">Rp 3.500.000</span>
+                        <span class="fw-bold text-dark fs-6" id="displayHargaMebel">Rp 0</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3">
                         <span class="text-muted fw-medium">Ongkos Kirim Standar</span>
@@ -344,7 +360,7 @@
                     </div>
                     <div class="d-flex justify-content-between mb-3 pb-2 border-bottom">
                         <span class="text-muted fw-medium">Total Nilai Pesanan</span>
-                        <span class="fw-bold text-dark fs-6" id="displayTotalPesanan">Rp 3.550.000</span>
+                        <span class="fw-bold text-dark fs-6" id="displayTotalPesanan">Rp 0</span>
                     </div>
 
                     <div class="d-flex align-items-center justify-content-between mb-4 p-3 rounded-4" style="background-color: var(--wood-bg); border: 1.5px solid var(--wood-border);">
@@ -352,17 +368,7 @@
                             <span class="text-muted d-block small fw-bold text-uppercase">Uang Muka (DP 50%)</span>
                             <span class="fw-bold text-dark small">Mulai Produksi</span>
                         </div>
-                        <span class="price-display" id="displayDP">Rp 1.775.000</span>
-                    </div>
-
-                    <!-- PILIH METODE BAYAR DP -->
-                    <div class="mb-4">
-                        <label class="form-label-custom">Pilih Metode Pembayaran DP</label>
-                        <select name="payment_method" class="form-select form-select-custom">
-                            <option value="qris">QRIS (Semua E-Wallet & M-Banking)</option>
-                            <option value="transfer">Transfer Bank (BCA 8830-1289-44)</option>
-                            <option value="dana">E-Wallet DANA</option>
-                        </select>
+                        <span class="price-display" id="displayDP">Rp 0</span>
                     </div>
 
                     <div class="d-grid gap-2">
@@ -377,7 +383,7 @@
             </div>
         </div>
 
-        <!-- MODAL KONFIRMASI REVIEW SEBELUM SUBMIT -->
+        <!-- MODAL 1: KONFIRMASI REVIEW SEBELUM SUBMIT -->
         <div class="modal fade" id="modalReviewDesain" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content rounded-4 p-4 text-center border-0 shadow-lg" style="background-color: var(--light-card);">
@@ -407,9 +413,43 @@
 
                     <div class="d-flex justify-content-center gap-3">
                         <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-3 fw-bold" data-bs-dismiss="modal">Kembali</button>
+<<<<<<< Updated upstream
                         <button type="submit" class="btn btn-orange px-5 py-2">
                             <i class="fa-solid fa-check me-1"></i> Konfirmasi & Simpan Pesanan
                         </button>
+=======
+                        <button type="button" class="btn btn-orange px-5 py-2" onclick="lanjutKePembayaran()">Konfirmasi & Simpan Pesanan 🚀</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 2: POPUP PEMBAYARAN DP -->
+        <div class="modal fade" id="modalPembayaranDP" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content rounded-4 p-4 text-center border-0 shadow-lg" style="background-color: var(--light-card);">
+                    <h5 class="fw-bold text-dark mb-1">PEMBAYARAN UANG MUKA (DP)</h5>
+                    <p class="text-muted small mb-3">Selesaikan DP 50% untuk langsung memulai proses produksi mebel Anda.</p>
+
+                    <p class="fw-bold fs-3 mb-3" style="color: var(--accent-gold);" id="modal_pay_dp_amount">Rp 0</p>
+
+                    <div id="boxDANA" class="p-3 border rounded-4 mb-3 bg-white shadow-sm" style="border-color: var(--light-border) !important;">
+                        <div class="mb-2">
+                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill fw-bold mb-2">DANA Instant Pay</span>
+                            <p class="mb-1 small text-muted">Nomor DANA Usaha:</p>
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                <h5 class="fw-bold text-dark mb-0" id="noDana">087872859262</h5>
+                                <button type="button" class="btn btn-sm btn-light border" onclick="copyDanaNumber()">📋 Salin</button>
+                            </div>
+                            <small class="text-muted d-block mt-1"> <strong>Mebel Assalam</strong></small>
+                        </div>
+                       
+                        
+
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary w-50 py-2 rounded-3 fw-bold" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn fw-bold w-50 py-2 rounded-3 text-white" style="background-color: var(--primary-color);">Bayar DP Sekarang</button>
+>>>>>>> Stashed changes
                     </div>
                 </div>
             </div>
@@ -418,10 +458,77 @@
     </form>
 </div>
 
+<!-- MODAL 3: PEMBAYARAN BERHASIL -->
+<div class="modal fade" id="modalPembayaranSukses" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content rounded-4 p-4 text-center border-0 shadow-lg" style="background-color: var(--light-card);">
+            <div class="modal-body p-0">
+                <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 70px; height: 70px; background-color: #d1fae5; color: #059669;">
+                    <i class="fa-solid fa-check fa-3x"></i>
+                </div>
+                
+                <h5 class="fw-bold text-dark mb-1">Pembayaran Berhasil!</h5>
+                <p class="text-muted small mb-3">Bukti pembayaran DP Anda telah diterima. Pesanan Anda sedang diproses oleh tim kami.</p>
+
+                <div class="p-2 rounded-3 bg-white border mb-3 text-start small">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Status:</span>
+                        <span class="badge bg-success">DP Dibayar</span>
+                    </div>
+                </div>
+
+                <!-- Tombol langsung Selesai -->
+                <button type="button" class="btn btn-orange w-100 py-2 rounded-3 fw-bold" onclick="selesaiDanSubmit()">
+                    Selesai
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     let currentBaseHex = "#d97706";
     let currentColorName = "Amber Gold";
 
+    // --- KALKULASI REAL-TIME ---
+    function hitungHargaReal() {
+        let p = parseFloat(document.getElementById('inputPanjang')?.value) || 0;
+        let l = parseFloat(document.getElementById('inputLebar')?.value) || 0;
+        let t = parseFloat(document.getElementById('inputTinggi')?.value) || 0;
+        let material = document.getElementById('inputMaterial')?.value || '';
+
+        // Hitung volume (m3)
+        let volume = (p * l * t) / 1000000; 
+
+        // Tentukan tarif dasar kayu
+        let baseRate = 500000;
+        if (material.includes('Jati')) {
+            baseRate = 4800000;
+        }
+
+        // Kalkulasi harga furniture
+        let hargaMebel = 0;
+        if (p > 0 && l > 0 && t > 0) {
+            hargaMebel = Math.round(Math.max(2500000, baseRate * Math.max(0.8, volume * 1.8)) / 50000) * 50000;
+        }
+
+        let ongkir = 50000;
+        let total = hargaMebel + ongkir;
+        let dp = Math.round(total * 0.5);
+
+        // Update tampilan DOM
+        if (document.getElementById('displayHargaMebel')) {
+            document.getElementById('displayHargaMebel').innerText = 'Rp ' + hargaMebel.toLocaleString('id-ID');
+        }
+        if (document.getElementById('displayTotalPesanan')) {
+            document.getElementById('displayTotalPesanan').innerText = 'Rp ' + total.toLocaleString('id-ID');
+        }
+        if (document.getElementById('displayDP')) {
+            document.getElementById('displayDP').innerText = 'Rp ' + dp.toLocaleString('id-ID');
+        }
+    }
+
+    // --- TONE WARNA & SWATCHES ---
     function selectBaseColor(hex, name, element) {
         document.querySelectorAll('.color-swatch-btn').forEach(btn => btn.classList.remove('active'));
         if (element) element.classList.add('active');
@@ -474,27 +581,7 @@
         ).toString(16).slice(1);
     }
 
-    function hitungHargaReal() {
-        let p = parseFloat(document.getElementById('inputPanjang').value) || 180;
-        let l = parseFloat(document.getElementById('inputLebar').value) || 80;
-        let t = parseFloat(document.getElementById('inputTinggi').value) || 75;
-        let material = document.getElementById('inputMaterial').value;
-
-        let volume = (p * l * t) / 1000000; // m3
-        let baseRate = 3500000;
-        if (material.includes('Jati')) baseRate = 4800000;
-        else if (material.includes('Mahoni')) baseRate = 3800000;
-
-        let hargaMebel = Math.round(Math.max(2500000, baseRate * Math.max(0.8, volume * 1.8)) / 50000) * 50000;
-        let ongkir = 50000;
-        let total = hargaMebel + ongkir;
-        let dp = Math.round(total * 0.5);
-
-        document.getElementById('displayHargaMebel').innerText = 'Rp ' + hargaMebel.toLocaleString('id-ID');
-        document.getElementById('displayTotalPesanan').innerText = 'Rp ' + total.toLocaleString('id-ID');
-        document.getElementById('displayDP').innerText = 'Rp ' + dp.toLocaleString('id-ID');
-    }
-
+    // --- MODAL & FLOW SUBMIT ---
     function bukaModalReview() {
         let alertBox = document.getElementById('validationAlert');
         alertBox.classList.add('d-none');
@@ -546,8 +633,57 @@
         modal.show();
     }
 
+    function lanjutKePembayaran() {
+        let modalReviewEl = document.getElementById('modalReviewDesain');
+        let modalReview = bootstrap.Modal.getInstance(modalReviewEl);
+        if (modalReview) modalReview.hide();
+
+        let dpValue = document.getElementById('displayDP').innerText;
+        document.getElementById('modal_pay_dp_amount').innerText = dpValue;
+
+        let modalPay = new bootstrap.Modal(document.getElementById('modalPembayaranDP'));
+        modalPay.show();
+    }
+
+    function copyDanaNumber() {
+        let noDana = document.getElementById('noDana').innerText;
+        navigator.clipboard.writeText(noDana);
+        alert('Nomor DANA berhasil disalin!');
+    }
+
+    function selesaiDanRedirect() {
+        window.location.href = "{{ route('customer.design.order') }}";
+    }
+
+    // --- INITIALIZATION ---
     document.addEventListener("DOMContentLoaded", function() {
+        // Pasang listener input ukuran & pilihan
+        ['inputPanjang', 'inputLebar', 'inputTinggi', 'inputKategori', 'inputMaterial'].forEach(id => {
+            let el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', hitungHargaReal);
+                el.addEventListener('change', hitungHargaReal);
+            }
+        });
+
+        // Jalankan kalkulasi awal saat halaman dimuat
         hitungHargaReal();
+
+        // Tangani submit form untuk menampilkan modal pembayaran sukses
+        document.getElementById('formCustomMebel')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let modalPayEl = document.getElementById('modalPembayaranDP');
+            let modalPay = bootstrap.Modal.getInstance(modalPayEl);
+            if (modalPay) modalPay.hide();
+
+            let modalSukses = new bootstrap.Modal(document.getElementById('modalPembayaranSukses'));
+            modalSukses.show();
+        });
     });
+    function selesaiDanSubmit() {
+    // Cari form utama dan kirimkan datanya
+    document.getElementById('formCustomMebel').submit();
+}
 </script>
 @endsection

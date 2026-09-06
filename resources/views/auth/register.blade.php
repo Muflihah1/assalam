@@ -191,7 +191,7 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Nama Lengkap</label>
-                    <input type="text" name="name" class="form-control" placeholder="John Doe" value="{{ old('name') }}" required>
+                    <input type="text" name="name" class="form-control" placeholder="Nama Anda" value="{{ old('name') }}" required>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Username</label>
@@ -199,6 +199,14 @@
                 </div>
             </div>
 
+<<<<<<< Updated upstream
+=======
+            <div class="mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" placeholder="anda@gmail.com" value="{{ old('email') }}" required>
+            </div>
+
+>>>>>>> Stashed changes
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Nomor WhatsApp</label>

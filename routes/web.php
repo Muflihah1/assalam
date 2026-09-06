@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Http\Controllers\Admin;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
@@ -60,6 +62,7 @@ Route::get('/katalog', function (\Illuminate\Http\Request $request) {
     $katalogs = $query->latest()->get();
     return view('customer.katalog', compact('katalogs', 'keyword'));
 })->name('customer.katalog');
+
 
 // Studio Desain Interaktif (Bebas Dieksplorasi Tamu/Publik)
 Route::get('/design', [CustomerOrderController::class, 'design'])->name('customer.design');
@@ -137,10 +140,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/progres-produksi/{id}', [OrderManagementController::class, 'updateProgres'])->name('progres.update');
 
     // Data Akun Pelanggan & Riwayat
-    Route::get('/data-pelanggan', [AdminCustomerController::class, 'index'])->name('data.pelanggan');
+    Route::get('/data-pelanggan', [CustomerController::class, 'index'])->name('data.pelanggan');
     Route::get('/riwayat', [OrderManagementController::class, 'riwayat'])->name('riwayat');
     Route::delete('/riwayat/{id}', [OrderManagementController::class, 'destroyRiwayat'])->name('riwayat.destroy');
 
+<<<<<<< Updated upstream
     // Pengaturan Admin (Profil, Gateway WhatsApp, Ongkir)
     Route::get('/pengaturan', [SettingController::class, 'index'])->name('pengaturan');
     Route::post('/pengaturan/profil', [SettingController::class, 'updateProfile'])->name('pengaturan.profile');
@@ -148,6 +152,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/pengaturan/whatsapp', [SettingController::class, 'updateWhatsapp'])->name('pengaturan.whatsapp');
     Route::post('/pengaturan/shipping', [SettingController::class, 'storeShipping'])->name('pengaturan.shipping.store');
     Route::put('/pengaturan/shipping/{id}', [SettingController::class, 'updateShipping'])->name('pengaturan.shipping.update');
+=======
+   // Pengaturan Admin (Profil, Password, Gateway WhatsApp, Ongkir)
+Route::get('/pengaturan', [SettingController::class, 'index'])->name('pengaturan');
+Route::post('/pengaturan/profile', [SettingController::class, 'updateProfile'])->name('pengaturan.profile');
+Route::post('/pengaturan/password', [SettingController::class, 'updatePassword'])->name('pengaturan.password'); // <-- Rute Baru
+Route::post('/pengaturan/whatsapp', [SettingController::class, 'updateWhatsapp'])->name('pengaturan.whatsapp');
+Route::post('/pengaturan/shipping', [SettingController::class, 'storeShipping'])->name('pengaturan.shipping.store');
+Route::put('/pengaturan/shipping/{id}', [SettingController::class, 'updateShipping'])->name('pengaturan.shipping.update');
+>>>>>>> Stashed changes
 
     // Manajemen WhatsApp Gateway Terpadu (laravel-whatsapp sidecar, QR/Pairing, Templates, Message Logs & Retry)
     Route::get('/whatsapp', [WhatsAppGatewayController::class, 'index'])->name('whatsapp.index');

@@ -13,8 +13,8 @@
 
     .profile-avatar-box {
         position: relative;
-        width: 100px;
-        height: 100px;
+        width: 110px;
+        height: 110px;
         margin: 0 auto;
     }
 
@@ -25,6 +25,28 @@
         object-fit: cover;
         border: 3px solid var(--primary-color);
         box-shadow: 0 4px 12px rgba(93, 64, 55, 0.2);
+    }
+
+    .avatar-upload-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background-color: var(--primary-color);
+        color: #fff;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 2px solid #fff;
+        transition: transform 0.2s;
+    }
+
+    .avatar-upload-btn:hover {
+        transform: scale(1.1);
+        background-color: var(--secondary-color);
     }
 
     .form-control-custom {
@@ -76,45 +98,66 @@
     <!-- HEADER HALAMAN -->
     <div class="mb-4">
         <h3 class="fw-bold mb-1" style="color: var(--primary-color);">Pengaturan Akun Pelanggan</h3>
-        <p class="text-muted small mb-0">Kelola informasi profil, nomor kontak, alamat pengiriman, dan keamanan akun Anda.</p>
+        <p class="text-muted small mb-0">Kelola informasi profil, foto avatar, nomor kontak, alamat pengiriman, dan keamanan akun Anda.</p>
     </div>
 
-    <div class="row g-4">
-        <!-- KOLOM KIRI: FOTO PROFIL & RINGKASAN AKUN -->
-        <div class="col-lg-4">
-            <div class="wireframe-card text-center">
-                <div class="profile-avatar-box mb-3">
-                    <img id="userAvatarPreview" src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ urlencode(Auth::user()->name ?? 'Budi') }}" alt="Avatar" class="profile-avatar-img">
-                </div>
-
-                <h5 class="fw-bold text-dark mb-1">{{ Auth::user()->name }}</h5>
-                <p class="text-muted small mb-3">{{ Auth::user()->email }}</p>
-
-                <div class="d-flex justify-content-center gap-2 mb-3">
-                    <span class="badge px-3 py-1.5 rounded-pill small fw-bold" style="background-color: #d1fae5; color: #15803d; border: 1px solid #a7f3d0;">
-                        <i class="fa-solid fa-user-check me-1"></i> Customer Terverifikasi
-                    </span>
-                </div>
-
-                <hr style="border-color: var(--light-border);" class="my-4">
-
-                <button class="btn btn-danger-outline w-100" data-bs-toggle="modal" data-bs-target="#modalLogout">
-                    <i class="fa-solid fa-right-from-bracket me-2"></i> Keluar Akun
-                </button>
-            </div>
+    <!-- ALERT SIKLUS SESSIN AKUN -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show rounded-4 mb-4" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+    @endif
 
-        <!-- KOLOM KANAN: FORM DETAIL PROFIL & KEAMANAN -->
-        <div class="col-lg-8">
-            
-            <!-- 1. INFORMASI PROFIL -->
-            <div class="wireframe-card mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                    <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-user me-2" style="color: var(--primary-color);"></i> Informasi Profil & Kontak</h5>
+    <form action="{{ route('customer.account.profile') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="row g-4">
+            <!-- KOLOM KIRI: FOTO PROFIL & RINGKASAN AKUN -->
+            <div class="col-lg-4">
+                <div class="wireframe-card text-center">
+                    
+                    <!-- FOTO PROFIL DENGAN INPUT FILE -->
+                    <div class="profile-avatar-box mb-3">
+                        @php
+                            $avatarUrl = Auth::user()->avatar 
+                                ? asset('storage/' . Auth::user()->avatar) 
+                                : 'https://api.dicebear.com/7.x/adventurer/svg?seed=' . urlencode(Auth::user()->name ?? 'Budi');
+                        @endphp
+                        <img id="userAvatarPreview" src="{{ $avatarUrl }}" alt="Avatar" class="profile-avatar-img">
+                        
+                        <!-- Tombol Ubah Foto -->
+                        <label for="avatarInput" class="avatar-upload-btn" title="Ubah Foto Profil">
+                            <i class="fa-solid fa-camera fa-sm"></i>
+                        </label>
+                        <input type="file" id="avatarInput" name="avatar" class="d-none" accept="image/*" onchange="previewAvatar(event)">
+                    </div>
+
+                    <h5 class="fw-bold text-dark mb-1">{{ Auth::user()->name }}</h5>
+                    <p class="text-muted small mb-3">{{ Auth::user()->email }}</p>
+
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        <span class="badge px-3 py-1.5 rounded-pill small fw-bold" style="background-color: #d1fae5; color: #15803d; border: 1px solid #a7f3d0;">
+                            <i class="fa-solid fa-user-check me-1"></i> Customer Terverifikasi
+                        </span>
+                    </div>
+
+                    <hr style="border-color: var(--light-border);" class="my-4">
+
+                    <button type="button" class="btn btn-danger-outline w-100" data-bs-toggle="modal" data-bs-target="#modalLogout">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i> Keluar Akun
+                    </button>
                 </div>
+            </div>
 
-                <form action="{{ route('customer.account.profile') }}" method="POST">
-                    @csrf
+            <!-- KOLOM KANAN: FORM DETAIL PROFIL -->
+            <div class="col-lg-8">
+                
+                <!-- 1. INFORMASI PROFIL -->
+                <div class="wireframe-card mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-user me-2" style="color: var(--primary-color);"></i> Informasi Profil & Kontak</h5>
+                    </div>
+
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label text-dark small fw-bold">Nama Lengkap</label>
@@ -151,10 +194,15 @@
                             <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Perubahan Profil
                         </button>
                     </div>
-                </form>
-            </div>
+                </div>
 
-            <!-- 2. KEAMANAN & PASSWORD -->
+            </div>
+        </div>
+    </form>
+
+    <!-- 2. KEAMANAN & PASSWORD (FORM TERPISAH) -->
+    <div class="row">
+        <div class="col-lg-8 offset-lg-4">
             <div class="wireframe-card">
                 <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
                     <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-shield-halved me-2" style="color: var(--primary-color);"></i> Keamanan & Ganti Password</h5>
@@ -199,7 +247,6 @@
                     </div>
                 </form>
             </div>
-
         </div>
     </div>
 
@@ -228,6 +275,7 @@
     </div>
 </div>
 
+<<<<<<< Updated upstream
 <script>
     function togglePasswordVisibility(inputId, iconId) {
         const input = document.getElementById(inputId);
@@ -250,6 +298,18 @@
                 icon.classList.add("text-muted");
                 icon.style.color = "";
             }
+=======
+<!-- SCRIPT PREVIEW GAMBAR AVATAR -->
+<script>
+    function previewAvatar(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const output = document.getElementById('userAvatarPreview');
+            output.src = reader.result;
+        };
+        if(event.target.files[0]) {
+            reader.readAsDataURL(event.target.files[0]);
+>>>>>>> Stashed changes
         }
     }
 </script>

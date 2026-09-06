@@ -17,6 +17,7 @@ class OrderController extends Controller
     /**
      * Show the custom design workbench studio (Public Access)
      */
+<<<<<<< Updated upstream
     public function design(Request $request)
     {
         $settings = StudioSetting::pluck('value', 'key');
@@ -29,6 +30,20 @@ class OrderController extends Controller
 
         return view('customer.design', compact('settings', 'shippingCosts', 'selectedProduct'));
     }
+=======
+    public function design()
+{
+    // 1. Ambil data settings & shipping costs
+    $settings = StudioSetting::pluck('value', 'key');
+    $shippingCosts = ShippingCost::where('status', 'Aktif')->get();
+    
+    /** @var \App\Models\Order|null $order */
+    $order = Order::where('user_id', auth::id())->latest()->first();
+
+    // 3. Kirim SEMUA variabel ke view dalam satu return statement
+    return view('customer.design', compact('settings', 'shippingCosts', 'order'));
+}
+>>>>>>> Stashed changes
 
     /**
      * Store a new custom furniture order (Requires Authentication)

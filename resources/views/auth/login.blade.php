@@ -59,6 +59,12 @@
             flex: 1;
             padding: 60px;
         }
+        .auth-image {
+            flex: 1;
+            background: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=1920') center/cover no-repeat;
+            position: relative;
+            min-height: 300px;
+        }
 
         .brand-title { color: var(--primary-color); font-weight: 900; }
         .input-group-text { background: transparent !important; color: var(--secondary-color); }

@@ -3,8 +3,8 @@
 @section('content')
 <style>
     .wireframe-card {
-        background-color: var(--light-card);
-        border: 1.5px solid var(--light-border);
+        background-color: var(--light-card, #ffffff);
+        border: 1.5px solid var(--light-border, #e5e7eb);
         border-radius: 20px;
         box-shadow: 0 6px 18px rgba(93, 64, 55, 0.06);
         padding: 24px;
@@ -23,7 +23,7 @@
 
     .timeline-step-card {
         background-color: #fdfaf6;
-        border: 1.5px solid var(--wood-border);
+        border: 1.5px solid var(--wood-border, #d1d5db);
         border-radius: 14px;
         padding: 12px 8px;
         flex: 1;
@@ -38,16 +38,16 @@
     }
 
     .timeline-step-card:hover {
-        border-color: var(--primary-color);
+        border-color: var(--primary-color, #2563eb);
         background-color: #ffffff;
         transform: translateY(-3px);
         box-shadow: 0 6px 15px rgba(93, 64, 55, 0.12);
     }
 
     .timeline-step-card.active-step {
-        border-color: var(--primary-color);
+        border-color: var(--primary-color, #2563eb);
         background-color: #ffffff;
-        box-shadow: 0 0 0 2px var(--primary-color), 0 6px 15px rgba(93, 64, 55, 0.15);
+        box-shadow: 0 0 0 2px var(--primary-color, #2563eb), 0 6px 15px rgba(93, 64, 55, 0.15);
     }
 
     .upload-date-label {
@@ -65,7 +65,7 @@
         width: 100%;
         height: 100px;
         background-color: #ffffff;
-        border: 1px solid var(--light-border);
+        border: 1px solid var(--light-border, #e5e7eb);
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -84,13 +84,13 @@
     .step-title-label {
         font-size: 0.75rem;
         font-weight: 800;
-        color: var(--text-dark);
+        color: var(--text-dark, #1f2937);
         line-height: 1.2;
     }
 
     .btn-orange-outline {
-        border: 2px solid var(--primary-color);
-        color: var(--primary-color);
+        border: 2px solid var(--primary-color, #d97706);
+        color: var(--primary-color, #d97706);
         background: transparent;
         font-weight: 700;
         border-radius: 30px;
@@ -99,14 +99,14 @@
     }
 
     .btn-orange-outline:hover {
-        background: var(--primary-color);
+        background: var(--primary-color, #d97706);
         color: #ffffff;
     }
 
     .btn-action-dark {
-        border: 1.5px solid var(--wood-border);
-        background-color: var(--wood-bg);
-        color: var(--text-dark);
+        border: 1.5px solid var(--wood-border, #d1d5db);
+        background-color: var(--wood-bg, #f3f4f6);
+        color: var(--text-dark, #1f2937);
         font-weight: 700;
         border-radius: 12px;
         padding: 12px 24px;
@@ -114,15 +114,16 @@
     }
 
     .btn-action-dark:hover {
-        border-color: var(--primary-color);
-        background-color: #dfcebc;
-        color: var(--primary-color);
+        border-color: var(--primary-color, #2563eb);
+        background-color: #e5e7eb;
+        color: var(--primary-color, #2563eb);
     }
 </style>
 
-<div class="container-fluid px-2 px-md-4 py-2">
+<div class="container-fluid px-2 px-md-4 py-3">
 
     @if(!$order)
+        <!-- JIKA BELUM ADA PESANAN -->
         <div class="wireframe-card text-center py-5">
             <div class="mb-3">
                 <i class="fa-solid fa-clock-rotate-left fa-3x text-muted"></i>
@@ -134,6 +135,7 @@
             </a>
         </div>
     @else
+<<<<<<< Updated upstream
         <!-- ALERT STATUS PESANAN (KONFIRMASI / TOLAK / PEMBAYARAN DP) -->
         @if($order->order_status === 'Menunggu Konfirmasi')
             <div class="alert alert-warning border-0 rounded-4 p-3 mb-3 shadow-sm d-flex align-items-center gap-3">
@@ -188,14 +190,21 @@
         @endif
 
         <!-- 1. SPESIFIKASI PELANGGAN DINAMIS -->
+=======
+        <!-- 1. SPESIFIKASI PESANAN AKURAT & DINAMIS -->
+>>>>>>> Stashed changes
         <div class="wireframe-card">
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                 <h4 class="fw-bold text-dark mb-0" style="color: var(--primary-color);">
-                    <i class="fa-solid fa-file-lines me-2"></i>Spesifikasi Pesanan #{{ $order->order_number }}
+                    <i class="fa-solid fa-file-lines me-2"></i>Spesifikasi Pesanan #{{ $order->order_number ?? $order->id }}
                 </h4>
                 <div class="d-flex gap-2">
                     <span class="badge px-3 py-2 rounded-pill fw-bold" style="background-color: rgba(93, 64, 55, 0.1); color: var(--primary-color); border: 1px solid var(--wood-border);">
+<<<<<<< Updated upstream
                         Progres: {{ $order->production_status }}
+=======
+                        Status Produksi: {{ $order->production_status ?? 'Dalam Proses' }}
+>>>>>>> Stashed changes
                     </span>
                     @if($order->order_status === 'Ditolak')
                         <span class="badge bg-danger px-3 py-2 rounded-pill fw-bold">Ditolak</span>
@@ -204,43 +213,90 @@
                     @endif
                 </div>
             </div>
+
             <div class="row g-3">
                 <div class="col-md-8">
+                    {{-- 1A. JIKA PESANAN ADALAH CUSTOM DESIGN --}}
+                  @if($order->customDesign)
+    <strong class="text-dark d-block mb-1">Spesifikasi Mebel Custom:</strong>
+    
+    <!-- Kategori -->
+    <p class="mb-1 text-muted">
+        <strong class="text-dark">Kategori:</strong> 
+        {{ $order->customDesign->category ?? $order->customDesign->product_type ?? $order->customDesign->name ?? '-' }}
+    </p>
+
+    <!-- Material Kayu -->
+    <p class="mb-1 text-muted">
+        <strong class="text-dark">Material Kayu:</strong> 
+        {{ $order->customDesign->wood_material ?? $order->customDesign->material ?? $order->customDesign->wood_type ?? '-' }}
+    </p>
+
+    <!-- Ukuran -->
+    <p class="mb-1 text-muted">
+        <strong class="text-dark">Ukuran Presisi:</strong> 
+        {{ $order->customDesign->length_cm ?? $order->customDesign->length ?? 0 }} cm (P) x 
+        {{ $order->customDesign->width_cm ?? $order->customDesign->width ?? 0 }} cm (L) x 
+        {{ $order->customDesign->height_cm ?? $order->customDesign->height ?? 0 }} cm (T)
+    </p>
+
+    <!-- Warna Finishing -->
+    <p class="mb-1 text-muted">
+        <strong class="text-dark">Warna Finishing:</strong> 
+        {{ $order->customDesign->color_name ?? $order->customDesign->color ?? '-' }}
+        @if(!empty($order->customDesign->color_hex))
+            <span class="d-inline-block rounded-circle border ms-1" style="width: 12px; height: 12px; background-color: {{ $order->customDesign->color_hex }}; vertical-align: middle;"></span>
+        @endif
+    </p>
+@endif
+
+                    {{-- 1B. JIKA PESANAN ADALAH ITEM KATALOG --}}
                     @if($order->items && $order->items->count() > 0)
-                        <strong class="text-dark d-block mb-2">Item Produk Katalog:</strong>
-                        <ul class="list-unstyled mb-2">
-                            @foreach($order->items as $it)
-                                <li class="text-muted small mb-1">
-                                    <i class="fa-solid fa-box text-secondary me-1"></i> <strong>{{ $it->product_name }}</strong> (x{{ $it->quantity }}) - Rp {{ number_format($it->subtotal, 0, ',', '.') }}
+                        <strong class="text-dark d-block mt-2 mb-2"><i class="fa-solid fa-boxes-packing me-1"></i> Item Produk Katalog:</strong>
+                        <ul class="list-group list-group-flush mb-2">
+                            @foreach($order->items as $item)
+                                <li class="list-group-item bg-transparent px-0 py-1 text-muted small d-flex justify-content-between align-items-center">
+                                    <span><i class="fa-solid fa-box text-secondary me-2"></i><strong>{{ $item->product_name ?? $item->product->name ?? 'Produk Mebel' }}</strong> (x{{ $item->quantity }})</span>
+                                    <span class="fw-bold text-dark">Rp {{ number_format($item->subtotal ?? ($item->price * $item->quantity), 0, ',', '.') }}</span>
                                 </li>
                             @endforeach
                         </ul>
                     @endif
 
-                    @if($order->customDesign)
-                        <strong class="text-dark d-block mb-1">Spesifikasi Mebel Custom:</strong>
-                        <p class="mb-1 text-muted"><strong class="text-dark">Kategori:</strong> {{ $order->customDesign->category ?? 'Custom Furniture' }}</p>
-                        <p class="mb-1 text-muted"><strong class="text-dark">Material Kayu:</strong> {{ $order->customDesign->wood_material ?? 'Kayu Jati Solid' }}</p>
-                        <p class="mb-1 text-muted"><strong class="text-dark">Ukuran Presisi:</strong> {{ $order->customDesign->length_cm ?? 0 }} cm (P) x {{ $order->customDesign->width_cm ?? 0 }} cm (L) x {{ $order->customDesign->height_cm ?? 0 }} cm (T)</p>
-                        <p class="mb-1 text-muted"><strong class="text-dark">Warna Finishing:</strong> {{ $order->customDesign->color_name ?? '-' }} ({{ $order->customDesign->color_hex ?? '-' }})</p>
-                    @endif
-
-                    @if($order->customer_notes)
-                        <p class="mb-0 text-muted mt-2"><strong class="text-dark">Catatan Pelanggan:</strong> <em>{{ $order->customer_notes }}</em></p>
+                    {{-- CATATAN TAMBAHAN --}}
+                    @if(!empty($order->customer_notes) || !empty($order->notes))
+                        <div class="mt-3 p-2 rounded bg-light border">
+                            <strong class="text-dark small d-block"><i class="fa-solid fa-note-sticky me-1"></i> Catatan Khusus:</strong>
+                            <span class="text-muted small"><em>"{{ $order->customer_notes ?? $order->notes }}"</em></span>
+                        </div>
                     @endif
                 </div>
-                <div class="col-md-4 text-md-end">
+
+                <div class="col-md-4 text-md-end border-start-md">
                     <span class="text-muted small d-block">Total Nilai Pesanan:</span>
+<<<<<<< Updated upstream
                     <h5 class="fw-bold text-dark mb-2">Rp {{ number_format($order->total_price, 0, ',', '.') }}</h5>
                     <span class="text-muted small d-block">Wajib DP (50%):</span>
                     <h6 class="fw-bold text-success mb-2">Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</h6>
                     <span class="text-muted small d-block">Status Pembayaran:</span>
                     <span class="badge bg-secondary px-3 py-1.5 rounded-pill">{{ $order->payment_status }}</span>
+=======
+                    <h4 class="fw-bold text-dark mb-3">Rp {{ number_format($order->total_price, 0, ',', '.') }}</h4>
+
+                    <span class="text-muted small d-block">Status Pembayaran:</span>
+                    @if($order->payment_status == 'paid' || $order->payment_status == 'Lunas')
+                        <span class="badge bg-success px-3 py-2 rounded-pill fs-6"><i class="fa-solid fa-circle-check me-1"></i> Lunas</span>
+                    @elseif($order->payment_status == 'pending_verification')
+                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fs-6"><i class="fa-solid fa-clock me-1"></i> Verifikasi Pelunasan</span>
+                    @else
+                        <span class="badge bg-secondary px-3 py-2 rounded-pill fs-6"><i class="fa-solid fa-hourglass-half me-1"></i> Belum Lunas</span>
+                    @endif
+>>>>>>> Stashed changes
                 </div>
             </div>
         </div>
 
-        <!-- 2. TIMELINE 8 TAHAPAN OTOMATIS -->
+        <!-- 2. TIMELINE PROGRES PRODUKSI -->
         <div class="wireframe-card">
             <h5 class="fw-bold text-dark mb-4 text-uppercase tracking-wider" style="color: var(--primary-color);">
                 <i class="fa-solid fa-timeline me-2"></i>TIMELINE PROGRES PRODUKSI
@@ -260,6 +316,7 @@
                     ];
                 @endphp
 
+<<<<<<< Updated upstream
                 @foreach($order->progresses as $prog)
                     @php
                         $isActive = $prog->status === 'Sedang Berjalan';
@@ -289,20 +346,56 @@
                                 <i class="fa-regular fa-circle text-muted"></i>
                                 <span class="text-muted">Pending</span>
                             @endif
+=======
+                @if($order->progresses && $order->progresses->count() > 0)
+                    @foreach($order->progresses as $prog)
+                        @php
+                            $isActive = $prog->status === 'Sedang Berjalan' || $prog->status === 'In Progress';
+                            $isDone = $prog->status === 'Selesai' || $prog->status === 'Completed';
+                            $imgUrl = null;
+
+                            if (!empty($prog->media_files) && is_array($prog->media_files) && count($prog->media_files) > 0) {
+                                $imgUrl = \Illuminate\Support\Facades\Storage::url($prog->media_files[0]);
+                            } elseif ($isDone || $isActive) {
+                                $imgUrl = $defaultImages[$prog->step_number] ?? $defaultImages[1];
+                            }
+                        @endphp
+
+                        <div class="timeline-step-card {{ $isActive ? 'active-step' : '' }}" 
+                             onclick="bukaModalTimeline('{{ $prog->stage_name }}', '{{ $prog->completed_at ? \Carbon\Carbon::parse($prog->completed_at)->format('d M Y') : ($isActive ? 'Sedang Berjalan' : 'Pending') }}', '{{ $prog->status }}', '{{ addslashes($prog->notes ?? 'Belum ada catatan progres.') }}', '{{ $imgUrl }}')">
+                            
+                            <div class="upload-date-label">
+                                @if($isDone)
+                                    <i class="fa-solid fa-circle-check text-success"></i>
+                                    <span class="text-success">{{ $prog->completed_at ? \Carbon\Carbon::parse($prog->completed_at)->format('d M') : 'Selesai' }}</span>
+                                @elseif($isActive)
+                                    <i class="fa-solid fa-spinner fa-spin text-warning"></i>
+                                    <span class="text-warning">Proses</span>
+                                @else
+                                    <i class="fa-regular fa-circle text-muted"></i>
+                                    <span class="text-muted">Pending</span>
+                                @endif
+                            </div>
+
+                            <div class="step-img-box">
+                                @if($imgUrl)
+                                    <img src="{{ $imgUrl }}" alt="{{ $prog->stage_name }}">
+                                @else
+                                    <span class="text-muted small text-center px-1"><i class="fa-solid fa-image fa-lg d-block mb-1" style="color: var(--primary-color);"></i>Foto Progres</span>
+                                @endif
+                            </div>
+
+                            <div class="step-title-label">{{ $prog->stage_name }}</div>
+>>>>>>> Stashed changes
                         </div>
-                        <div class="step-img-box">
-                            @if($imgUrl)
-                                <img src="{{ $imgUrl }}" alt="{{ $prog->stage_name }}">
-                            @else
-                                <span class="text-muted small text-center px-1"><i class="fa-solid fa-image fa-lg d-block mb-1" style="color: var(--primary-color);"></i>Foto Progres</span>
-                            @endif
-                        </div>
-                        <div class="step-title-label">{{ $prog->stage_name }}</div>
-                    </div>
-                @endforeach
+                    @endforeach
+                @else
+                    <p class="text-muted small mb-0 py-3 text-center">Belum ada tahapan progres yang dimasukkan oleh admin/pengrajin.</p>
+                @endif
             </div>
         </div>
 
+<<<<<<< Updated upstream
         <!-- 3. BOTTOM ACTION BOX (PEMBAYARAN DP / PELUNASAN / KONFIRMASI SELESAI) -->
         <div class="row g-3">
             <!-- BOX KIRI: STATUS PEMBAYARAN & SISA PELUNASAN -->
@@ -330,6 +423,19 @@
                         <h4 class="fw-bold text-dark mb-1">Sisa Pelunasan: <span style="color: var(--accent-gold);">Rp {{ number_format($order->remaining_payment, 0, ',', '.') }}</span></h4>
                         <p class="text-muted small mb-3">Lakukan pelunasan sebelum pesanan dikirimkan ke alamat Anda.</p>
                         <button class="btn btn-orange-outline" onclick="bukaModalPelunasan()">
+=======
+        <!-- 3. TOMBOL PELUNASAN & PESANAN SELESAI -->
+        <div class="row g-3">
+            <!-- BOX KIRI: PELUNASAN -->
+            <div class="col-lg-7">
+                <div class="wireframe-card d-flex flex-column align-items-center justify-content-center py-4 mb-0 h-100 text-center">
+                    @if(($order->remaining_payment ?? 0) > 0)
+                        <h4 class="fw-bold text-dark mb-3">
+                            Sisa Pelunasan: <span style="color: var(--accent-gold, #d97706);">Rp {{ number_format($order->remaining_payment, 0, ',', '.') }}</span>
+                        </h4>
+                        <!-- MENGIRIM NOMINAL SECARA PASTI KE FUNGSI JAVASCRIPT -->
+                        <button type="button" class="btn btn-orange-outline" onclick="bukaModalPelunasan({{ $order->remaining_payment }})">
+>>>>>>> Stashed changes
                             <i class="fa-solid fa-credit-card me-1"></i> Bayar Sisa Pelunasan
                         </button>
                     @else
@@ -339,7 +445,11 @@
                 </div>
             </div>
 
+<<<<<<< Updated upstream
             <!-- BOX KANAN: STATUS & KONFIRMASI PENERIMAAN MEBEL -->
+=======
+            <!-- BOX KANAN: KONFIRMASI DITERIMA -->
+>>>>>>> Stashed changes
             <div class="col-lg-5">
                 <div class="wireframe-card d-flex flex-column align-items-center justify-content-center p-4 mb-0 h-100 text-center">
                     @php
@@ -410,6 +520,7 @@
                             </button>
                         </div>
                     @else
+<<<<<<< Updated upstream
                         <div class="py-2 w-100">
                             <i class="fa-solid fa-truck-ramp-box text-success fa-3x mb-2"></i>
                             <h5 class="fw-bold text-dark mb-1">Mebel Dalam Pengiriman</h5>
@@ -418,6 +529,11 @@
                                 <i class="fa-solid fa-box-open me-2"></i> Konfirmasi Pesanan Diterima
                             </button>
                         </div>
+=======
+                        <button type="button" class="btn btn-action-dark w-100 py-3 fs-5 shadow-sm" onclick="bukaModalSelesai()">
+                            <i class="fa-solid fa-box-check me-2"></i> Konfirmasi Pesanan Selesai
+                        </button>
+>>>>>>> Stashed changes
                     @endif
                 </div>
             </div>
@@ -427,14 +543,14 @@
 </div>
 
 @if($order)
-    <!-- MODAL DETAIL FOTO / CATATAN TIMELINE -->
+    <!-- MODAL DETAIL TIMELINE -->
     <div class="modal fade" id="modalTimelineDetail" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 p-4 shadow-lg border-0" style="background-color: var(--light-card);">
+            <div class="modal-content rounded-4 p-4 shadow-lg border-0" style="background-color: var(--light-card, #fff);">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
                         <h5 class="fw-bold text-dark mb-0" id="modalTimelineTitle">Detail Progress</h5>
-                        <p class="text-muted small mb-0">Status: <span id="modalTimelineStatus" class="fw-bold"></span></p>
+                        <p class="text-muted small mb-0">Status: <span id="modalTimelineStatus" class="fw-bold text-primary"></span></p>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -443,7 +559,7 @@
                     <img id="modalTimelineImg" src="" alt="Pratinjau Foto" class="w-100 h-auto" style="object-fit: cover; max-height: 280px;">
                 </div>
 
-                <div class="p-3 rounded-3 mb-3" style="background-color: var(--wood-bg); border: 1px solid var(--wood-border);">
+                <div class="p-3 rounded-3 mb-3" style="background-color: var(--wood-bg, #f3f4f6); border: 1px solid var(--wood-border, #e5e7eb);">
                     <span class="small text-muted fw-bold d-block mb-1">Catatan Pengrajin/Admin:</span>
                     <p class="small text-dark mb-0" id="modalTimelineNotes">-</p>
                 </div>
@@ -455,11 +571,19 @@
         </div>
     </div>
 
+<<<<<<< Updated upstream
     <!-- MODAL UPLOAD BUKTI TRANSFER DP -->
     <div class="modal fade" id="modalUploadDP" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 p-4 text-center border-0 shadow-lg" style="background-color: var(--light-card);">
                 <form action="{{ route('customer.progress.upload_dp', $order->id) }}" method="POST" enctype="multipart/form-data">
+=======
+    <!-- MODAL PELUNASAN -->
+    <div class="modal fade" id="modalPelunasan" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 p-4 text-center border-0 shadow-lg" style="background-color: var(--light-card, #fff);">
+                <form action="{{ route('customer.progress.pay_remaining', $order->id) }}" method="POST">
+>>>>>>> Stashed changes
                     @csrf
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-money-bill-transfer text-success me-2"></i>Pembayaran Uang Muka (DP)</h5>
@@ -467,6 +591,7 @@
                     </div>
                     <p class="text-muted small mb-3 text-start">Silakan lakukan transfer uang muka 50% untuk pesanan <strong>#{{ $order->order_number }}</strong>.</p>
 
+<<<<<<< Updated upstream
                     <div class="p-3 border rounded-3 mb-3 bg-white text-start">
                         <div class="d-flex justify-content-between mb-1">
                             <span class="small text-muted">Total Tagihan:</span>
@@ -488,10 +613,31 @@
                         <label class="form-label fw-bold small text-dark">Unggah Foto Bukti Transfer DP <span class="text-danger">*</span></label>
                         <input type="file" name="dp_receipt_proof" class="form-control rounded-3" accept="image/jpeg,image/png,image/jpg" required>
                         <div class="form-text small">Format gambar JPG/PNG, ukuran berkas maksimal 3 MB.</div>
+=======
+                    <!-- ELEMENT TARGET HARGA PELUNASAN -->
+                    <p class="fw-bold fs-3 mb-3" style="color: var(--accent-gold, #d97706);" id="modal_pay_dp_amount">Rp 0</p>
+
+                    <div id="boxDANA" class="p-3 border rounded-4 mb-3 bg-white shadow-sm" style="border-color: var(--light-border, #e5e7eb) !important;">
+                        <div class="mb-2">
+                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill fw-bold mb-2">DANA Instant Pay</span>
+                            <p class="mb-1 small text-muted">Nomor DANA Usaha:</p>
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                <h5 class="fw-bold text-dark mb-0" id="noDana">087872859262</h5>
+                                <button type="button" class="btn btn-sm btn-light border" onclick="copyDanaNumber()">📋 Salin</button>
+                            </div>
+                            <small class="text-muted d-block mt-1">a.n. <strong>Mebel Assalam</strong></small>
+                        </div>
+                        <hr class="my-2">
+                        <div class="p-2 rounded-3 mb-2 mx-auto d-flex align-items-center justify-content-center" style="width: 170px; height: 170px;">
+                            <img src="{{ asset('images/dana.jpeg') }}" alt="QRIS DANA Mebel Assalam" class="img-fluid rounded-3">
+                        </div>
+                        <span class="small text-muted d-block">Atau scan QRIS DANA di atas menggunakan aplikasi DANA / M-Banking Anda.</span>
+>>>>>>> Stashed changes
                     </div>
 
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-outline-secondary w-50 py-2 rounded-3 fw-bold" data-bs-dismiss="modal">Batal</button>
+<<<<<<< Updated upstream
                         <button type="submit" class="btn fw-bold w-50 py-2 rounded-3 text-white" style="background-color: var(--primary-color);">
                             <i class="fa-solid fa-upload me-1"></i> Kirim Bukti DP
                         </button>
@@ -544,6 +690,9 @@
                         <button type="submit" class="btn fw-bold w-50 py-2 rounded-3 text-white" style="background-color: var(--primary-color);">
                             <i class="fa-solid fa-upload me-1"></i> Kirim Bukti Pelunasan
                         </button>
+=======
+                        <button type="submit" class="btn fw-bold w-50 py-2 rounded-3 text-white" style="background-color: var(--primary-color, #2563eb);">Konfirmasi Pelunasan</button>
+>>>>>>> Stashed changes
                     </div>
                 </form>
             </div>
@@ -553,7 +702,7 @@
     <!-- MODAL KONFIRMASI SELESAI -->
     <div class="modal fade" id="modalSelesai" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 p-4 text-center border-0 shadow-lg" style="background-color: var(--light-card);">
+            <div class="modal-content rounded-4 p-4 text-center border-0 shadow-lg" style="background-color: var(--light-card, #fff);">
                 <form action="{{ route('customer.progress.confirm_completed', $order->id) }}" method="POST">
                     @csrf
                     <div class="mb-3">
@@ -573,16 +722,19 @@
 @endif
 
 <script>
+    // Membuka Modal Detail Progres
     function bukaModalTimeline(title, date, status, notes, imgUrl) {
         document.getElementById('modalTimelineTitle').innerText = title;
         document.getElementById('modalTimelineStatus').innerText = status + " (" + date + ")";
         document.getElementById('modalTimelineNotes').innerText = notes;
         document.getElementById('modalTimelineImg').src = imgUrl || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop';
         
-        let modal = new bootstrap.Modal(document.getElementById('modalTimelineDetail'));
+        let modalEl = document.getElementById('modalTimelineDetail');
+        let modal = bootstrap.Modal.getOrCreateInstance(modalEl);
         modal.show();
     }
 
+<<<<<<< Updated upstream
     function bukaModalUploadDP() {
         let modal = new bootstrap.Modal(document.getElementById('modalUploadDP'));
         modal.show();
@@ -590,12 +742,38 @@
 
     function bukaModalPelunasan() {
         let modal = new bootstrap.Modal(document.getElementById('modalPelunasan'));
+=======
+    // Membuka Modal Pelunasan dan Mengisi Nominal Rupiah secara Dinamis
+    function bukaModalPelunasan(amount) {
+        if (amount !== undefined && amount !== null) {
+            let formattedAmount = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                maximumFractionDigits: 0
+            }).format(amount);
+
+            document.getElementById('modal_pay_dp_amount').innerText = formattedAmount;
+        }
+
+        let modalEl = document.getElementById('modalPelunasan');
+        let modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+>>>>>>> Stashed changes
         modal.show();
     }
 
+    // Membuka Modal Konfirmasi Selesai
     function bukaModalSelesai() {
-        let modal = new bootstrap.Modal(document.getElementById('modalSelesai'));
+        let modalEl = document.getElementById('modalSelesai');
+        let modal = bootstrap.Modal.getOrCreateInstance(modalEl);
         modal.show();
+    }
+
+    // Salin Nomor DANA
+    function copyDanaNumber() {
+        let noDana = document.getElementById('noDana').innerText;
+        navigator.clipboard.writeText(noDana).then(() => {
+            alert('Nomor DANA berhasil disalin: ' + noDana);
+        });
     }
 </script>
 @endsection

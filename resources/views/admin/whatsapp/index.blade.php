@@ -382,7 +382,8 @@
                 <!-- Nav Tabs Modal: QR Code vs Pairing Code -->
                 <ul class="nav nav-pills nav-fill bg-light p-1 rounded-pill mb-4" id="pairingTypeTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active rounded-pill fw-bold small py-2" id="qr-sub-tab" data-bs-toggle="pill" data-bs-target="#sub-tab-qr" type="button" role="tab">
+                        <button class
+                        ="nav-link active rounded-pill fw-bold small py-2" id="qr-sub-tab" data-bs-toggle="pill" data-bs-target="#sub-tab-qr" type="button" role="tab">
                             <i class="fa-solid fa-qrcode me-1"></i> Scan QR Code
                         </button>
                     </li>

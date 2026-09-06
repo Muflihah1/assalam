@@ -211,8 +211,13 @@
                                 <i class="fa-solid fa-circle-info"></i>
                             </button>
                         </div>
+<<<<<<< Updated upstream
                         <a href="{{ route('customer.design', ['product_id' => $item->id]) }}" class="btn btn-outline-dark-theme text-decoration-none text-center">
                             <i class="fa-solid fa-pen-ruler me-1"></i> Kustomisasi Model Ini
+=======
+                        <a href="{{ route('customer.design') }}" class="btn btn-outline-dark-theme text-decoration-none text-center">
+                            <i class="fa-solid fa-pen-ruler me-1"></i> Kostumisasi Model Ini 
+>>>>>>> Stashed changes
                         </a>
                     </div>
                 </div>

@@ -148,11 +148,6 @@
                                 <option value="Tidak Terhubung" {{ (isset($settings['wa_status']) && $settings['wa_status'] == 'Tidak Terhubung') ? 'selected' : '' }}>Tidak Terhubung</option>
                             </select>
                         </div>
-                        <div class="col-12">
-                            <label class="form-label small fw-bold">Template Pesan Pembaruan Progres:</label>
-                            <textarea name="wa_template" class="form-control rounded-3" rows="4">{{ $settings['wa_template'] ?? 'Halo *{nama}*, pembaruan untuk pesanan mebel custom Anda (*{produk}* - #{no_pesanan}) saat ini telah memasuki tahap: *{tahap}*. Silakan cek foto progres di aplikasi Assalam Mebel. Terima kasih!' }}</textarea>
-                            <small class="text-muted" style="font-size: 0.75rem;">Variabel otomatis yang didukung: {nama}, {produk}, {no_pesanan}, {tahap}</small>
-                        </div>
                     </div>
                     <button type="submit" class="btn btn-dark rounded-3 px-4" style="background-color: var(--primary-color); border: none;">
                         <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Konfigurasi WhatsApp
@@ -184,7 +179,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($shippingCosts as $index => $item)
+                            @forelse($shippingCosts ?? [] as $index => $item)
                             <tr>
                                 <td class="fw-bold">{{ $index + 1 }}</td>
                                 <td class="text-start ps-4 fw-semibold text-dark">{{ $item->kecamatan }}</td>
@@ -248,43 +243,45 @@
 </div>
 
 <!-- Modal Ubah Wilayah -->
-@foreach($shippingCosts as $item)
-<div class="modal fade" id="editShippingModal{{ $item->id }}" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form action="{{ route('admin.pengaturan.shipping.update', $item->id) }}" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="modal-content rounded-4 shadow-lg border-0">
-                <div class="modal-header text-white rounded-top-4" style="background-color: var(--primary-color);">
-                    <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-pen-to-square me-1"></i> Ubah Tarif Wilayah</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Wilayah Kecamatan / Kota:</label>
-                        <input type="text" name="kecamatan" class="form-control rounded-3" value="{{ $item->kecamatan }}" required>
+@if(isset($shippingCosts))
+    @foreach($shippingCosts as $item)
+    <div class="modal fade" id="editShippingModal{{ $item->id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form action="{{ route('admin.pengaturan.shipping.update', $item->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-content rounded-4 shadow-lg border-0">
+                    <div class="modal-header text-white rounded-top-4" style="background-color: var(--primary-color);">
+                        <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-pen-to-square me-1"></i> Ubah Tarif Wilayah</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Tarif Ongkos Kirim (Rp):</label>
-                        <input type="number" name="biaya" class="form-control rounded-3" value="{{ $item->biaya }}" required>
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Wilayah Kecamatan / Kota:</label>
+                            <input type="text" name="kecamatan" class="form-control rounded-3" value="{{ $item->kecamatan }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Tarif Ongkos Kirim (Rp):</label>
+                            <input type="number" name="biaya" class="form-control rounded-3" value="{{ $item->biaya }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Status Layanan:</label>
+                            <select name="status" class="form-select rounded-3">
+                                <option value="Aktif" {{ $item->status == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                <option value="Non-Aktif" {{ $item->status == 'Non-Aktif' ? 'selected' : '' }}>Non-Aktif</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Status Layanan:</label>
-                        <select name="status" class="form-select rounded-3">
-                            <option value="Aktif" {{ $item->status == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-                            <option value="Non-Aktif" {{ $item->status == 'Non-Aktif' ? 'selected' : '' }}>Non-Aktif</option>
-                        </select>
+                    <div class="modal-footer bg-light rounded-bottom-4">
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 px-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-dark btn-sm rounded-3 px-4" style="background-color: var(--primary-color); border: none;">Perbarui Tarif</button>
                     </div>
                 </div>
-                <div class="modal-footer bg-light rounded-bottom-4">
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 px-3" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-dark btn-sm rounded-3 px-4" style="background-color: var(--primary-color); border: none;">Perbarui Tarif</button>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
-@endforeach
+    @endforeach
+@endif
 
 <script>
     function togglePasswordVisibility(inputId, iconId) {
