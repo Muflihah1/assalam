@@ -49,6 +49,11 @@
                 <i class="fa-solid fa-truck me-1"></i> Tarif Ongkos Kirim
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pembayaran-tab" data-bs-toggle="pill" data-bs-target="#pembayaran" type="button" role="tab">
+                <i class="fa-solid fa-wallet me-1"></i> Metode Pembayaran (DANA)
+            </button>
+        </li>
     </ul>
 
     <div class="tab-content" id="settingTabContent">
@@ -232,6 +237,142 @@
             </div>
         </div>
 
+        <!-- 4. TAB PENGATURAN PAYMENT GATEWAY DANA -->
+        <div class="tab-pane fade" id="pembayaran" role="tabpanel">
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="admin-card h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0">
+                                    <i class="fa-solid fa-qrcode me-2" style="color: var(--primary-color);"></i> Konfigurasi Metode Pembayaran DANA
+                                </h6>
+                                <small class="text-muted">Satu-satunya gateway pembayaran resmi untuk pesanan mebel Assalam.</small>
+                            </div>
+                            @if(($settings['payment_dana_status'] ?? 'Aktif') === 'Aktif')
+                                <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-bold border border-success">
+                                    <i class="fa-solid fa-circle-check me-1"></i> DANA Aktif
+                                </span>
+                            @else
+                                <span class="badge bg-secondary-subtle text-secondary px-3 py-1.5 rounded-pill fw-bold border">
+                                    Nonaktif
+                                </span>
+                            @endif
+                        </div>
+
+                        <form action="{{ route('admin.pengaturan.payment') }}" method="POST" enctype="multipart/form-data" id="danaPaymentForm">
+                            @csrf
+                            
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Status Layanan DANA:</label>
+                                    <select name="payment_dana_status" class="form-select rounded-3" required>
+                                        <option value="Aktif" {{ ($settings['payment_dana_status'] ?? 'Aktif') === 'Aktif' ? 'selected' : '' }}>Aktif (Dapat digunakan transaksi)</option>
+                                        <option value="Nonaktif" {{ ($settings['payment_dana_status'] ?? '') === 'Nonaktif' ? 'selected' : '' }}>Nonaktif (Tutup sementara)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Nomor Akun / Telepon DANA:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-mobile-screen-button"></i></span>
+                                        <input type="text" name="payment_dana_number" class="form-control rounded-end-3" value="{{ old('payment_dana_number', $settings['payment_dana_number'] ?? '085234567890') }}" placeholder="Contoh: 085234567890" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Nama Pemilik Akun DANA (Atas Nama):</label>
+                                <input type="text" name="payment_dana_name" class="form-control rounded-3" value="{{ old('payment_dana_name', $settings['payment_dana_name'] ?? 'Assalam Mebel Official') }}" placeholder="Contoh: Assalam Mebel Official / Pemilik" required>
+                            </div>
+
+                            <!-- UPLOAD FOTO QR CODE DANA -->
+                            <div class="mb-3 p-3 bg-light rounded-3 border">
+                                <label class="form-label text-dark small fw-bold mb-1">
+                                    <i class="fa-solid fa-image text-warning me-1"></i> Foto / Gambar QR Code DANA Toko:
+                                </label>
+                                <p class="text-muted small mb-2" style="font-size: 0.75rem;">
+                                    Unggah foto tangkapan layar (screenshot) QR Code DANA resmi toko Anda. Foto ini akan otomatis ditampilkan kepada pelanggan saat membayar DP maupun sisa pelunasan.
+                                </p>
+
+                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                    <div class="p-1 bg-white rounded-3 border text-center shadow-sm" style="width: 130px;">
+                                        @php
+                                            $danaQrDisplay = \App\Models\Setting::getDanaQrUrl();
+                                        @endphp
+                                        <img id="danaQrPreviewImg" src="{{ $danaQrDisplay }}" alt="QR Code DANA" class="img-fluid rounded" style="max-height: 120px; object-fit: contain;">
+                                    </div>
+
+                                    <div class="d-flex flex-column gap-2">
+                                        <div class="d-flex gap-2">
+                                            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-semibold" onclick="document.getElementById('danaQrFileInput').click()">
+                                                <i class="fa-solid fa-upload me-1 text-warning"></i> Unggah QR Baru
+                                            </button>
+                                            @if(!empty($settings['payment_dana_qr']))
+                                                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="hapusQrDana()">
+                                                    <i class="fa-solid fa-trash-can me-1"></i> Reset ke Default
+                                                </button>
+                                            @endif
+                                        </div>
+                                        <small class="text-muted" style="font-size: 0.72rem;">Format gambar: JPG, PNG, WEBP, SVG (Maks. 5MB)</small>
+                                    </div>
+                                </div>
+
+                                <input type="file" name="payment_dana_qr" id="danaQrFileInput" class="d-none" accept="image/jpeg,image/png,image/webp,image/svg+xml,image/jpg" onchange="previewDanaQr(this)">
+                                <input type="hidden" name="remove_dana_qr" id="removeDanaQrInput" value="0">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label text-muted small fw-bold">Instruksi / Catatan Pembayaran untuk Pelanggan:</label>
+                                <textarea name="payment_dana_instructions" class="form-control rounded-3" rows="3" placeholder="Instruksi transfer ke pelanggan...">{{ old('payment_dana_instructions', $settings['payment_dana_instructions'] ?? 'Buka aplikasi DANA > Tekan Pindai / Pay > Scan QR Code di atas atau transfer manual ke nomor DANA toko. Masukkan nominal sesuai tagihan DP / Pelunasan.') }}</textarea>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-dark rounded-3 px-4 py-2 fw-bold" style="background-color: var(--primary-color); border: none;">
+                                    <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Pengaturan Pembayaran DANA
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- PREVIEW TAMPILAN SISI PELANGGAN -->
+                <div class="col-lg-5">
+                    <div class="admin-card h-100 bg-white">
+                        <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">
+                            <i class="fa-solid fa-eye me-2" style="color: var(--accent-gold);"></i> Preview Tampilan Pelanggan
+                        </h6>
+                        <div class="p-3.5 rounded-4 border text-center shadow-sm" style="background: linear-gradient(135deg, #fdfbf7 0%, #faf5ef 100%); border-color: var(--wood-border) !important;">
+                            <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                                <span class="badge px-3 py-1 rounded-pill fw-bold text-white shadow-sm" style="background-color: #118eea;">
+                                    <i class="fa-solid fa-wallet me-1"></i> METODE RESMI DANA
+                                </span>
+                            </div>
+                            
+                            <h6 class="fw-bold text-dark mb-1">{{ $settings['payment_dana_name'] ?? 'Assalam Mebel Official' }}</h6>
+                            <p class="text-muted small mb-3">Scan QR Code DANA di bawah ini untuk verifikasi instan:</p>
+
+                            <div class="p-2.5 bg-white rounded-3 border d-inline-block shadow-sm mb-3">
+                                <img id="danaPreviewMirror" src="{{ $danaQrDisplay }}" alt="QR Code Preview" style="width: 170px; height: 170px; object-fit: contain;">
+                            </div>
+
+                            <div class="p-2.5 bg-white rounded-3 border mb-3 text-start">
+                                <span class="text-muted d-block" style="font-size: 0.72rem;">Nomor Akun DANA Toko:</span>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <strong class="text-dark fs-6 font-monospace" id="danaNumberMirror">{{ $settings['payment_dana_number'] ?? '085234567890' }}</strong>
+                                    <span class="badge bg-light text-primary border">1-Klik Salin</span>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info py-2 px-3 mb-0 text-start small border-0" style="font-size: 0.75rem; border-radius: 10px;">
+                                <i class="fa-solid fa-shield-halved me-1 text-primary"></i>
+                                Transaksi aman & tercatat. Setelah transfer, pembeli mengunggah screenshot bukti pembayaran untuk diverifikasi oleh admin.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -361,6 +502,37 @@
             const photoInput = document.getElementById('adminPhotoInput');
             if (photoInput) photoInput.value = '';
             document.getElementById('adminProfileForm').submit();
+        }
+    }
+
+    function previewDanaQr(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Ukuran berkas QR Code terlalu besar! Maksimal 5MB.');
+                input.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('danaQrPreviewImg');
+                const mirror = document.getElementById('danaPreviewMirror');
+                if (img) img.src = e.target.result;
+                if (mirror) mirror.src = e.target.result;
+                const removeInput = document.getElementById('removeDanaQrInput');
+                if (removeInput) removeInput.value = '0';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function hapusQrDana() {
+        if (confirm('Kembalikan foto QR Code DANA ke template resmi default?')) {
+            const removeInput = document.getElementById('removeDanaQrInput');
+            if (removeInput) removeInput.value = '1';
+            const fileInput = document.getElementById('danaQrFileInput');
+            if (fileInput) fileInput.value = '';
+            document.getElementById('danaPaymentForm').submit();
         }
     }
 </script>

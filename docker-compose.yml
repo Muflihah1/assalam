@@ -45,7 +45,13 @@ services:
       DB_USERNAME: ${DB_USERNAME:-assalam_user}
       DB_PASSWORD: ${DB_PASSWORD:-password}
       SERVER_HOST: "0.0.0.0"
-      WHATSAPP_WEB_HOST: "0.0.0.0"
+      WHATSAPP_WEB_ENABLED: "true"
+      WHATSAPP_WEB_HOST: "127.0.0.1"
+      WHATSAPP_WEB_PORT: 3000
+      BIND_HOST: "0.0.0.0"
+      PORT: "3000"
+      SESSION_DIR: "/var/www/html/storage/app/whatsapp-sidecar/sessions"
+      WHATSAPP_WEB_SESSION_DIR: "/var/www/html/storage/app/whatsapp-sidecar/sessions"
       WHATSAPP_WEB_CHROME_PATH: "/usr/bin/chromium"
       PUPPETEER_EXECUTABLE_PATH: "/usr/bin/chromium"
     volumes:

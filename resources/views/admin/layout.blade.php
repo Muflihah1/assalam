@@ -41,7 +41,10 @@
 
         .admin-sidebar { 
             width: var(--sidebar-width); 
-            min-height: 100vh; 
+            height: 100vh;
+            max-height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
             background: #ffffff; 
             border-right: 1.5px solid var(--light-border); 
             position: fixed; 
@@ -49,6 +52,9 @@
             z-index: 1050; 
             box-shadow: 4px 0 20px rgba(93, 64, 55, 0.03);
             transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .main-content { 
@@ -72,7 +78,7 @@
             line-height: 1.2;
         }
 
-        .nav-link { 
+        .admin-sidebar .nav-link { 
             color: var(--text-dark); 
             font-weight: 600; 
             padding: 13px 20px; 
@@ -84,31 +90,31 @@
             transition: all 0.2s ease;
         }
 
-        .nav-link i {
+        .admin-sidebar .nav-link i {
             width: 20px;
             text-align: center;
             color: var(--text-muted);
             transition: color 0.2s;
         }
 
-        .nav-link:hover { 
+        .admin-sidebar .nav-link:hover { 
             background: rgba(93, 64, 55, 0.08); 
             color: var(--primary-color);
             transform: translateX(4px);
         }
 
-        .nav-link:hover i {
+        .admin-sidebar .nav-link:hover i {
             color: var(--primary-color);
         }
 
-        .nav-link.active { 
+        .admin-sidebar .nav-link.active { 
             background: var(--primary-color); 
             color: #ffffff !important;
             font-weight: 700;
             box-shadow: 0 4px 12px rgba(93, 64, 55, 0.25);
         }
 
-        .nav-link.active i {
+        .admin-sidebar .nav-link.active i {
             color: #ffffff;
         }
 
@@ -226,56 +232,82 @@
 
     <!-- SIDEBAR ADMIN -->
     <div class="admin-sidebar" id="adminSidebar">
-        <div class="brand-box d-flex align-items-center justify-content-between">
-            <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center gap-2 text-decoration-none">
-                <img src="{{ asset('logo.png') }}" alt="Assalam Mebel Admin" style="max-height: 44px; width: auto; object-fit: contain;">
-            </a>
-            <button class="btn btn-sm btn-light border d-lg-none" id="closeAdminSidebar">
-                <i class="fa-solid fa-xmark"></i>
+        <div>
+            <div class="brand-box d-flex align-items-center justify-content-between">
+                <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center gap-2 text-decoration-none">
+                    <img src="{{ asset('logo.png') }}" alt="Assalam Mebel Admin" style="max-height: 44px; width: auto; object-fit: contain;">
+                </a>
+                <button class="btn btn-sm btn-light border d-lg-none" id="closeAdminSidebar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            @php
+                $sidebarPendingCount = \App\Models\Order::where('order_status', 'Menunggu Konfirmasi')
+                    ->orWhere('payment_status', 'Menunggu Verifikasi DP')
+                    ->count();
+            @endphp
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item">
+                    <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                        <i class="fa-solid fa-gauge-high"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.pesanan.masuk') }}" class="nav-link {{ request()->routeIs('admin.pesanan.masuk*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-cart-arrow-down"></i>
+                        <span>Pesanan Masuk</span>
+                        @if($sidebarPendingCount > 0)
+                            <span class="badge bg-danger rounded-pill ms-auto px-2 py-0.5" style="font-size: 0.72rem;">{{ $sidebarPendingCount }}</span>
+                        @endif
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.katalog') }}" class="nav-link {{ request()->routeIs('admin.katalog*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-box-open"></i> Katalog Produk
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.progres.produksi') }}" class="nav-link {{ request()->routeIs('admin.progres.produksi*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-gears"></i> Progres Produksi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.data.pelanggan') }}" class="nav-link {{ request()->routeIs('admin.data.pelanggan*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-users"></i> Akun Pelanggan
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.riwayat') }}" class="nav-link {{ request()->routeIs('admin.riwayat*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Pesanan
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.whatsapp.index') }}" class="nav-link {{ request()->routeIs('admin.whatsapp*') ? 'active' : '' }}">
+                        <i class="fa-brands fa-whatsapp text-success"></i> WhatsApp Gateway
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.pengaturan') }}" class="nav-link {{ request()->routeIs('admin.pengaturan*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-sliders"></i> Pengaturan
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- FOOTER SIDEBAR ADMIN: PROFIL & LOGOUT -->
+        <div class="p-3 border-top mt-auto" style="border-color: var(--light-border) !important; background-color: var(--light-bg);">
+            <div class="d-flex align-items-center gap-2 mb-2.5 overflow-hidden">
+                <img src="{{ Auth::user()->profile_photo_url }}" alt="Admin" class="rounded-circle border" style="width: 36px; height: 36px; object-fit: cover; border-color: var(--primary-color) !important;">
+                <div class="text-truncate">
+                    <span class="d-block fw-bold small text-dark text-truncate">{{ Auth::user()->name }}</span>
+                    <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.68rem;">Administrator</span>
+                </div>
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm w-100 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 py-1.5 shadow-2xs" data-bs-toggle="modal" data-bs-target="#modalKonfirmasiLogout">
+                <i class="fa-solid fa-power-off"></i>
+                <span>Keluar / Logout</span>
             </button>
         </div>
-        <ul class="nav flex-column mt-3">
-            <li class="nav-item">
-                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="fa-solid fa-gauge-high"></i> Dashboard
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.katalog') }}" class="nav-link {{ request()->routeIs('admin.katalog*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-box-open"></i> Katalog Produk
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.pesanan.masuk') }}" class="nav-link {{ request()->routeIs('admin.pesanan.masuk*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-cart-arrow-down"></i> Pesanan Masuk
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.progres.produksi') }}" class="nav-link {{ request()->routeIs('admin.progres.produksi*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-gears"></i> Progres Produksi
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.data.pelanggan') }}" class="nav-link {{ request()->routeIs('admin.data.pelanggan*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-users"></i> Akun Pelanggan
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.riwayat') }}" class="nav-link {{ request()->routeIs('admin.riwayat*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Pesanan
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.whatsapp.index') }}" class="nav-link {{ request()->routeIs('admin.whatsapp*') ? 'active' : '' }}">
-                    <i class="fa-brands fa-whatsapp text-success"></i> WhatsApp Gateway
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.pengaturan') }}" class="nav-link {{ request()->routeIs('admin.pengaturan*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-sliders"></i> Pengaturan
-                </a>
-            </li>
-        </ul>
     </div>
 
     <!-- MAIN CONTENT -->
@@ -294,18 +326,23 @@
             </div>
 
             <div class="d-flex align-items-center gap-3">
+                <!-- Tombol Pintas Lihat Toko Pelanggan -->
+                <a href="{{ route('customer.beranda') }}" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1.5 fw-semibold d-none d-md-flex align-items-center gap-1.5" style="border-color: var(--light-border);">
+                    <i class="fa-solid fa-store text-warning"></i>
+                    <span>Buka Toko</span>
+                </a>
+
                 <!-- Ikon Profil Admin -->
                 <div class="d-flex align-items-center gap-2 interactive-icon" data-bs-toggle="modal" data-bs-target="#modalProfilAdmin" title="Lihat Profil Admin">
                     <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name ?? 'Admin' }}" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover; border-color: var(--primary-color) !important;">
                     <span class="fw-bold small d-none d-md-inline" style="color: var(--text-dark);">{{ Auth::user()->name ?? 'Administrator' }}</span>
                 </div>
 
-                <!-- Ikon Logout -->
-                <div class="interactive-icon text-danger" data-bs-toggle="modal" data-bs-target="#modalKonfirmasiLogout" title="Keluar Sistem">
-                    <div class="bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
-                        <i class="fa-solid fa-power-off fs-6"></i>
-                    </div>
-                </div>
+                <!-- Tombol Logout Topbar -->
+                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-bold d-flex align-items-center gap-1.5 shadow-2xs" data-bs-toggle="modal" data-bs-target="#modalKonfirmasiLogout" title="Keluar dari Akun Admin">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span class="d-none d-sm-inline">Keluar</span>
+                </button>
             </div>
         </div>
 

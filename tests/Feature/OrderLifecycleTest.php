@@ -29,7 +29,7 @@ class OrderLifecycleTest extends TestCase
         ]);
 
         $order = Order::create([
-            'order_number' => 'ORD-TEST-' . rand(1000, 9999),
+            'order_number' => 'ORD-TEST-' . uniqid() . '-' . rand(100, 999),
             'user_id' => $customer->id,
             'total_price' => 2000000,
             'dp_amount' => 1000000,

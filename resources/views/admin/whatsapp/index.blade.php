@@ -12,11 +12,19 @@
             </h4>
             <p class="text-muted small mb-0">Kelola koneksi live WhatsApp Web Sidecar, pairing QR/Code, template pesan otomatis, dan log pengiriman.</p>
         </div>
-        <div class="d-flex gap-2">
-            <button type="button" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalHubungkanWA" id="btnOpenConnectModal">
+        <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-success rounded-pill px-3 shadow-sm fw-bold d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalHubungkanWA" id="btnOpenConnectModal">
                 <i class="fa-solid fa-qrcode"></i>
-                <span id="btnConnectLabel">Hubungkan WhatsApp</span>
+                <span id="btnConnectLabel">{{ ($gatewayStatus['status'] ?? '') === 'ready' ? 'Tautkan Ulang / QR' : 'Hubungkan WhatsApp' }}</span>
             </button>
+            @if(($gatewayStatus['status'] ?? '') === 'ready')
+                <form action="{{ route('admin.whatsapp.disconnect') }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin memutuskan koneksi WhatsApp ini?')">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger rounded-pill px-3 shadow-sm fw-semibold d-flex align-items-center gap-1.5" title="Putuskan sesi WhatsApp">
+                        <i class="fa-solid fa-link-slash"></i> Putuskan
+                    </button>
+                </form>
+            @endif
             <button type="button" class="btn btn-outline-secondary rounded-pill px-3 shadow-sm fw-semibold d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalTestMessage">
                 <i class="fa-solid fa-paper-plane"></i> Test Kirim
             </button>
@@ -36,7 +44,15 @@
                     </span>
                 </div>
                 <h5 class="fw-bold text-dark mb-1" id="textGatewayNumber">{{ $gatewayStatus['phone_number'] ?? 'Belum Tertaut' }}</h5>
-                <span class="text-muted small"><i class="fa-solid fa-server text-primary me-1"></i> Sidecar: <code class="text-dark">127.0.0.1:3000</code></span>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span class="text-muted small"><i class="fa-solid fa-server text-primary me-1"></i> Sidecar: <code class="text-dark">127.0.0.1:3000</code></span>
+                    <form action="{{ route('admin.whatsapp.restart') }}" method="POST" class="d-inline" onsubmit="return confirm('Restart WhatsApp Sidecar service sekarang?')">
+                        @csrf
+                        <button type="submit" class="btn btn-xs btn-outline-secondary rounded-pill px-2 py-0" style="font-size: 0.72rem;" title="Restart service sidecar">
+                            <i class="fa-solid fa-rotate me-1"></i> Restart
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -640,6 +656,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (textGatewayStatus) {
                             textGatewayStatus.innerText = 'Menunggu Scan QR';
                         }
+                    } else if (data.status === 'initializing') {
+                        if (modalLiveStatusBadge) {
+                            modalLiveStatusBadge.className = 'badge bg-info-subtle text-dark border border-info px-3 py-1.5 rounded-pill small';
+                            modalLiveStatusBadge.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-primary me-1"></i> Menyiapkan Browser WhatsApp...';
+                        }
+                        if (badgeGatewayLive) {
+                            badgeGatewayLive.className = 'badge rounded-pill px-2.5 py-1 text-dark bg-info d-flex align-items-center gap-1.5 shadow-sm';
+                        }
+                        if (textGatewayStatus) {
+                            textGatewayStatus.innerText = 'Memulai Browser...';
+                        }
                     } else {
                         if (modalLiveStatusBadge) {
                             modalLiveStatusBadge.className = 'badge bg-light text-muted border px-3 py-1.5 rounded-pill small';
@@ -650,7 +677,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             badgeGatewayLive.className = 'badge rounded-pill px-2.5 py-1 text-white bg-secondary d-flex align-items-center gap-1.5 shadow-sm';
                         }
                         if (textGatewayStatus) {
-                            textGatewayStatus.innerText = 'Belum Terhubung';
+                            textGatewayStatus.innerText = data.sidecar_running ? 'Belum Terhubung' : 'Sidecar Offline';
                         }
                     }
                 })

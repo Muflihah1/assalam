@@ -15,7 +15,15 @@ class AccountController extends Controller
     public function index()
     {
         $user = Auth::user();
-        return view('customer.account', compact('user'));
+        $totalOrders = \App\Models\Order::where('user_id', $user->id)->count();
+        $activeOrders = \App\Models\Order::where('user_id', $user->id)
+            ->whereNotIn('order_status', ['Selesai', 'Ditolak', 'Dibatalkan'])
+            ->count();
+        $completedOrders = \App\Models\Order::where('user_id', $user->id)
+            ->where('order_status', 'Selesai')
+            ->count();
+
+        return view('customer.account', compact('user', 'totalOrders', 'activeOrders', 'completedOrders'));
     }
 
     /**

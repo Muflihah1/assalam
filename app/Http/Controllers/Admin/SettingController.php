@@ -117,4 +117,50 @@ class SettingController extends Controller
 
         return back()->with('success', 'Tarif ongkir berhasil diperbarui!');
     }
+
+    /**
+     * Update Pengaturan Payment Gateway DANA & Foto QR Code
+     */
+    public function updatePayment(Request $request)
+    {
+        $request->validate([
+            'payment_dana_status' => 'required|in:Aktif,Nonaktif,1,0',
+            'payment_dana_number' => 'required|string|max:50',
+            'payment_dana_name' => 'required|string|max:100',
+            'payment_dana_qr' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:5120',
+            'payment_dana_instructions' => 'nullable|string|max:1000',
+        ], [
+            'payment_dana_number.required' => 'Nomor akun DANA wajib diisi.',
+            'payment_dana_name.required' => 'Nama pemilik akun DANA wajib diisi.',
+            'payment_dana_qr.image' => 'Berkas QR Code harus berupa gambar (JPG, PNG, WEBP, SVG).',
+            'payment_dana_qr.max' => 'Ukuran berkas QR Code maksimal 5MB.',
+        ]);
+
+        $status = in_array($request->payment_dana_status, ['Aktif', '1', 1]) ? 'Aktif' : 'Nonaktif';
+        Setting::set('payment_dana_status', $status);
+        Setting::set('payment_dana_number', $request->payment_dana_number);
+        Setting::set('payment_dana_name', $request->payment_dana_name);
+        Setting::set('payment_dana_instructions', $request->payment_dana_instructions ?? '');
+
+        // Hapus QR jika diminta
+        if ($request->filled('remove_dana_qr') && $request->remove_dana_qr == '1') {
+            $oldQr = Setting::get('payment_dana_qr');
+            if ($oldQr && \Illuminate\Support\Facades\Storage::disk('public')->exists($oldQr)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldQr);
+            }
+            Setting::set('payment_dana_qr', null);
+        }
+
+        // Upload foto QR baru
+        if ($request->hasFile('payment_dana_qr')) {
+            $oldQr = Setting::get('payment_dana_qr');
+            if ($oldQr && \Illuminate\Support\Facades\Storage::disk('public')->exists($oldQr)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldQr);
+            }
+            $path = $request->file('payment_dana_qr')->store('payment_qr', 'public');
+            Setting::set('payment_dana_qr', $path);
+        }
+
+        return back()->with('success', 'Pengaturan Payment Gateway DANA & QR Code berhasil disimpan!');
+    }
 }

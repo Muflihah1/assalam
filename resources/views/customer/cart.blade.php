@@ -287,12 +287,23 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label small fw-bold text-dark">Pilih Metode Pembayaran DP:</label>
-                                <select name="payment_method" class="form-select form-select-custom form-select-sm" required>
-                                    <option value="qris">QRIS (Semua E-Wallet & M-Banking)</option>
-                                    <option value="transfer">Transfer Bank (BCA 8830-1289-44)</option>
-                                    <option value="dana">E-Wallet DANA</option>
-                                </select>
+                                <label class="form-label small fw-bold text-dark mb-1">Metode Pembayaran DP & Pelunasan:</label>
+                                <input type="hidden" name="payment_method" value="dana">
+                                <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between" style="background-color: #f0f9ff; border-color: #bae6fd !important;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 36px; height: 36px; background-color: #118eea;">
+                                            <i class="fa-solid fa-wallet"></i>
+                                        </div>
+                                        <div>
+                                            <strong class="text-dark small d-block">E-Wallet DANA Resmi</strong>
+                                            <span class="text-muted" style="font-size: 0.74rem;">{{ \App\Models\Setting::get('payment_dana_number', '0852-3456-7890') }} (a.n {{ \App\Models\Setting::get('payment_dana_name', 'Assalam Mebel Official') }})</span>
+                                        </div>
+                                    </div>
+                                    <span class="badge rounded-pill bg-primary px-2.5 py-1 text-white fw-bold" style="font-size: 0.7rem;">DANA Only</span>
+                                </div>
+                                <div class="form-text small text-muted mt-1" style="font-size: 0.74rem;">
+                                    <i class="fa-solid fa-circle-info text-primary me-1"></i>Bayar uang muka (DP 50%) via DANA untuk memulai pengerjaan, dan sisa 50% saat mebel selesai diproduksi & siap kirim.
+                                </div>
                             </div>
 
                             <div class="mb-4">

@@ -40,40 +40,46 @@
         overflow-x: auto;
         flex-wrap: nowrap;
         scrollbar-width: none;
+        padding-bottom: 8px;
     }
 
     .nav-tabs-order .nav-link {
-        border: none;
-        color: var(--text-muted);
+        border: 1.5px solid var(--light-border) !important;
+        color: var(--text-dark) !important;
+        background-color: #ffffff !important;
         font-weight: 600;
-        font-size: 0.875rem;
-        padding: 10px 16px;
-        border-radius: 12px 12px 0 0;
+        font-size: 0.85rem;
+        padding: 8px 16px;
+        border-radius: 10px !important;
         position: relative;
         white-space: nowrap;
-        transition: all 0.2s;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        margin: 0 !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
 
     .nav-tabs-order .nav-link:hover {
-        color: var(--primary-color);
-        background-color: rgba(93, 64, 55, 0.04);
+        color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
+        background-color: rgba(93, 64, 55, 0.06) !important;
     }
 
     .nav-tabs-order .nav-link.active {
-        color: var(--primary-color);
-        background-color: transparent;
+        color: #ffffff !important;
+        background-color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
         font-weight: 700;
+        box-shadow: 0 4px 12px rgba(93, 64, 55, 0.25) !important;
     }
 
-    .nav-tabs-order .nav-link.active::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background-color: var(--primary-color);
-        border-radius: 3px 3px 0 0;
+    .nav-tabs-order .nav-link.active .badge.bg-light {
+        background-color: rgba(255, 255, 255, 0.25) !important;
+        color: #ffffff !important;
+    }
+
+    .nav-tabs-order .nav-link.active .badge.text-dark {
+        color: #ffffff !important;
     }
 
     .order-thumb-box {
@@ -91,6 +97,28 @@
         font-weight: 600;
         border-radius: 8px;
         white-space: nowrap;
+    }
+
+    .action-dots-btn {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: var(--light-bg);
+        border: 1.5px solid var(--light-border);
+        color: var(--text-dark);
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .action-dots-btn:hover, .action-dots-btn:focus, .show > .action-dots-btn {
+        background-color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
+        color: #ffffff !important;
+        transform: scale(1.08);
+        box-shadow: 0 4px 12px rgba(93, 64, 55, 0.2);
     }
 </style>
 
@@ -245,20 +273,20 @@
     <div class="admin-card">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light text-center">
+                <thead class="table-light">
                     <tr>
-                        <th style="width: 14%; text-align: left;">Pesanan & Tanggal</th>
-                        <th style="width: 18%; text-align: left;">Pemesan & Kontak</th>
-                        <th style="width: 22%; text-align: left;">Spesifikasi Mebel</th>
-                        <th style="width: 20%; text-align: left;">Rincian Pembayaran</th>
-                        <th style="width: 26%;">Aksi & Tindakan</th>
+                        <th style="width: 20%;" class="ps-3">Pesanan & Tanggal</th>
+                        <th style="width: 22%;">Pemesan & Kontak</th>
+                        <th style="width: 26%;">Spesifikasi Mebel Jati</th>
+                        <th style="width: 24%;">Status & Pembayaran</th>
+                        <th style="width: 8%; text-align: center;" class="pe-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($listPesananMasuk as $item)
                     <tr>
                         <!-- 1. PESANAN & TANGGAL -->
-                        <td>
+                        <td class="ps-3">
                             <div class="d-flex align-items-center gap-2.5">
                                 @php
                                     $itemThumb = null;
@@ -310,7 +338,7 @@
                             @if($cleanPhone)
                                 <a href="https://wa.me/{{ $cleanPhone }}?text=Halo%20{{ urlencode($item->recipient_name ?? $item->user->name) }},%20kami%20dari%20Assalam%20Mebel%20mengenai%20pesanan%20%23{{ $item->order_number }}" 
                                    target="_blank" 
-                                   class="btn btn-sm btn-outline-success rounded-pill px-2.5 py-0.5" 
+                                   class="btn btn-sm btn-outline-success rounded-pill px-2.5 py-0.5 shadow-2xs" 
                                    style="font-size: 0.75rem;">
                                     <i class="fa-brands fa-whatsapp me-1"></i>{{ $item->recipient_phone ?? $item->user->whatsapp_number }}
                                 </a>
@@ -328,7 +356,7 @@
                                 </div>
                             @endif
                             <div class="small text-muted" style="font-size: 0.8rem;">
-                                <span><i class="fa-solid fa-tree me-1 text-secondary"></i>{{ $item->customDesign->wood_material ?? 'Kayu Jati' }}</span>
+                                <span><i class="fa-solid fa-tree me-1 text-success"></i>Kayu Jati Solid</span>
                                 @if($item->customDesign && $item->customDesign->length_cm)
                                     <span class="ms-1">({{ $item->customDesign->length_cm }}×{{ $item->customDesign->width_cm }}×{{ $item->customDesign->height_cm }} cm)</span>
                                 @endif
@@ -336,6 +364,21 @@
                             @if($item->customDesign && $item->customDesign->color_name)
                                 <div class="small text-muted" style="font-size: 0.78rem;">
                                     <span>Tone: <strong>{{ $item->customDesign->color_name }}</strong></span>
+                                </div>
+                            @endif
+
+                            @php
+                                $rowSpecialNotes = $item->customer_notes ?? ($item->customDesign->notes ?? null);
+                            @endphp
+                            @if(!empty($rowSpecialNotes))
+                                <div class="mt-2 p-2 rounded-3 shadow-2xs" style="background-color: #fefce8; border: 1.5px dashed #f59e0b; max-width: 320px;">
+                                    <div class="d-flex align-items-center gap-1.5 fw-bold text-dark mb-0.5" style="font-size: 0.74rem;">
+                                        <i class="fa-solid fa-note-sticky text-warning"></i>
+                                        <span>Catatan Khusus Pelanggan:</span>
+                                    </div>
+                                    <div class="text-dark fw-semibold fst-italic" style="font-size: 0.78rem; line-height: 1.35;">
+                                        "{{ $rowSpecialNotes }}"
+                                    </div>
                                 </div>
                             @endif
                         </td>
@@ -354,86 +397,134 @@
                             </div>
 
                             <!-- Payment Status Badge -->
-                            @if($item->payment_status === 'Lunas')
-                                <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill small">
-                                    <i class="fa-solid fa-check-double me-1"></i>Lunas
-                                </span>
-                            @elseif($item->payment_status === 'Menunggu Verifikasi Pelunasan')
-                                <span class="badge bg-info-subtle text-info px-2 py-0.5 rounded-pill small border border-info">
-                                    <i class="fa-solid fa-receipt me-1"></i>Perlu Verif. Pelunasan
-                                </span>
-                            @elseif($item->payment_status === 'Bukti Pelunasan Ditolak')
-                                <span class="badge bg-danger-subtle text-danger px-2 py-0.5 rounded-pill small border border-danger">
-                                    <i class="fa-solid fa-xmark me-1"></i>Pelunasan Ditolak
-                                </span>
-                            @elseif($item->payment_status === 'DP Terverifikasi')
-                                <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill small">
-                                    <i class="fa-solid fa-check me-1"></i>DP Terverifikasi
-                                </span>
-                            @elseif($item->payment_status === 'Menunggu Verifikasi DP')
-                                <span class="badge bg-warning-subtle text-warning-emphasis px-2 py-0.5 rounded-pill small border border-warning">
-                                    <i class="fa-solid fa-receipt me-1"></i>Perlu Verif. DP
-                                </span>
-                            @elseif($item->payment_status === 'Bukti DP Ditolak')
-                                <span class="badge bg-danger-subtle text-danger px-2 py-0.5 rounded-pill small border border-danger">
-                                    <i class="fa-solid fa-xmark me-1"></i>Bukti DP Ditolak
-                                </span>
-                            @elseif($item->payment_status === 'Menunggu Pembayaran DP')
-                                <span class="badge bg-secondary-subtle text-secondary px-2 py-0.5 rounded-pill small">
-                                    Menunggu Bayar DP
-                                </span>
-                            @else
-                                <span class="badge bg-light text-dark px-2 py-0.5 rounded-pill small border">{{ $item->payment_status }}</span>
-                            @endif
+                            <div>
+                                @if($item->payment_status === 'Lunas')
+                                    <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill small">
+                                        <i class="fa-solid fa-check-double me-1"></i>Lunas
+                                    </span>
+                                @elseif($item->payment_status === 'Menunggu Verifikasi Pelunasan')
+                                    <span class="badge bg-info-subtle text-info px-2 py-0.5 rounded-pill small border border-info">
+                                        <i class="fa-solid fa-receipt me-1"></i>Verif. Pelunasan
+                                    </span>
+                                @elseif($item->payment_status === 'Bukti Pelunasan Ditolak')
+                                    <span class="badge bg-danger-subtle text-danger px-2 py-0.5 rounded-pill small border border-danger">
+                                        <i class="fa-solid fa-xmark me-1"></i>Pelunasan Ditolak
+                                    </span>
+                                @elseif($item->payment_status === 'DP Terverifikasi')
+                                    <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill small">
+                                        <i class="fa-solid fa-check me-1"></i>DP Terverifikasi
+                                    </span>
+                                @elseif($item->payment_status === 'Menunggu Verifikasi DP')
+                                    <span class="badge bg-warning-subtle text-warning-emphasis px-2 py-0.5 rounded-pill small border border-warning">
+                                        <i class="fa-solid fa-receipt me-1"></i>Perlu Verif. DP
+                                    </span>
+                                @elseif($item->payment_status === 'Bukti DP Ditolak')
+                                    <span class="badge bg-danger-subtle text-danger px-2 py-0.5 rounded-pill small border border-danger">
+                                        <i class="fa-solid fa-xmark me-1"></i>Bukti DP Ditolak
+                                    </span>
+                                @elseif($item->payment_status === 'Menunggu Pembayaran DP')
+                                    <span class="badge bg-secondary-subtle text-secondary px-2 py-0.5 rounded-pill small">
+                                        Menunggu Bayar DP
+                                    </span>
+                                @else
+                                    <span class="badge bg-light text-dark px-2 py-0.5 rounded-pill small border">{{ $item->payment_status }}</span>
+                                @endif
+
+                                @if($item->order_status === 'Menunggu Konfirmasi')
+                                    <span class="badge bg-warning-subtle text-warning-emphasis px-2 py-0.5 rounded-pill small border border-warning ms-1">
+                                        Konfirmasi Awal
+                                    </span>
+                                @elseif($item->order_status === 'Ditolak' || $item->order_status === 'Dibatalkan')
+                                    <span class="badge bg-danger-subtle text-danger px-2 py-0.5 rounded-pill small ms-1">
+                                        {{ $item->order_status }}
+                                    </span>
+                                @endif
+                            </div>
                         </td>
 
-                        <!-- 5. AKSI & TINDAKAN -->
-                        <td class="text-center">
-                            <div class="d-flex flex-column gap-1.5 align-items-center">
-                                
-                                <!-- Aksi Konfirmasi Awal (Menunggu Konfirmasi) -->
-                                @if($item->order_status === 'Menunggu Konfirmasi')
-                                    <div class="d-flex gap-1 justify-content-center w-100">
-                                        <button type="button" class="btn btn-success btn-action-sm flex-grow-1"
-                                                data-bs-toggle="modal" data-bs-target="#modalTerimaPesanan{{ $item->id }}">
-                                            <i class="fa-solid fa-check me-1"></i> Terima
+                        <!-- 5. AKSI DENGAN TITIK TIGA (DROPDOWN 3-DOTS) -->
+                        <td class="text-center pe-3">
+                            <div class="dropdown">
+                                <button class="action-dots-btn shadow-2xs position-relative" 
+                                        type="button" 
+                                        data-bs-toggle="dropdown" 
+                                        aria-expanded="false" 
+                                        title="Pilihan Aksi Pesanan">
+                                    <i class="fa-solid fa-ellipsis-vertical fs-6"></i>
+                                    @if($item->order_status === 'Menunggu Konfirmasi' || $item->payment_status === 'Menunggu Verifikasi DP' || $item->payment_status === 'Menunggu Verifikasi Pelunasan')
+                                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                            <span class="visually-hidden">Perlu Tindakan</span>
+                                        </span>
+                                    @endif
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-lg rounded-3 border py-1.5" style="min-width: 220px; font-size: 0.85rem;">
+                                    <li>
+                                        <button class="dropdown-item py-2 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalDetailPesanan{{ $item->id }}">
+                                            <i class="fa-solid fa-circle-info text-primary" style="width: 18px;"></i>
+                                            <span class="fw-semibold">Lihat Detail Lengkap</span>
                                         </button>
-                                        <button type="button" class="btn btn-outline-danger btn-action-sm flex-grow-1"
-                                                data-bs-toggle="modal" data-bs-target="#modalTolakPesanan{{ $item->id }}">
-                                            <i class="fa-solid fa-xmark me-1"></i> Tolak
-                                        </button>
-                                    </div>
-                                @endif
+                                    </li>
 
-                                <!-- Aksi Verifikasi Bukti DP -->
-                                @if($item->payment_status === 'Menunggu Verifikasi DP' || ($item->dp_receipt_proof && in_array($item->payment_status, ['Menunggu Pembayaran DP', 'Bukti DP Ditolak'])))
-                                    <button type="button" class="btn btn-warning text-dark btn-action-sm w-100 shadow-sm"
-                                            data-bs-toggle="modal" data-bs-target="#modalVerifikasiDP{{ $item->id }}">
-                                        <i class="fa-solid fa-receipt me-1"></i> Verifikasi Bukti DP
-                                    </button>
-                                @endif
+                                    <!-- Konfirmasi Terima / Tolak -->
+                                    @if($item->order_status === 'Menunggu Konfirmasi')
+                                        <li><hr class="dropdown-divider my-1"></li>
+                                        <li>
+                                            <button class="dropdown-item py-2 d-flex align-items-center gap-2 text-success fw-bold" data-bs-toggle="modal" data-bs-target="#modalTerimaPesanan{{ $item->id }}">
+                                                <i class="fa-solid fa-circle-check text-success" style="width: 18px;"></i>
+                                                <span>Terima Pesanan</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item py-2 d-flex align-items-center gap-2 text-danger fw-semibold" data-bs-toggle="modal" data-bs-target="#modalTolakPesanan{{ $item->id }}">
+                                                <i class="fa-solid fa-ban text-danger" style="width: 18px;"></i>
+                                                <span>Tolak Pesanan</span>
+                                            </button>
+                                        </li>
+                                    @endif
 
-                                <!-- Aksi Verifikasi Pelunasan -->
-                                @if($item->payment_status === 'Menunggu Verifikasi Pelunasan' || ($item->final_receipt_proof && in_array($item->payment_status, ['Bukti Pelunasan Ditolak', 'DP Terverifikasi'])))
-                                    <button type="button" class="btn btn-info text-white btn-action-sm w-100 shadow-sm"
-                                            data-bs-toggle="modal" data-bs-target="#modalVerifikasiPelunasan{{ $item->id }}">
-                                        <i class="fa-solid fa-file-invoice-dollar me-1"></i> Verifikasi Pelunasan
-                                    </button>
-                                @endif
+                                    <!-- Verifikasi Bukti DP -->
+                                    @if($item->payment_status === 'Menunggu Verifikasi DP' || ($item->dp_receipt_proof && in_array($item->payment_status, ['Menunggu Pembayaran DP', 'Bukti DP Ditolak'])))
+                                        <li><hr class="dropdown-divider my-1"></li>
+                                        <li>
+                                            <button class="dropdown-item py-2 d-flex align-items-center gap-2 text-warning-emphasis fw-bold" data-bs-toggle="modal" data-bs-target="#modalVerifikasiDP{{ $item->id }}">
+                                                <i class="fa-solid fa-receipt text-warning" style="width: 18px;"></i>
+                                                <span>Verifikasi Bukti DP</span>
+                                            </button>
+                                        </li>
+                                    @endif
 
-                                <!-- Tombol Kelola Progres Workshop -->
-                                @if(!in_array($item->order_status, ['Ditolak', 'Dibatalkan']))
-                                    <a href="{{ route('admin.progres.produksi', $item->id) }}" class="btn btn-outline-dark btn-action-sm w-100" style="border-color: var(--light-border);">
-                                        <i class="fa-solid fa-hammer me-1 text-warning"></i> Progres Workshop
-                                    </a>
-                                @endif
+                                    <!-- Verifikasi Bukti Pelunasan -->
+                                    @if($item->payment_status === 'Menunggu Verifikasi Pelunasan' || ($item->final_receipt_proof && in_array($item->payment_status, ['Bukti Pelunasan Ditolak', 'DP Terverifikasi'])))
+                                        <li><hr class="dropdown-divider my-1"></li>
+                                        <li>
+                                            <button class="dropdown-item py-2 d-flex align-items-center gap-2 text-info-emphasis fw-bold" data-bs-toggle="modal" data-bs-target="#modalVerifikasiPelunasan{{ $item->id }}">
+                                                <i class="fa-solid fa-file-invoice-dollar text-info" style="width: 18px;"></i>
+                                                <span>Verifikasi Pelunasan</span>
+                                            </button>
+                                        </li>
+                                    @endif
 
-                                @if(in_array($item->order_status, ['Ditolak', 'Dibatalkan']) && $item->rejection_reason)
-                                    <div class="alert alert-danger p-1.5 mb-0 text-start w-100" style="font-size: 0.75rem; border-radius: 8px;">
-                                        <strong>Alasan:</strong> {{ $item->rejection_reason }}
-                                    </div>
-                                @endif
+                                    <!-- Progres Workshop -->
+                                    @if(!in_array($item->order_status, ['Ditolak', 'Dibatalkan']))
+                                        <li><hr class="dropdown-divider my-1"></li>
+                                        <li>
+                                            <a class="dropdown-item py-2 d-flex align-items-center gap-2 text-dark" href="{{ route('admin.progres.produksi', $item->id) }}">
+                                                <i class="fa-solid fa-hammer text-secondary" style="width: 18px;"></i>
+                                                <span>Progres Workshop</span>
+                                            </a>
+                                        </li>
+                                    @endif
 
+                                    <!-- WhatsApp Direct -->
+                                    @if($cleanPhone)
+                                        <li>
+                                            <a class="dropdown-item py-2 d-flex align-items-center gap-2 text-success" href="https://wa.me/{{ $cleanPhone }}?text=Halo%20{{ urlencode($item->recipient_name ?? $item->user->name) }},%20kami%20dari%20Assalam%20Mebel%20mengenai%20pesanan%20%23{{ $item->order_number }}" target="_blank">
+                                                <i class="fa-brands fa-whatsapp text-success" style="width: 18px;"></i>
+                                                <span>Hubungi WhatsApp</span>
+                                            </a>
+                                        </li>
+                                    @endif
+                                </ul>
                             </div>
                         </td>
                     </tr>
@@ -462,6 +553,189 @@
          KUMPULAN MODAL INTERAKTIF (DI LUAR TABEL AGAR VALID HTML)
          ======================================================== -->
     @foreach($listPesananMasuk as $item)
+
+        <!-- 0. MODAL DETAIL LENGKAP PESANAN -->
+        <div class="modal fade" id="modalDetailPesanan{{ $item->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content rounded-4 shadow-lg border-0">
+                    <div class="modal-header text-white rounded-top-4" style="background-color: var(--primary-color);">
+                        <h5 class="modal-title fs-6 fw-bold">
+                            <i class="fa-solid fa-file-lines me-2"></i> Rincian Pesanan #{{ $item->order_number }}
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4 text-start">
+                        <!-- Ringkasan Status & Tanggal -->
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom flex-wrap gap-2">
+                            <div>
+                                <span class="text-muted small d-block">Waktu Pemesanan:</span>
+                                <strong class="text-dark">{{ $item->created_at ? $item->created_at->translatedFormat('d F Y, H:i') : '-' }} WIB</strong>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center flex-wrap">
+                                <span class="badge px-3 py-1.5 rounded-pill border" style="background-color: var(--wood-bg); color: var(--text-dark);">
+                                    Tahap: {{ $item->current_stage ?? 'Tahap 1' }}
+                                </span>
+                                <span class="badge bg-secondary-subtle text-secondary px-3 py-1.5 rounded-pill border">
+                                    {{ $item->order_status }}
+                                </span>
+                                <span class="badge bg-primary-subtle text-primary px-3 py-1.5 rounded-pill border border-primary">
+                                    {{ $item->payment_status }}
+                                </span>
+                            </div>
+                        </div>
+
+                        @php
+                            $modalSpecialNotes = $item->customer_notes ?? ($item->customDesign->notes ?? null);
+                        @endphp
+                        @if($modalSpecialNotes)
+                            <div class="p-3 mb-3 rounded-3 border border-warning" style="background-color: #fffbeb;">
+                                <div class="d-flex align-items-center justify-content-between mb-1.5 flex-wrap gap-1">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge bg-warning text-dark px-2.5 py-1 fw-bold">
+                                            <i class="fa-solid fa-note-sticky me-1"></i> CATATAN KHUSUS PELANGGAN
+                                        </span>
+                                        <span class="text-muted small fw-semibold">Wajib diprioritaskan oleh Tukang Kayu / Workshop</span>
+                                    </div>
+                                    <span class="badge bg-white text-secondary border border-warning-subtle small px-2 py-0.5">Custom Request</span>
+                                </div>
+                                <div class="p-2.5 bg-white rounded-2 border border-warning-subtle text-dark fw-medium mt-1" style="font-size: 0.92rem; line-height: 1.5;">
+                                    "{{ $modalSpecialNotes }}"
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="row g-3 mb-4">
+                            <!-- Informasi Pemesan & Pengiriman -->
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3 border h-100">
+                                    <h6 class="fw-bold text-dark mb-2 pb-1 border-bottom" style="font-size: 0.85rem;">
+                                        <i class="fa-solid fa-user me-1 text-primary"></i> Data Pemesan & Pengiriman
+                                    </h6>
+                                    <div class="mb-2">
+                                        <span class="small text-muted d-block">Nama Lengkap:</span>
+                                        <strong class="text-dark">{{ $item->recipient_name ?? $item->user->name }}</strong>
+                                        @if($item->user && $item->user->username)
+                                            <span class="small text-muted">(@{{ $item->user->username }})</span>
+                                        @endif
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="small text-muted d-block">WhatsApp:</span>
+                                        <strong class="text-success"><i class="fa-brands fa-whatsapp me-1"></i>{{ $item->recipient_phone ?? $item->user->whatsapp_number }}</strong>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="small text-muted d-block">Alamat Pengiriman:</span>
+                                        <span class="text-dark small">{{ $item->shipping_address ?? 'Alamat belum diatur' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Spesifikasi Mebel Custom -->
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3 border h-100">
+                                    <h6 class="fw-bold text-dark mb-2 pb-1 border-bottom" style="font-size: 0.85rem;">
+                                        <i class="fa-solid fa-couch me-1" style="color: var(--primary-color);"></i> Spesifikasi Mebel Kayu Jati
+                                    </h6>
+                                    <div class="mb-2">
+                                        <span class="small text-muted d-block">Kategori Furniture:</span>
+                                        <strong class="text-dark">{{ $item->customDesign->category ?? 'Custom Mebel' }}</strong>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="small text-muted d-block">Bahan Kayu:</span>
+                                        <span class="badge bg-success-subtle text-success border border-success fw-bold">
+                                            <i class="fa-solid fa-tree me-1"></i> Kayu Jati Solid Grade A (Perhutani)
+                                        </span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="small text-muted d-block">Dimensi Presisi (P × L × T):</span>
+                                        <strong class="text-dark">
+                                            {{ $item->customDesign->length_cm ?? 180 }} cm × {{ $item->customDesign->width_cm ?? 80 }} cm × {{ $item->customDesign->height_cm ?? 75 }} cm
+                                        </strong>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="small text-muted d-block">Warna Finishing:</span>
+                                        <div class="d-flex align-items-center gap-2 mt-1">
+                                            <span class="rounded-circle border" style="width: 20px; height: 20px; background-color: {{ $item->customDesign->color_hex ?? '#d97706' }}; display: inline-block;"></span>
+                                            <strong class="text-dark small">{{ $item->customDesign->color_name ?? 'Amber Gold' }}</strong>
+                                            <span class="text-muted small">({{ $item->customDesign->color_hex ?? '#d97706' }})</span>
+                                        </div>
+                                    </div>
+
+                                    @if($item->customDesign && $item->customDesign->sketch_image)
+                                        <div class="mt-2 pt-2 border-top">
+                                            <span class="small text-muted d-block mb-1">Sketsa / Foto Referensi:</span>
+                                            <a href="{{ asset('storage/' . $item->customDesign->sketch_image) }}" target="_blank">
+                                                <img src="{{ asset('storage/' . $item->customDesign->sketch_image) }}" alt="Sketsa" class="img-thumbnail rounded-3 shadow-sm" style="max-height: 80px;">
+                                            </a>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rincian Biaya & Skema Pembayaran DANA -->
+                        <div class="p-3 rounded-3 border" style="background: linear-gradient(135deg, #fdfbf7 0%, #f6ede3 100%);">
+                            <h6 class="fw-bold text-dark mb-2" style="font-size: 0.85rem;">
+                                <i class="fa-solid fa-wallet me-1 text-primary"></i> Rincian Pembayaran (Metode DANA)
+                            </h6>
+                            <div class="row g-2 text-center">
+                                <div class="col-4">
+                                    <div class="p-2 bg-white rounded-3 border shadow-2xs">
+                                        <span class="text-muted d-block small">Total Tagihan:</span>
+                                        <strong class="text-dark fs-6">Rp {{ number_format($item->total_price, 0, ',', '.') }}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 bg-white rounded-3 border shadow-2xs">
+                                        <span class="text-muted d-block small">Wajib DP (50%):</span>
+                                        <strong class="text-success fs-6">Rp {{ number_format($item->dp_amount, 0, ',', '.') }}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 bg-white rounded-3 border shadow-2xs">
+                                        <span class="text-muted d-block small">Sisa Pelunasan (50%):</span>
+                                        <strong class="text-danger fs-6">Rp {{ number_format($item->remaining_payment, 0, ',', '.') }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if($item->dp_receipt_proof || $item->final_receipt_proof)
+                                <div class="d-flex gap-3 mt-3 pt-2 border-top flex-wrap">
+                                    @if($item->dp_receipt_proof)
+                                        <div>
+                                            <span class="small fw-bold text-dark d-block mb-1">Bukti Transfer DP:</span>
+                                            <a href="{{ asset('storage/' . $item->dp_receipt_proof) }}" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                                                <i class="fa-solid fa-file-image me-1 text-warning"></i> Lihat Bukti DP
+                                            </a>
+                                        </div>
+                                    @endif
+                                    @if($item->final_receipt_proof)
+                                        <div>
+                                            <span class="small fw-bold text-dark d-block mb-1">Bukti Pelunasan:</span>
+                                            <a href="{{ asset('storage/' . $item->final_receipt_proof) }}" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                                                <i class="fa-solid fa-file-invoice-dollar me-1 text-info"></i> Lihat Bukti Pelunasan
+                                            </a>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light rounded-bottom-4">
+                        @if($cleanPhone)
+                            <a href="https://wa.me/{{ $cleanPhone }}?text=Halo%20{{ urlencode($item->recipient_name ?? $item->user->name) }},%20kami%20dari%20Assalam%20Mebel%20mengenai%20pesanan%20%23{{ $item->order_number }}" target="_blank" class="btn btn-outline-success btn-sm rounded-3 px-3">
+                                <i class="fa-brands fa-whatsapp me-1"></i> WhatsApp
+                            </a>
+                        @endif
+                        @if(!in_array($item->order_status, ['Ditolak', 'Dibatalkan']))
+                            <a href="{{ route('admin.progres.produksi', $item->id) }}" class="btn btn-dark btn-sm rounded-3 px-3" style="background-color: var(--primary-color); border: none;">
+                                <i class="fa-solid fa-hammer me-1"></i> Buka Workshop Progres
+                            </a>
+                        @endif
+                        <button type="button" class="btn btn-secondary btn-sm rounded-3 px-3" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- 1. MODAL TERIMA PESANAN -->
         <div class="modal fade" id="modalTerimaPesanan{{ $item->id }}" tabindex="-1" aria-hidden="true">
@@ -500,6 +774,21 @@
                                     </div>
                                 </div>
                             </div>
+
+                            @php
+                                $terimaSpecialNotes = $item->customer_notes ?? ($item->customDesign->notes ?? null);
+                            @endphp
+                            @if($terimaSpecialNotes)
+                                <div class="p-3 rounded-3 border border-warning-subtle mb-3" style="background-color: #fffbeb;">
+                                    <div class="d-flex align-items-center gap-1.5 text-warning-emphasis fw-bold small mb-1">
+                                        <i class="fa-solid fa-note-sticky text-warning"></i>
+                                        <span>Catatan Khusus dari Pemesan:</span>
+                                    </div>
+                                    <div class="small text-dark fw-medium p-2 bg-white rounded border border-warning-subtle fst-italic">
+                                        "{{ $terimaSpecialNotes }}"
+                                    </div>
+                                </div>
+                            @endif
 
                             <div class="alert alert-info small py-2 px-3 mb-3 border-0 bg-info-subtle text-info-emphasis rounded-3">
                                 <i class="fa-solid fa-circle-info me-1"></i>
@@ -576,6 +865,18 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                @php
+                                    $dpSpecialNotes = $item->customer_notes ?? ($item->customDesign->notes ?? null);
+                                @endphp
+                                @if($dpSpecialNotes)
+                                    <div class="p-2.5 rounded-3 border border-warning-subtle mb-3" style="background-color: #fffbeb; font-size: 0.82rem;">
+                                        <span class="fw-bold text-warning-emphasis d-block mb-1"><i class="fa-solid fa-note-sticky me-1"></i> Catatan Khusus Pemesan:</span>
+                                        <div class="fst-italic text-dark bg-white p-2 rounded border border-warning-subtle">
+                                            "{{ $dpSpecialNotes }}"
+                                        </div>
+                                    </div>
+                                @endif
 
                                 <!-- Form Tolak Bukti DP -->
                                 <div class="p-3 rounded-3 border border-danger-subtle bg-danger-subtle bg-opacity-25 mt-3">
@@ -654,6 +955,18 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                @php
+                                    $lunasSpecialNotes = $item->customer_notes ?? ($item->customDesign->notes ?? null);
+                                @endphp
+                                @if($lunasSpecialNotes)
+                                    <div class="p-2.5 rounded-3 border border-warning-subtle mb-3" style="background-color: #fffbeb; font-size: 0.82rem;">
+                                        <span class="fw-bold text-warning-emphasis d-block mb-1"><i class="fa-solid fa-note-sticky me-1"></i> Catatan Khusus Pemesan:</span>
+                                        <div class="fst-italic text-dark bg-white p-2 rounded border border-warning-subtle">
+                                            "{{ $lunasSpecialNotes }}"
+                                        </div>
+                                    </div>
+                                @endif
 
                                 <!-- Form Tolak Bukti Pelunasan -->
                                 <div class="p-3 rounded-3 border border-danger-subtle bg-danger-subtle bg-opacity-25 mt-3">

@@ -357,9 +357,6 @@
                     </li>
 
                     <li class="px-3 py-2">
-                        <hr class="my-1" style="border-color: var(--light-border);">
-                    </li>
-
                     @auth
                         <li>
                             <a href="{{ route('customer.progress') }}" class="{{ request()->routeIs('customer.progress') ? 'active' : '' }}">
@@ -399,7 +396,7 @@
             <!-- Footer User Sidebar -->
             <div class="p-3 border-top" style="border-color: var(--light-border) !important; background-color: var(--light-bg);">
                 @auth
-                    <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
                         <div class="d-flex align-items-center gap-2 overflow-hidden">
                             <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 36px; height: 36px; background-color: var(--primary-color);">
                                 <i class="fa-solid fa-user small"></i>
@@ -410,6 +407,13 @@
                             </div>
                         </div>
                     </div>
+                    <form action="{{ route('logout') }}" method="POST" class="mt-2">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-danger btn-sm w-100 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-1.5 py-1.5 shadow-2xs">
+                            <i class="fa-solid fa-power-off"></i>
+                            <span>Keluar / Logout</span>
+                        </button>
+                    </form>
                 @else
                     <div class="text-center">
                         <span class="small text-muted d-block mb-2">Belum memiliki akun?</span>
@@ -448,10 +452,77 @@
                 </a>
 
                 @auth
-                    <a href="{{ route('customer.account') }}" class="d-flex align-items-center gap-2 text-decoration-none" title="Akun Saya">
-                        <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover; border-color: var(--wood-border) !important;">
-                        <span class="fw-bold small d-none d-md-inline text-dark">{{ Auth::user()->name }}</span>
-                    </a>
+                    @if(Auth::user()->role === 'admin')
+                        @php
+                            $topbarPendingOrders = \App\Models\Order::where('order_status', 'Menunggu Konfirmasi')
+                                ->orWhere('payment_status', 'Menunggu Verifikasi DP')
+                                ->count();
+                        @endphp
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-sm btn-dark rounded-pill px-3 py-1.5 fw-bold d-flex align-items-center gap-1.5 shadow-2xs" style="background-color: var(--primary-color); border: none;" title="Buka Control Panel Administrator">
+                            <i class="fa-solid fa-shield-halved text-warning"></i>
+                            <span class="d-none d-sm-inline">Panel Admin</span>
+                            @if($topbarPendingOrders > 0)
+                                <span class="badge bg-danger text-white rounded-pill px-1.5 py-0.5" style="font-size: 0.68rem;">{{ $topbarPendingOrders }}</span>
+                            @endif
+                        </a>
+                    @endif
+
+                    <!-- Dropdown User Profil & Logout -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none dropdown-toggle" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover; border-color: var(--wood-border) !important;">
+                            <span class="fw-bold small d-none d-md-inline text-dark">{{ Auth::user()->name }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg rounded-3 border py-1.5" aria-labelledby="userMenuDropdown" style="min-width: 210px; font-size: 0.85rem;">
+                            <li class="px-3 py-2 border-bottom">
+                                <strong class="d-block text-dark">{{ Auth::user()->name }}</strong>
+                                <small class="text-muted">{{ Auth::user()->email }}</small>
+                            </li>
+                            @if(Auth::user()->role === 'admin')
+                                <li>
+                                    <a class="dropdown-item py-2 fw-bold text-warning-emphasis d-flex align-items-center gap-2" href="{{ route('admin.pesanan.masuk') }}">
+                                        <i class="fa-solid fa-inbox text-warning" style="width: 18px;"></i>
+                                        <span>Pesanan Masuk (Admin)</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('admin.pengaturan') }}">
+                                        <i class="fa-solid fa-sliders text-primary" style="width: 18px;"></i>
+                                        <span>Pengaturan Toko & DANA</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('admin.dashboard') }}">
+                                        <i class="fa-solid fa-gauge text-secondary" style="width: 18px;"></i>
+                                        <span>Dashboard Admin</span>
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                            @endif
+                            <li>
+                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('customer.account') }}">
+                                    <i class="fa-solid fa-user text-primary" style="width: 18px;"></i>
+                                    <span>Akun Saya</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('customer.riwayat') }}">
+                                    <i class="fa-solid fa-file-invoice text-success" style="width: 18px;"></i>
+                                    <span>Riwayat Pesanan</span>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item py-2 text-danger d-flex align-items-center gap-2 fw-semibold">
+                                        <i class="fa-solid fa-power-off text-danger" style="width: 18px;"></i>
+                                        <span>Keluar / Logout</span>
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 @else
                     <div class="d-flex gap-2">
                         <a href="{{ route('login') }}" class="btn btn-outline-dark btn-auth-nav">

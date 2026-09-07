@@ -483,10 +483,20 @@
                             <span class="small text-dark fw-bold">{{ $progres->customDesign->color_name }}</span>
                         </div>
                     @endif
-                    @if($progres->customer_notes)
+                    @php
+                        $workshopNote = $progres->customer_notes ?? ($progres->customDesign->notes ?? null);
+                    @endphp
+                    @if($workshopNote)
                         <div class="mt-2 pt-2 border-top">
-                            <span class="small text-muted d-block">Catatan Pelanggan:</span>
-                            <p class="small text-dark mb-0 fst-italic">"{{ $progres->customer_notes }}"</p>
+                            <div class="p-2.5 rounded-3 border border-warning" style="background-color: #fffbeb;">
+                                <div class="d-flex align-items-center gap-1.5 mb-1 text-warning-emphasis fw-bold small">
+                                    <i class="fa-solid fa-note-sticky text-warning"></i>
+                                    <span>Catatan Khusus Pemesan:</span>
+                                </div>
+                                <p class="small text-dark mb-0 fst-italic fw-medium bg-white p-2 rounded border border-warning-subtle">
+                                    "{{ $workshopNote }}"
+                                </p>
+                            </div>
                         </div>
                     @endif
                 </div>

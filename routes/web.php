@@ -149,6 +149,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/pengaturan/profil', [SettingController::class, 'updateProfile'])->name('pengaturan.profile');
     Route::post('/pengaturan/password', [SettingController::class, 'updatePassword'])->name('pengaturan.password');
     Route::post('/pengaturan/whatsapp', [SettingController::class, 'updateWhatsapp'])->name('pengaturan.whatsapp');
+    Route::post('/pengaturan/payment', [SettingController::class, 'updatePayment'])->name('pengaturan.payment');
     Route::post('/pengaturan/shipping', [SettingController::class, 'storeShipping'])->name('pengaturan.shipping.store');
     Route::put('/pengaturan/shipping/{id}', [SettingController::class, 'updateShipping'])->name('pengaturan.shipping.update');
 
@@ -160,5 +161,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/whatsapp/templates/{id}', [WhatsAppGatewayController::class, 'updateTemplate'])->name('whatsapp.templates.update');
     Route::post('/whatsapp/logs/{id}/retry', [WhatsAppGatewayController::class, 'retryLog'])->name('whatsapp.logs.retry');
     Route::post('/whatsapp/logs/retry-all', [WhatsAppGatewayController::class, 'retryAllFailed'])->name('whatsapp.logs.retry_all');
+    Route::post('/whatsapp/disconnect', [WhatsAppGatewayController::class, 'disconnect'])->name('whatsapp.disconnect');
+    Route::post('/whatsapp/restart', [WhatsAppGatewayController::class, 'restartSidecar'])->name('whatsapp.restart');
     Route::post('/whatsapp/send-test', [WhatsAppGatewayController::class, 'sendTestMessage'])->name('whatsapp.send_test');
 });

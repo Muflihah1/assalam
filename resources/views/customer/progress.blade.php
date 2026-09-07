@@ -617,7 +617,7 @@
                         <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-wallet text-primary me-2"></i>Pembayaran Uang Muka (DP)</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <p class="text-muted small mb-3 text-start">Gunakan aplikasi <strong>DANA</strong> atau scan QRIS di bawah ini untuk membayar DP pesanan <strong>#{{ $order->order_number }}</strong>.</p>
+                    <p class="text-muted small mb-3 text-start">Gunakan aplikasi <strong>DANA</strong> atau scan QR Code di bawah ini untuk membayar DP pesanan <strong>#{{ $order->order_number }}</strong>.</p>
 
                     <!-- KARTU INFORMASI TAGIHAN DP -->
                     <div class="p-3 border rounded-3 mb-3 bg-white text-start shadow-2xs">
@@ -635,38 +635,29 @@
                     <div class="p-3 border rounded-4 mb-3 bg-white shadow-sm text-center">
                         <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
                             <span class="badge px-3 py-1.5 rounded-pill fw-bold text-white" style="background-color: #118eea;">
-                                <i class="fa-solid fa-qrcode me-1"></i> QR Code DANA / QRIS
+                                <i class="fa-solid fa-qrcode me-1"></i> QR Code DANA Resmi
                             </span>
                         </div>
 
                         <!-- Gambar Kartu QR Code DANA -->
                         <div class="mx-auto my-2" style="max-width: 220px;">
-                            <img src="{{ asset('images/dana_qr_card.svg') }}" alt="QR Code DANA Assalam Mebel" class="img-fluid rounded-3 shadow-2xs border">
+                            <img src="{{ \App\Models\Setting::getDanaQrUrl() }}" alt="QR Code DANA Assalam Mebel" class="img-fluid rounded-3 shadow-2xs border">
                         </div>
 
                         <!-- Info Nomor DANA dengan Tombol Salin -->
                         <div class="p-2 rounded-3 mt-2 bg-light border d-flex justify-content-between align-items-center text-start">
                             <div>
                                 <span class="text-muted d-block" style="font-size: 0.7rem;">Nomor Akun DANA:</span>
-                                <strong class="text-dark fs-6" id="danaNumDP">0852-3456-7890</strong>
-                                <span class="text-muted d-block small" style="font-size: 0.68rem;">a.n Administrator Assalam</span>
+                                <strong class="text-dark fs-6" id="danaNumDP">{{ \App\Models\Setting::get('payment_dana_number', '0852-3456-7890') }}</strong>
+                                <span class="text-muted d-block small" style="font-size: 0.68rem;">a.n {{ \App\Models\Setting::get('payment_dana_name', 'Assalam Mebel Official') }}</span>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3 py-1" onclick="salinNomorDANA('085234567890', this)">
+                            <button type="button" class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3 py-1" onclick="salinNomorDANA('{{ preg_replace('/[^0-9]/', '', \App\Models\Setting::get('payment_dana_number', '085234567890')) }}', this)">
                                 <i class="fa-regular fa-copy me-1"></i>Salin
                             </button>
                         </div>
 
                         <div class="mt-2 text-start small text-muted" style="font-size: 0.74rem;">
                             <i class="fa-solid fa-circle-check text-success me-1"></i>Buka aplikasi <strong>DANA</strong> &gt; Tekan <strong>Pindai / Pay</strong> &gt; Scan QR Code di atas &gt; Masukkan nominal DP: <strong>Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</strong>.
-                        </div>
-                    </div>
-
-                    <!-- Rekening Alternatif BCA -->
-                    <div class="p-2 px-3 border rounded-3 mb-3 bg-light text-start small">
-                        <span class="text-muted d-block mb-1" style="font-size: 0.72rem;">Alternatif Transfer Manual BCA:</span>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-dark"><strong>BCA 8830-1289-44</strong> (PT Assalam Mebel)</span>
-                            <button type="button" class="btn btn-xs btn-link text-decoration-none py-0 px-1 text-primary fw-bold" onclick="salinNomorDANA('8830128944', this)">Salin</button>
                         </div>
                     </div>
 
@@ -700,7 +691,7 @@
                         <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-wallet text-success me-2"></i>Pembayaran Sisa Pelunasan</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <p class="text-muted small mb-3 text-start">Gunakan aplikasi <strong>DANA</strong> atau scan QRIS di bawah ini untuk pelunasan sisa tagihan mebel.</p>
+                    <p class="text-muted small mb-3 text-start">Gunakan aplikasi <strong>DANA</strong> atau scan QR Code di bawah ini untuk pelunasan sisa tagihan mebel.</p>
 
                     <div class="p-3 border rounded-3 mb-3 bg-white text-start shadow-2xs">
                         <div class="d-flex justify-content-between align-items-center">
@@ -713,38 +704,29 @@
                     <div class="p-3 border rounded-4 mb-3 bg-white shadow-sm text-center">
                         <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
                             <span class="badge px-3 py-1.5 rounded-pill fw-bold text-white" style="background-color: #118eea;">
-                                <i class="fa-solid fa-qrcode me-1"></i> QR Code DANA / QRIS
+                                <i class="fa-solid fa-qrcode me-1"></i> QR Code DANA Resmi
                             </span>
                         </div>
 
                         <!-- Gambar Kartu QR Code DANA -->
                         <div class="mx-auto my-2" style="max-width: 220px;">
-                            <img src="{{ asset('images/dana_qr_card.svg') }}" alt="QR Code DANA Assalam Mebel" class="img-fluid rounded-3 shadow-2xs border">
+                            <img src="{{ \App\Models\Setting::getDanaQrUrl() }}" alt="QR Code DANA Assalam Mebel" class="img-fluid rounded-3 shadow-2xs border">
                         </div>
 
                         <!-- Info Nomor DANA dengan Tombol Salin -->
                         <div class="p-2 rounded-3 mt-2 bg-light border d-flex justify-content-between align-items-center text-start">
                             <div>
                                 <span class="text-muted d-block" style="font-size: 0.7rem;">Nomor Akun DANA:</span>
-                                <strong class="text-dark fs-6" id="danaNumPelunasan">0852-3456-7890</strong>
-                                <span class="text-muted d-block small" style="font-size: 0.68rem;">a.n Administrator Assalam</span>
+                                <strong class="text-dark fs-6" id="danaNumPelunasan">{{ \App\Models\Setting::get('payment_dana_number', '0852-3456-7890') }}</strong>
+                                <span class="text-muted d-block small" style="font-size: 0.68rem;">a.n {{ \App\Models\Setting::get('payment_dana_name', 'Assalam Mebel Official') }}</span>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3 py-1" onclick="salinNomorDANA('085234567890', this)">
+                            <button type="button" class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3 py-1" onclick="salinNomorDANA('{{ preg_replace('/[^0-9]/', '', \App\Models\Setting::get('payment_dana_number', '085234567890')) }}', this)">
                                 <i class="fa-regular fa-copy me-1"></i>Salin
                             </button>
                         </div>
 
                         <div class="mt-2 text-start small text-muted" style="font-size: 0.74rem;">
                             <i class="fa-solid fa-circle-check text-success me-1"></i>Buka aplikasi <strong>DANA</strong> &gt; Tekan <strong>Pindai / Pay</strong> &gt; Scan QR Code di atas &gt; Masukkan nominal sisa: <strong>Rp {{ number_format($order->remaining_payment, 0, ',', '.') }}</strong>.
-                        </div>
-                    </div>
-
-                    <!-- Rekening Alternatif BCA -->
-                    <div class="p-2 px-3 border rounded-3 mb-3 bg-light text-start small">
-                        <span class="text-muted d-block mb-1" style="font-size: 0.72rem;">Alternatif Transfer Manual BCA:</span>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-dark"><strong>BCA 8830-1289-44</strong> (PT Assalam Mebel)</span>
-                            <button type="button" class="btn btn-xs btn-link text-decoration-none py-0 px-1 text-primary fw-bold" onclick="salinNomorDANA('8830128944', this)">Salin</button>
                         </div>
                     </div>
 

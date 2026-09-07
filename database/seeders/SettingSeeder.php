@@ -15,9 +15,11 @@ class SettingSeeder extends Seeder
             'wa_template' => 'Halo *{nama}*, pembaruan untuk pesanan mebel custom Anda (*{produk}* - #{no_pesanan}) saat ini telah memasuki tahap: *{tahap}*. Silakan cek foto progres di aplikasi Assalam Mebel. Terima kasih!',
             'shop_name' => 'Assalam Mebel Indonesia',
             'shop_address' => 'Jl. Raya Trunojoyo No. 45, Sumenep, Madura',
-            'bank_name' => 'BCA',
-            'bank_account_number' => '8830-1289-44',
-            'bank_account_holder' => 'CV. Assalam Mebel Indonesia',
+            'payment_dana_status' => 'Aktif',
+            'payment_dana_number' => '085234567890',
+            'payment_dana_name' => 'Assalam Mebel Official',
+            'payment_dana_qr' => null,
+            'payment_dana_instructions' => 'Buka aplikasi DANA > Tekan Pindai / Pay > Scan QR Code atau transfer manual ke nomor DANA di atas. Masukkan nominal sesuai tagihan.',
         ];
 
         foreach ($settings as $key => $value) {

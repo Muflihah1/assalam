@@ -310,6 +310,9 @@ class WhatsAppNotificationService
 
         try {
             $sidecarHost = config('laravel-whatsapp.web.host', '127.0.0.1');
+            if ($sidecarHost === '0.0.0.0' || empty($sidecarHost)) {
+                $sidecarHost = '127.0.0.1';
+            }
             $sidecarPort = config('laravel-whatsapp.web.port', 3000);
             $sidecarToken = config('laravel-whatsapp.web.token', '');
             $sessionId = 'main';

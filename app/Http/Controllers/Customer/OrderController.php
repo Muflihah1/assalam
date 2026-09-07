@@ -21,13 +21,21 @@ class OrderController extends Controller
     {
         $settings = StudioSetting::pluck('value', 'key');
         $shippingCosts = ShippingCost::where('status', 'Aktif')->get();
+        $katalogs = \App\Models\Produk::latest()->get();
         
         $selectedProduct = null;
         if ($request->filled('product_id')) {
             $selectedProduct = \App\Models\Produk::find($request->product_id);
         }
 
-        return view('customer.design', compact('settings', 'shippingCosts', 'selectedProduct'));
+        // Jika tidak ada ID produk tertentu, pasang produk pertama sebagai model dasar
+        if (!$selectedProduct && $katalogs->isNotEmpty()) {
+            $selectedProduct = $katalogs->first();
+        }
+
+        $paymentSettings = \App\Models\Setting::pluck('value', 'key');
+
+        return view('customer.design', compact('settings', 'shippingCosts', 'selectedProduct', 'katalogs', 'paymentSettings'));
     }
 
     /**
@@ -40,30 +48,26 @@ class OrderController extends Controller
         }
 
         $request->validate([
-            'product_id' => 'nullable|exists:produks,id',
+            'product_id' => 'required|exists:produks,id',
             'category' => 'required|string|max:100',
-            'length_cm' => 'required|numeric|min:30|max:400',
-            'width_cm' => 'required|numeric|min:20|max:300',
-            'height_cm' => 'required|numeric|min:20|max:300',
-            'wood_material' => 'required|string|max:100',
+            'length_cm' => 'required|numeric|min:20|max:600',
+            'width_cm' => 'required|numeric|min:4|max:500',
+            'height_cm' => 'required|numeric|min:2|max:500',
+            'wood_material' => 'nullable|string|max:100',
             'color_name' => 'required|string|max:100',
             'color_hex' => 'required|string|max:20',
             'tone_percent' => 'nullable|numeric|min:40|max:160',
             'sketch_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'notes' => 'nullable|string|max:1000',
-            'payment_method' => 'nullable|string',
         ], [
+            'product_id.required' => 'Model produk dasar mebel wajib dipilih.',
             'category.required' => 'Kategori mebel wajib dipilih.',
-            'length_cm.required' => 'Panjang furniture wajib diisi.',
-            'length_cm.min' => 'Panjang minimal 30 cm.',
-            'length_cm.max' => 'Panjang maksimal 400 cm.',
-            'width_cm.required' => 'Lebar furniture wajib diisi.',
-            'width_cm.min' => 'Lebar minimal 20 cm.',
-            'width_cm.max' => 'Lebar maksimal 300 cm.',
-            'height_cm.required' => 'Tinggi furniture wajib diisi.',
-            'height_cm.min' => 'Tinggi minimal 20 cm.',
-            'height_cm.max' => 'Tinggi maksimal 300 cm.',
-            'wood_material.required' => 'Pilihan material kayu wajib ditentukan.',
+            'length_cm.required' => 'Panjang mebel wajib diisi.',
+            'length_cm.min' => 'Panjang minimal 20 cm.',
+            'width_cm.required' => 'Lebar mebel wajib diisi.',
+            'width_cm.min' => 'Lebar minimal 4 cm.',
+            'height_cm.required' => 'Tinggi mebel wajib diisi.',
+            'height_cm.min' => 'Tinggi minimal 2 cm.',
             'color_name.required' => 'Warna finishing mebel wajib dipilih.',
             'sketch_image.image' => 'Berkas sketsa harus berupa gambar (JPG, PNG, WEBP).',
             'sketch_image.max' => 'Ukuran sketsa gambar maksimal 5MB.',
@@ -71,24 +75,20 @@ class OrderController extends Controller
 
         $user = Auth::user();
 
-        // Formula kalkulasi estimasi harga berdasarkan volume dan material
-        $volume = ($request->length_cm * $request->width_cm * $request->height_cm) / 1000000; // dalam m3
-        $baseMaterialPrice = 3000000;
-        if (str_contains(strtolower($request->wood_material), 'jati')) {
-            $baseMaterialPrice = 4500000;
-        } elseif (str_contains(strtolower($request->wood_material), 'mahoni')) {
-            $baseMaterialPrice = 3500000;
-        }
+        // Pilihan kayu dikunci secara permanen pada Kayu Jati Solid Grade A
+        $woodMaterial = 'Kayu Jati Solid Grade A (Perhutani)';
 
-        // Jika ada referensi produk katalog, gunakan harga dasar produk tersebut sebagai patokan
-        if ($request->filled('product_id')) {
-            $refProduct = \App\Models\Produk::find($request->product_id);
-            if ($refProduct && $refProduct->harga > 0) {
-                $baseMaterialPrice = max($baseMaterialPrice, $refProduct->harga);
-            }
-        }
+        // Ambil produk katalog referensi
+        $refProduct = \App\Models\Produk::findOrFail($request->product_id);
+        $baseProductPrice = (float) $refProduct->harga;
 
-        $calculatedPrice = round(max(2500000, $baseMaterialPrice * max(0.8, $volume * 1.8)), -4);
+        // Volume kubikasi mebel custom
+        $volume = ($request->length_cm * $request->width_cm * $request->height_cm) / 1000000; // m3
+        $standardVolume = (180 * 80 * 75) / 1000000; // 1.08 m3
+        $volumeRatio = max(0.75, min(2.5, $volume / $standardVolume));
+
+        // Kalkulasi harga berdasarkan harga produk jati dasar katalog dikali rasio ukuran
+        $calculatedPrice = round(($baseProductPrice * $volumeRatio), -4);
         $shippingCost = 50000;
         $totalPrice = $calculatedPrice + $shippingCost;
         $dpAmount = round($totalPrice * 0.5);
@@ -102,7 +102,7 @@ class OrderController extends Controller
 
         $orderNumber = 'ORD-' . strtoupper(Str::random(4)) . rand(1000, 9999);
 
-        // Buat Order dengan alur status: Menunggu Konfirmasi dari Admin
+        // Buat Order dengan alur status: Menunggu Konfirmasi dari Admin & Metode DANA
         $order = Order::create([
             'order_number' => $orderNumber,
             'user_id' => $user->id,
@@ -110,7 +110,7 @@ class OrderController extends Controller
             'dp_amount' => $dpAmount,
             'shipping_cost' => $shippingCost,
             'remaining_payment' => $remainingPayment,
-            'payment_method' => $request->payment_method ?? 'qris',
+            'payment_method' => 'dana',
             'order_status' => 'Menunggu Konfirmasi',
             'payment_status' => 'Belum Bayar',
             'production_status' => 'Menunggu Konfirmasi',
@@ -124,12 +124,12 @@ class OrderController extends Controller
         // Buat Custom Design dengan relasi ke product_id katalog
         CustomDesign::create([
             'order_id' => $order->id,
-            'product_id' => $request->product_id,
-            'category' => $request->category,
+            'product_id' => $refProduct->id,
+            'category' => $refProduct->kategori ?? $request->category,
             'length_cm' => $request->length_cm,
             'width_cm' => $request->width_cm,
             'height_cm' => $request->height_cm,
-            'wood_material' => $request->wood_material,
+            'wood_material' => $woodMaterial,
             'color_name' => $request->color_name,
             'color_hex' => $request->color_hex,
             'tone_percent' => $request->tone_percent ?? 100,
@@ -327,13 +327,41 @@ class OrderController extends Controller
     }
 
     /**
-     * Show order history
+     * Show order history with tab filtering
      */
     public function riwayat(Request $request)
     {
         $user = Auth::user();
-        $query = Order::with(['customDesign', 'progresses', 'items'])
+        $query = Order::with(['customDesign.produk', 'progresses', 'items'])
             ->where('user_id', $user->id);
+
+        $activeTab = $request->query('tab', 'all');
+        if ($activeTab === 'menunggu_konfirmasi') {
+            $query->where('order_status', 'Menunggu Konfirmasi');
+        } elseif ($activeTab === 'menunggu_bayar') {
+            $query->where(function($q) {
+                $q->whereIn('payment_status', ['Menunggu Pembayaran DP', 'Menunggu Verifikasi DP', 'Menunggu Verifikasi Pelunasan', 'Bukti DP Ditolak', 'Bukti Pelunasan Ditolak'])
+                  ->orWhere(function($sub) {
+                      $sub->where('payment_status', 'DP Terverifikasi')
+                          ->where('remaining_payment', '>', 0)
+                          ->whereIn('current_stage', ['Penyelesaian', 'Pengiriman']);
+                  });
+            });
+        } elseif ($activeTab === 'diproses') {
+            $query->whereIn('production_status', ['Antrean Produksi', 'Dalam Pengerjaan', 'Penyelesaian']);
+        } elseif ($activeTab === 'dikirim') {
+            $query->where(function($q) {
+                $q->where('production_status', 'Pengiriman')
+                  ->orWhere('current_stage', 'Pengiriman');
+            });
+        } elseif ($activeTab === 'selesai') {
+            $query->where(function($q) {
+                $q->where('order_status', 'Selesai')
+                  ->orWhere('production_status', 'Selesai');
+            });
+        } elseif ($activeTab === 'batal') {
+            $query->whereIn('order_status', ['Ditolak', 'Dibatalkan']);
+        }
 
         if ($request->filled('q')) {
             $search = trim($request->q);
@@ -351,6 +379,23 @@ class OrderController extends Controller
 
         $orders = $query->latest()->get();
 
-        return view('customer.riwayat', compact('orders'));
+        // Hitung count per tab untuk badges
+        $tabCounts = [
+            'all' => Order::where('user_id', $user->id)->count(),
+            'menunggu_konfirmasi' => Order::where('user_id', $user->id)->where('order_status', 'Menunggu Konfirmasi')->count(),
+            'menunggu_bayar' => Order::where('user_id', $user->id)->where(function($q) {
+                $q->whereIn('payment_status', ['Menunggu Pembayaran DP', 'Menunggu Verifikasi DP', 'Menunggu Verifikasi Pelunasan', 'Bukti DP Ditolak', 'Bukti Pelunasan Ditolak']);
+            })->count(),
+            'diproses' => Order::where('user_id', $user->id)->whereIn('production_status', ['Antrean Produksi', 'Dalam Pengerjaan', 'Penyelesaian'])->count(),
+            'dikirim' => Order::where('user_id', $user->id)->where(function($q) {
+                $q->where('production_status', 'Pengiriman')->orWhere('current_stage', 'Pengiriman');
+            })->count(),
+            'selesai' => Order::where('user_id', $user->id)->where(function($q) {
+                $q->where('order_status', 'Selesai')->orWhere('production_status', 'Selesai');
+            })->count(),
+            'batal' => Order::where('user_id', $user->id)->whereIn('order_status', ['Ditolak', 'Dibatalkan'])->count(),
+        ];
+
+        return view('customer.riwayat', compact('orders', 'activeTab', 'tabCounts'));
     }
 }
