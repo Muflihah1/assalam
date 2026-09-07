@@ -164,8 +164,9 @@ class CartController extends Controller
             'shipping_cost' => $shippingCost,
             'remaining_payment' => $remainingPayment,
             'payment_method' => $request->payment_method,
-            'payment_status' => 'DP Terverifikasi', // Otomatis terverifikasi untuk flow demo / simulasi pembayaran sukses
-            'production_status' => 'Antrean Produksi',
+            'order_status' => 'Menunggu Konfirmasi',
+            'payment_status' => 'Belum Bayar',
+            'production_status' => 'Menunggu Konfirmasi',
             'current_stage' => 'Konfirmasi Pesanan',
             'recipient_name' => $request->recipient_name,
             'recipient_phone' => $request->recipient_phone,
@@ -188,9 +189,9 @@ class CartController extends Controller
 
         // 3. Inisialisasi 8 Tahapan Progres
         $stages = [
-            ['step' => 1, 'name' => 'Konfirmasi Pesanan', 'status' => 'Selesai', 'completed_at' => now()],
-            ['step' => 2, 'name' => 'Validasi Pembayaran', 'status' => 'Selesai', 'completed_at' => now()],
-            ['step' => 3, 'name' => 'Pesanan Diterima', 'status' => 'Sedang Berjalan', 'completed_at' => null],
+            ['step' => 1, 'name' => 'Konfirmasi Pesanan', 'status' => 'Sedang Berjalan', 'completed_at' => null],
+            ['step' => 2, 'name' => 'Validasi Pembayaran', 'status' => 'Pending', 'completed_at' => null],
+            ['step' => 3, 'name' => 'Pesanan Diterima', 'status' => 'Pending', 'completed_at' => null],
             ['step' => 4, 'name' => 'Menyiapkan Bahan', 'status' => 'Pending', 'completed_at' => null],
             ['step' => 5, 'name' => 'Perakitan', 'status' => 'Pending', 'completed_at' => null],
             ['step' => 6, 'name' => 'Penyelesaian', 'status' => 'Pending', 'completed_at' => null],
@@ -205,7 +206,7 @@ class CartController extends Controller
                 'stage_name' => $stage['name'],
                 'status' => $stage['status'],
                 'completed_at' => $stage['completed_at'],
-                'notes' => $stage['step'] === 1 ? 'Pesanan katalog berhasil di-checkout oleh pelanggan' : null,
+                'notes' => $stage['step'] === 1 ? 'Menunggu peninjauan dan konfirmasi pesanan oleh admin' : null,
             ]);
         }
 
@@ -219,6 +220,6 @@ class CartController extends Controller
         // 5. Kosongkan keranjang belanja
         session()->forget('cart');
 
-        return redirect()->route('customer.progress')->with('success', 'Pesanan #' . $order->order_number . ' berhasil dibuat! Silakan pantau pengerjaan dan pengiriman di timeline progres.');
+        return redirect()->route('customer.progress')->with('success', 'Pesanan #' . $order->order_number . ' berhasil dibuat! Pesanan Anda saat ini sedang menunggu konfirmasi admin.');
     }
 }

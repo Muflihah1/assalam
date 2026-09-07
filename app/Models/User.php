@@ -36,7 +36,31 @@ class User extends Authenticatable
         'password',
         'alamat',
         'role',
+        'profile_photo',
     ];
+
+    /**
+     * URL Foto Profil Pengguna (Dukungan foto unggahan atau fallback DiceBear)
+     */
+    public function getProfilePhotoUrlAttribute(): string
+    {
+        if ($this->profile_photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->profile_photo)) {
+            return \Illuminate\Support\Facades\Storage::url($this->profile_photo);
+        }
+
+        return 'https://api.dicebear.com/7.x/adventurer/svg?seed=' . urlencode($this->name ?? 'User');
+    }
+
+    /**
+     * Hapus berkas foto profil dari storage
+     */
+    public function deleteProfilePhoto(): void
+    {
+        if ($this->profile_photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->profile_photo)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($this->profile_photo);
+        }
+        $this->update(['profile_photo' => null]);
+    }
 
     /**
      * Check if user is administrator

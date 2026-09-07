@@ -87,7 +87,7 @@ class OrderSeeder extends Seeder
                 'shipping_cost' => 50000,
                 'remaining_payment' => 1950000,
                 'payment_method' => 'transfer',
-                'payment_status' => 'Menunggu Pembayaran DP',
+                'payment_status' => 'Belum Bayar',
                 'production_status' => 'Menunggu Konfirmasi',
                 'current_stage' => 'Konfirmasi Pesanan',
                 'recipient_name' => $rina->name,

@@ -1,0 +1,7 @@
+tunnel: c995f4be-2d8d-4dac-ac32-8b5b519cb259
+credentials-file: /etc/cloudflared/credentials.json
+
+ingress:
+  - hostname: assalam.ghaibnet.co.id
+    service: http://app:8000
+  - service: http_status:404

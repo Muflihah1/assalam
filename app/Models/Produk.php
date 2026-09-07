@@ -30,6 +30,16 @@ class Produk extends Model
             return $this->foto;
         }
 
+        // Cek jika file tersimpan di storage public
+        if (Storage::disk('public')->exists($this->foto)) {
+            return Storage::url($this->foto);
+        }
+
+        // Fallback jika file berada langsung di folder public/ (misal "produk/...")
+        if (file_exists(public_path($this->foto))) {
+            return asset($this->foto);
+        }
+
         return Storage::url($this->foto);
     }
 }

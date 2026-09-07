@@ -13,8 +13,8 @@
 
     .profile-avatar-box {
         position: relative;
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
         margin: 0 auto;
     }
 
@@ -24,7 +24,32 @@
         border-radius: 50%;
         object-fit: cover;
         border: 3px solid var(--primary-color);
-        box-shadow: 0 4px 12px rgba(93, 64, 55, 0.2);
+        box-shadow: 0 4px 14px rgba(93, 64, 55, 0.2);
+        background: #ffffff;
+        transition: filter 0.2s ease;
+    }
+
+    .avatar-upload-badge {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 2.5px solid #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        transition: all 0.2s ease;
+    }
+
+    .avatar-upload-badge:hover {
+        background-color: var(--secondary-color);
+        transform: scale(1.1);
     }
 
     .form-control-custom {
@@ -76,45 +101,74 @@
     <!-- HEADER HALAMAN -->
     <div class="mb-4">
         <h3 class="fw-bold mb-1" style="color: var(--primary-color);">Pengaturan Akun Pelanggan</h3>
-        <p class="text-muted small mb-0">Kelola informasi profil, nomor kontak, alamat pengiriman, dan keamanan akun Anda.</p>
+        <p class="text-muted small mb-0">Kelola foto profil, informasi kontak, alamat pengiriman, dan keamanan akun Anda.</p>
     </div>
 
-    <div class="row g-4">
-        <!-- KOLOM KIRI: FOTO PROFIL & RINGKASAN AKUN -->
-        <div class="col-lg-4">
-            <div class="wireframe-card text-center">
-                <div class="profile-avatar-box mb-3">
-                    <img id="userAvatarPreview" src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ urlencode(Auth::user()->name ?? 'Budi') }}" alt="Avatar" class="profile-avatar-img">
-                </div>
+    <!-- FORM UTAMA PROFIL (MENCAKUP FOTO & DATA DIRI) -->
+    <form id="profileForm" action="{{ route('customer.account.profile') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        
+        <input type="file" name="profile_photo" id="profilePhotoInput" class="d-none" accept="image/jpeg,image/png,image/webp,image/jpg" onchange="previewAvatar(this)">
+        <input type="hidden" name="remove_photo" id="removePhotoInput" value="0">
 
-                <h5 class="fw-bold text-dark mb-1">{{ Auth::user()->name }}</h5>
-                <p class="text-muted small mb-3">{{ Auth::user()->email }}</p>
-
-                <div class="d-flex justify-content-center gap-2 mb-3">
-                    <span class="badge px-3 py-1.5 rounded-pill small fw-bold" style="background-color: #d1fae5; color: #15803d; border: 1px solid #a7f3d0;">
-                        <i class="fa-solid fa-user-check me-1"></i> Customer Terverifikasi
-                    </span>
-                </div>
-
-                <hr style="border-color: var(--light-border);" class="my-4">
-
-                <button class="btn btn-danger-outline w-100" data-bs-toggle="modal" data-bs-target="#modalLogout">
-                    <i class="fa-solid fa-right-from-bracket me-2"></i> Keluar Akun
-                </button>
-            </div>
-        </div>
-
-        <!-- KOLOM KANAN: FORM DETAIL PROFIL & KEAMANAN -->
-        <div class="col-lg-8">
+        <div class="row g-4">
             
-            <!-- 1. INFORMASI PROFIL -->
-            <div class="wireframe-card mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                    <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-user me-2" style="color: var(--primary-color);"></i> Informasi Profil & Kontak</h5>
-                </div>
+            <!-- KOLOM KIRI: FOTO PROFIL & RINGKASAN AKUN -->
+            <div class="col-lg-4">
+                <div class="wireframe-card text-center">
+                    
+                    <div class="profile-avatar-box mb-3">
+                        <img id="userAvatarPreview" src="{{ Auth::user()->profile_photo_url }}" alt="Avatar" class="profile-avatar-img">
+                        <label for="profilePhotoInput" class="avatar-upload-badge" title="Klik untuk mengganti foto profil">
+                            <i class="fa-solid fa-camera"></i>
+                        </label>
+                    </div>
 
-                <form action="{{ route('customer.account.profile') }}" method="POST">
-                    @csrf
+                    <div id="photoStatusBadge" class="mb-2" style="display: none;">
+                        <span class="badge bg-warning text-dark px-2.5 py-1 rounded-pill small">
+                            <i class="fa-solid fa-clock me-1"></i> Foto baru dipilih (Simpan profil)
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-2 mb-3 flex-wrap">
+                        <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-1.5 fw-semibold" onclick="document.getElementById('profilePhotoInput').click()">
+                            <i class="fa-solid fa-upload me-1 text-warning"></i> Ganti Foto
+                        </button>
+                        
+                        @if(Auth::user()->profile_photo)
+                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1.5" onclick="hapusFotoProfil()" title="Kembalikan ke avatar default">
+                                <i class="fa-solid fa-trash-can me-1"></i> Hapus Foto
+                            </button>
+                        @endif
+                    </div>
+                    <small class="text-muted d-block mb-3" style="font-size: 0.75rem;">Format: JPG, PNG, WEBP (Maks. 5MB)</small>
+
+                    <h5 class="fw-bold text-dark mb-1">{{ Auth::user()->name }}</h5>
+                    <p class="text-muted small mb-3">{{ Auth::user()->email }}</p>
+
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        <span class="badge px-3 py-1.5 rounded-pill small fw-bold" style="background-color: #d1fae5; color: #15803d; border: 1px solid #a7f3d0;">
+                            <i class="fa-solid fa-user-check me-1"></i> Customer Terverifikasi
+                        </span>
+                    </div>
+
+                    <hr style="border-color: var(--light-border);" class="my-4">
+
+                    <button type="button" class="btn btn-danger-outline w-100" data-bs-toggle="modal" data-bs-target="#modalLogout">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i> Keluar Akun
+                    </button>
+                </div>
+            </div>
+
+            <!-- KOLOM KANAN: FORM DETAIL PROFIL -->
+            <div class="col-lg-8">
+                
+                <!-- 1. INFORMASI PROFIL & KONTAK -->
+                <div class="wireframe-card mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-user me-2" style="color: var(--primary-color);"></i> Informasi Profil & Kontak</h5>
+                    </div>
+
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label text-dark small fw-bold">Nama Lengkap</label>
@@ -148,60 +202,61 @@
 
                     <div class="text-end mt-4">
                         <button type="submit" class="btn btn-orange-fill">
-                            <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Perubahan Profil
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Perubahan Profil & Foto
                         </button>
                     </div>
-                </form>
-            </div>
-
-            <!-- 2. KEAMANAN & PASSWORD -->
-            <div class="wireframe-card">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                    <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-shield-halved me-2" style="color: var(--primary-color);"></i> Keamanan & Ganti Password</h5>
                 </div>
 
-                <form action="{{ route('customer.account.password') }}" method="POST">
-                    @csrf
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label text-dark small fw-bold">Password Saat Ini</label>
-                            <div class="input-group">
-                                <input type="password" id="custCurrentPass" name="current_password" class="form-control form-control-custom border-end-0" placeholder="Password lama" required>
-                                <button type="button" class="btn btn-outline-secondary border bg-white" onclick="togglePasswordVisibility('custCurrentPass', 'eyeCustCurr')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
-                                    <i class="fa-solid fa-eye-slash text-muted" id="eyeCustCurr"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label text-dark small fw-bold">Password Baru</label>
-                            <div class="input-group">
-                                <input type="password" id="custNewPass" name="password" class="form-control form-control-custom border-end-0" placeholder="Min. 6 karakter" required>
-                                <button type="button" class="btn btn-outline-secondary border bg-white" onclick="togglePasswordVisibility('custNewPass', 'eyeCustNew')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
-                                    <i class="fa-solid fa-eye-slash text-muted" id="eyeCustNew"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label text-dark small fw-bold">Konfirmasi Password Baru</label>
-                            <div class="input-group">
-                                <input type="password" id="custConfPass" name="password_confirmation" class="form-control form-control-custom border-end-0" placeholder="Ulangi password" required>
-                                <button type="button" class="btn btn-outline-secondary border bg-white" onclick="togglePasswordVisibility('custConfPass', 'eyeCustConf')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
-                                    <i class="fa-solid fa-eye-slash text-muted" id="eyeCustConf"></i>
-                                </button>
-                            </div>
-                        </div>
+    </form>
+
+                <!-- 2. KEAMANAN & PASSWORD (FORM TERPISAH) -->
+                <div class="wireframe-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-shield-halved me-2" style="color: var(--primary-color);"></i> Keamanan & Ganti Password</h5>
                     </div>
 
-                    <div class="text-end mt-4">
-                        <button type="submit" class="btn btn-orange-fill">
-                            <i class="fa-solid fa-key me-1"></i> Perbarui Kata Sandi
-                        </button>
-                    </div>
-                </form>
+                    <form action="{{ route('customer.account.password') }}" method="POST">
+                        @csrf
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label text-dark small fw-bold">Password Saat Ini</label>
+                                <div class="input-group">
+                                    <input type="password" id="custCurrentPass" name="current_password" class="form-control form-control-custom border-end-0" placeholder="Password lama" required>
+                                    <button type="button" class="btn btn-outline-secondary border bg-white" onclick="togglePasswordVisibility('custCurrentPass', 'eyeCustCurr')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                                        <i class="fa-solid fa-eye-slash text-muted" id="eyeCustCurr"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-dark small fw-bold">Password Baru</label>
+                                <div class="input-group">
+                                    <input type="password" id="custNewPass" name="password" class="form-control form-control-custom border-end-0" placeholder="Min. 6 karakter" required>
+                                    <button type="button" class="btn btn-outline-secondary border bg-white" onclick="togglePasswordVisibility('custNewPass', 'eyeCustNew')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                                        <i class="fa-solid fa-eye-slash text-muted" id="eyeCustNew"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-dark small fw-bold">Konfirmasi Password Baru</label>
+                                <div class="input-group">
+                                    <input type="password" id="custConfPass" name="password_confirmation" class="form-control form-control-custom border-end-0" placeholder="Ulangi password" required>
+                                    <button type="button" class="btn btn-outline-secondary border bg-white" onclick="togglePasswordVisibility('custConfPass', 'eyeCustConf')" title="Tampilkan/Sembunyikan Password" tabindex="-1">
+                                        <i class="fa-solid fa-eye-slash text-muted" id="eyeCustConf"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-end mt-4">
+                            <button type="submit" class="btn btn-orange-fill">
+                                <i class="fa-solid fa-key me-1"></i> Perbarui Kata Sandi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
             </div>
-
         </div>
-    </div>
 
 </div>
 
@@ -229,6 +284,54 @@
 </div>
 
 <script>
+    // Live preview avatar saat file dipilih
+    function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+
+            // Validasi ukuran maks 5MB
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Ukuran berkas foto terlalu besar! Maksimal 5MB.');
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('userAvatarPreview');
+                if (img) {
+                    img.src = e.target.result;
+                }
+                const badge = document.getElementById('photoStatusBadge');
+                if (badge) {
+                    badge.style.display = 'block';
+                }
+                // Reset remove_photo flag
+                const removeInput = document.getElementById('removePhotoInput');
+                if (removeInput) {
+                    removeInput.value = '0';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Fungsi menghapus foto profil dan kembali ke avatar default
+    function hapusFotoProfil() {
+        if (confirm('Apakah Anda yakin ingin menghapus foto profil ini dan kembali menggunakan avatar default?')) {
+            const removeInput = document.getElementById('removePhotoInput');
+            if (removeInput) {
+                removeInput.value = '1';
+            }
+            const photoInput = document.getElementById('profilePhotoInput');
+            if (photoInput) {
+                photoInput.value = '';
+            }
+            // Langsung submit form profil
+            document.getElementById('profileForm').submit();
+        }
+    }
+
     function togglePasswordVisibility(inputId, iconId) {
         const input = document.getElementById(inputId);
         const icon = document.getElementById(iconId);

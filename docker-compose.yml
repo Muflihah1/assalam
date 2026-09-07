@@ -56,6 +56,19 @@ services:
     networks:
       - assalam_net
 
+  tunnel:
+    image: docker.io/cloudflare/cloudflared:latest
+    container_name: assalam_tunnel
+    restart: unless-stopped
+    command: tunnel --config /etc/cloudflared/config.yml run
+    volumes:
+      - ./docker/cloudflared/config.yml:/etc/cloudflared/config.yml:ro,z
+      - /home/quixiq/.cloudflared/c995f4be-2d8d-4dac-ac32-8b5b519cb259.json:/etc/cloudflared/credentials.json:ro,z
+    depends_on:
+      - app
+    networks:
+      - assalam_net
+
 volumes:
   mysql_data:
     driver: local

@@ -61,8 +61,32 @@
                         <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">
                             <i class="fa fa-user me-2" style="color: var(--primary-color);"></i> Informasi Akun Administrator
                         </h6>
-                        <form action="{{ route('admin.pengaturan.profile') }}" method="POST">
+                        <form action="{{ route('admin.pengaturan.profile') }}" method="POST" enctype="multipart/form-data" id="adminProfileForm">
                             @csrf
+                            
+                            <!-- Foto Profil Admin -->
+                            <div class="d-flex align-items-center gap-3 mb-3 p-3 bg-light rounded-3 border">
+                                <div class="position-relative">
+                                    <img id="adminAvatarPreview" src="{{ Auth::user()->profile_photo_url }}" alt="Admin" class="rounded-circle border" style="width: 68px; height: 68px; object-fit: cover; border-color: var(--primary-color) !important;">
+                                </div>
+                                <div>
+                                    <label class="form-label text-dark small fw-bold mb-1">Foto Profil Administrator:</label>
+                                    <div class="d-flex gap-2 flex-wrap align-items-center mb-1">
+                                        <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-1 fw-semibold" onclick="document.getElementById('adminPhotoInput').click()">
+                                            <i class="fa-solid fa-camera me-1 text-warning"></i> Ganti Foto
+                                        </button>
+                                        @if(Auth::user()->profile_photo)
+                                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1" onclick="hapusFotoAdmin()">
+                                                <i class="fa-solid fa-trash-can me-1"></i> Hapus Foto
+                                            </button>
+                                        @endif
+                                    </div>
+                                    <small class="text-muted d-block" style="font-size: 0.72rem;">Mendukung format JPG, PNG, WEBP (Maks. 5MB)</small>
+                                </div>
+                            </div>
+                            <input type="file" name="profile_photo" id="adminPhotoInput" class="d-none" accept="image/jpeg,image/png,image/webp,image/jpg" onchange="previewAdminAvatar(this)">
+                            <input type="hidden" name="remove_photo" id="adminRemovePhotoInput" value="0">
+
                             <div class="mb-3">
                                 <label class="form-label text-muted small fw-bold">Nama Lengkap:</label>
                                 <input type="text" name="name" class="form-control rounded-3" value="{{ old('name', Auth::user()->name ?? 'Administrator') }}" required>
@@ -79,7 +103,7 @@
                                 <input type="email" name="email" class="form-control rounded-3" value="{{ old('email', Auth::user()->email ?? 'admin@assalammebel.com') }}" required>
                             </div>
                             <button type="submit" class="btn btn-dark rounded-3 px-4" style="background-color: var(--primary-color); border: none;">
-                                <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Perubahan Profil
+                                <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Perubahan Profil & Foto
                             </button>
                         </form>
                     </div>
@@ -308,6 +332,35 @@
                 icon.classList.add("text-muted");
                 icon.style.color = "";
             }
+        }
+    }
+
+    function previewAdminAvatar(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Ukuran foto terlalu besar! Maksimal 5MB.');
+                input.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('adminAvatarPreview');
+                if (img) img.src = e.target.result;
+                const removeInput = document.getElementById('adminRemovePhotoInput');
+                if (removeInput) removeInput.value = '0';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function hapusFotoAdmin() {
+        if (confirm('Hapus foto profil administrator dan kembali ke avatar default?')) {
+            const removeInput = document.getElementById('adminRemovePhotoInput');
+            if (removeInput) removeInput.value = '1';
+            const photoInput = document.getElementById('adminPhotoInput');
+            if (photoInput) photoInput.value = '';
+            document.getElementById('adminProfileForm').submit();
         }
     }
 </script>

@@ -119,7 +119,7 @@
             <div class="col-md-9 col-lg-10">
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" name="keyword" value="{{ request('keyword', request('q', $keyword ?? '')) }}" class="form-control border-start-0 ps-0" placeholder="Cari nama mebel, model, atau kata kunci (contoh: Sofa, Meja, Kursi, Lemari)...">
+                    <input type="text" name="keyword" value="{{ request('keyword', request('q', $keyword ?? '')) }}" class="form-control border-start-0 ps-0" placeholder="Cari nama mebel, ukiran, atau kata kunci (contoh: Kursi Ukir, Pintu, Blawong, Lemari, Mimbar)...">
                 </div>
             </div>
             <div class="col-md-3 col-lg-2 d-flex gap-2">
@@ -140,14 +140,14 @@
                 $activeKw = strtolower($keyword ?? '');
                 $quickCategories = [
                     '' => ['label' => 'Semua', 'icon' => 'fa-cubes'],
-                    'Sofa' => ['label' => 'Sofa', 'icon' => 'fa-couch'],
-                    'Meja' => ['label' => 'Meja', 'icon' => 'fa-table'],
-                    'Kursi' => ['label' => 'Kursi', 'icon' => 'fa-chair'],
+                    'Kursi' => ['label' => 'Kursi & Sofa', 'icon' => 'fa-chair'],
                     'Lemari' => ['label' => 'Lemari', 'icon' => 'fa-door-closed'],
-                    'Tempat Tidur' => ['label' => 'Tempat Tidur', 'icon' => 'fa-bed'],
-                    'Pintu' => ['label' => 'Pintu', 'icon' => 'fa-door-open'],
-                    'Credenza' => ['label' => 'Credenza / TV', 'icon' => 'fa-tv'],
-                    'Jati' => ['label' => 'Kayu Jati', 'icon' => 'fa-tree'],
+                    'Pintu' => ['label' => 'Pintu Tarung', 'icon' => 'fa-door-open'],
+                    'Ukir' => ['label' => 'Ukir & Relief', 'icon' => 'fa-gem'],
+                    'Blawong' => ['label' => 'Blawong', 'icon' => 'fa-feather'],
+                    'Podium' => ['label' => 'Podium / Mimbar', 'icon' => 'fa-landmark'],
+                    'Pendopo' => ['label' => 'Pendopo / Gazebo', 'icon' => 'fa-house'],
+                    'Meja' => ['label' => 'Meja', 'icon' => 'fa-table'],
                 ];
             @endphp
             @foreach($quickCategories as $key => $cat)

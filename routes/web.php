@@ -99,6 +99,7 @@ Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(functi
     Route::post('/progress/{id}/upload-dp', [CustomerOrderController::class, 'uploadDP'])->name('progress.upload_dp');
     Route::post('/progress/{id}/pay-remaining', [CustomerOrderController::class, 'payRemaining'])->name('progress.pay_remaining');
     Route::post('/progress/{id}/confirm-completed', [CustomerOrderController::class, 'confirmCompleted'])->name('progress.confirm_completed');
+    Route::post('/progress/{id}/cancel', [CustomerOrderController::class, 'cancelOrder'])->name('progress.cancel');
 
     Route::get('/riwayat', [CustomerOrderController::class, 'riwayat'])->name('riwayat');
 
@@ -130,7 +131,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/pesanan-masuk/{id}/confirm', [OrderManagementController::class, 'confirmOrder'])->name('pesanan.confirm');
     Route::post('/pesanan-masuk/{id}/reject', [OrderManagementController::class, 'rejectOrder'])->name('pesanan.reject');
     Route::post('/pesanan-masuk/{id}/verify-dp', [OrderManagementController::class, 'verifyDP'])->name('pesanan.verify_dp');
+    Route::post('/pesanan-masuk/{id}/reject-dp', [OrderManagementController::class, 'rejectDP'])->name('pesanan.reject_dp');
     Route::post('/pesanan-masuk/{id}/verify-pelunasan', [OrderManagementController::class, 'verifyPelunasan'])->name('pesanan.verify_pelunasan');
+    Route::post('/pesanan-masuk/{id}/reject-pelunasan', [OrderManagementController::class, 'rejectPelunasan'])->name('pesanan.reject_pelunasan');
     
     // Manajemen Progres Produksi
     Route::get('/progres-produksi/{id?}', [OrderManagementController::class, 'progresProduksi'])->name('progres.produksi');

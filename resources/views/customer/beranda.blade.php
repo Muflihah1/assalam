@@ -133,7 +133,7 @@
                         <span class="input-group-text bg-transparent border-0 ps-3 text-muted">
                             <i class="fa-solid fa-magnifying-glass" style="color: var(--primary-color);"></i>
                         </span>
-                        <input type="text" name="keyword" class="form-control border-0 shadow-none ps-2" placeholder="Cari sofa, meja makan jati, lemari duco, dipan..." style="background: transparent;">
+                        <input type="text" name="keyword" class="form-control border-0 shadow-none ps-2" placeholder="Cari kursi ukir, mimbar podium, pintu jati, blawong, lemari..." style="background: transparent;">
                         <button type="submit" class="btn btn-dark px-4 rounded-pill fw-bold" style="background-color: var(--primary-color); border: none;">
                             Cari Mebel
                         </button>

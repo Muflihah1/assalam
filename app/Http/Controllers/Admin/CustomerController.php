@@ -31,7 +31,9 @@ class CustomerController extends Controller
 
         $customers = $query->latest()->paginate(15)->withQueryString();
         $totalCustomers = User::where('role', 'customer')->count();
+        $customersWithOrders = User::where('role', 'customer')->has('orders')->count();
+        $newCustomersThisMonth = User::where('role', 'customer')->where('created_at', '>=', now()->startOfMonth())->count();
 
-        return view('admin.data_pelanggan', compact('customers', 'totalCustomers'));
+        return view('admin.data_pelanggan', compact('customers', 'totalCustomers', 'customersWithOrders', 'newCustomersThisMonth'));
     }
 }

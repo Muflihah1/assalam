@@ -112,7 +112,7 @@ class OrderController extends Controller
             'remaining_payment' => $remainingPayment,
             'payment_method' => $request->payment_method ?? 'qris',
             'order_status' => 'Menunggu Konfirmasi',
-            'payment_status' => 'Menunggu Pembayaran DP',
+            'payment_status' => 'Belum Bayar',
             'production_status' => 'Menunggu Konfirmasi',
             'current_stage' => 'Konfirmasi Pesanan',
             'recipient_name' => $user->name,
@@ -200,11 +200,11 @@ class OrderController extends Controller
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
 
         $request->validate([
-            'dp_receipt_proof' => 'required|image|mimes:jpeg,png,jpg|max:3072',
+            'dp_receipt_proof' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ], [
             'dp_receipt_proof.required' => 'Bukti transfer DP wajib diunggah.',
-            'dp_receipt_proof.image' => 'Berkas bukti transfer harus berupa gambar (JPG, PNG).',
-            'dp_receipt_proof.max' => 'Ukuran berkas maksimal 3MB.',
+            'dp_receipt_proof.image' => 'Berkas bukti transfer harus berupa gambar (JPG, PNG, WEBP).',
+            'dp_receipt_proof.max' => 'Ukuran berkas maksimal 5MB.',
         ]);
 
         $path = $request->file('dp_receipt_proof')->store('receipts', 'public');
@@ -212,7 +212,8 @@ class OrderController extends Controller
         $order->update([
             'dp_receipt_proof' => $path,
             'payment_status' => 'Menunggu Verifikasi DP',
-            'admin_notes' => 'Pelanggan telah mengunggah bukti pembayaran DP. Menunggu verifikasi admin.',
+            'rejection_reason' => null, // Reset alasan penolakan sebelumnya
+            'admin_notes' => 'Pelanggan telah mengunggah bukti pembayaran DP baru. Menunggu verifikasi admin.',
         ]);
 
         return back()->with('success', 'Bukti transfer DP berhasil diunggah! Admin akan segera memverifikasi pembayaran Anda.');
@@ -226,11 +227,11 @@ class OrderController extends Controller
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
 
         $request->validate([
-            'final_receipt_proof' => 'required|image|mimes:jpeg,png,jpg|max:3072',
+            'final_receipt_proof' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ], [
             'final_receipt_proof.required' => 'Bukti transfer pelunasan wajib diunggah.',
-            'final_receipt_proof.image' => 'Berkas bukti transfer harus berupa gambar (JPG, PNG).',
-            'final_receipt_proof.max' => 'Ukuran berkas maksimal 3MB.',
+            'final_receipt_proof.image' => 'Berkas bukti transfer harus berupa gambar (JPG, PNG, WEBP).',
+            'final_receipt_proof.max' => 'Ukuran berkas maksimal 5MB.',
         ]);
 
         $path = $request->file('final_receipt_proof')->store('receipts', 'public');
@@ -238,10 +239,42 @@ class OrderController extends Controller
         $order->update([
             'final_receipt_proof' => $path,
             'payment_status' => 'Menunggu Verifikasi Pelunasan',
-            'admin_notes' => 'Pelanggan telah mengunggah bukti pelunasan. Menunggu verifikasi admin.',
+            'rejection_reason' => null, // Reset alasan penolakan sebelumnya
+            'admin_notes' => 'Pelanggan telah mengunggah bukti pelunasan baru. Menunggu verifikasi admin.',
         ]);
 
         return back()->with('success', 'Bukti transfer pelunasan berhasil diunggah! Pembayaran akan diverifikasi oleh admin.');
+    }
+
+    /**
+     * Batalkan Pesanan oleh Pelanggan (Hanya pada tahap Menunggu Konfirmasi)
+     */
+    public function cancelOrder(Request $request, $id)
+    {
+        $order = Order::where('user_id', Auth::id())->findOrFail($id);
+
+        // Hanya boleh dibatalkan jika belum disetujui / belum diproses
+        if ($order->order_status !== 'Menunggu Konfirmasi') {
+            return back()->with('error', 'Pesanan tidak dapat dibatalkan secara mandiri karena sudah disetujui oleh admin atau telah memasuki tahap pengerjaan. Silakan hubungi admin via WhatsApp untuk bantuan.');
+        }
+
+        $reason = $request->input('reason', 'Dibatalkan oleh pelanggan');
+
+        $order->update([
+            'order_status' => 'Dibatalkan',
+            'production_status' => 'Dibatalkan',
+            'payment_status' => 'Dibatalkan',
+            'rejection_reason' => $reason,
+            'admin_notes' => 'Pesanan dibatalkan sendiri oleh pelanggan: ' . $reason,
+        ]);
+
+        // Update step 1 progress menjadi Dibatalkan
+        OrderProgress::where('order_id', $order->id)->where('step_number', 1)->update([
+            'status' => 'Dibatalkan',
+            'notes' => 'Pesanan dibatalkan oleh pemesan: ' . $reason,
+        ]);
+
+        return redirect()->route('customer.riwayat')->with('success', 'Pesanan #' . $order->order_number . ' telah berhasil dibatalkan.');
     }
 
     /**
@@ -251,9 +284,9 @@ class OrderController extends Controller
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
 
-        // 1. Validasi: Pesanan harus sudah disetujui admin
-        if ($order->order_status !== 'Diterima') {
-            return back()->with('error', 'Pesanan belum dapat diselesaikan karena belum disetujui oleh admin.');
+        // 1. Validasi: Pesanan harus sudah disetujui admin dan tidak dibatalkan/ditolak
+        if (in_array($order->order_status, ['Menunggu Konfirmasi', 'Ditolak', 'Dibatalkan'])) {
+            return back()->with('error', 'Pesanan belum dapat diselesaikan karena belum disetujui oleh admin atau telah dibatalkan.');
         }
 
         // 2. Validasi: Pembayaran harus sudah lunas (DP dan sisa pelunasan)
@@ -268,6 +301,7 @@ class OrderController extends Controller
         }
 
         $order->update([
+            'order_status' => 'Selesai',
             'production_status' => 'Selesai',
             'current_stage' => 'Pesanan Selesai'
         ]);

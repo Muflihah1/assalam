@@ -32,6 +32,7 @@ class AccountController extends Controller
             'whatsapp_number' => ['required', 'string', 'regex:/^(\+?62|0)8[1-9][0-9]{7,12}$/'],
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'alamat' => 'nullable|string|max:500',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'username.required' => 'Username wajib diisi.',
@@ -40,7 +41,23 @@ class AccountController extends Controller
             'whatsapp_number.regex' => 'Format nomor WhatsApp tidak valid. Gunakan awalan 08 atau 62 (contoh: 08123456789 atau 628123456789) tanpa huruf.',
             'email.required' => 'Alamat email wajib diisi.',
             'email.unique' => 'Email ini sudah digunakan oleh akun lain.',
+            'profile_photo.image' => 'Berkas foto profil harus berupa gambar (JPG, PNG, WEBP).',
+            'profile_photo.max' => 'Ukuran berkas foto profil maksimal 5MB.',
         ]);
+
+        // Hapus foto jika diminta
+        if ($request->filled('remove_photo') && $request->remove_photo == '1') {
+            $user->deleteProfilePhoto();
+        }
+
+        // Upload foto profil baru jika ada
+        if ($request->hasFile('profile_photo')) {
+            if ($user->profile_photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->profile_photo)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->profile_photo);
+            }
+            $path = $request->file('profile_photo')->store('avatars', 'public');
+            $user->profile_photo = $path;
+        }
 
         // Normalisasi format nomor WA menjadi 628...
         $phone = preg_replace('/[^0-9]/', '', $request->whatsapp_number);
@@ -48,15 +65,14 @@ class AccountController extends Controller
             $phone = '62' . substr($phone, 1);
         }
 
-        $user->update([
-            'name' => $request->name,
-            'username' => $request->username,
-            'whatsapp_number' => $phone,
-            'email' => $request->email,
-            'alamat' => $request->alamat,
-        ]);
+        $user->name = $request->name;
+        $user->username = $request->username;
+        $user->whatsapp_number = $phone;
+        $user->email = $request->email;
+        $user->alamat = $request->alamat;
+        $user->save();
 
-        return back()->with('success', 'Informasi profil berhasil diperbarui!');
+        return back()->with('success', 'Informasi profil & foto akun berhasil diperbarui!');
     }
 
     /**

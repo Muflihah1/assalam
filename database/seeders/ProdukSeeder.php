@@ -5,134 +5,137 @@ namespace Database\Seeders;
 use App\Models\Produk;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class ProdukSeeder extends Seeder
 {
     public function run(): void
     {
-        $katalogPath = storage_path('app/public/katalog');
-        if (!File::exists($katalogPath)) {
-            File::makeDirectory($katalogPath, 0755, true);
+        // 1. Pastikan folder penyimpanan storage/app/public/produk tersedia
+        $storageProdukDir = storage_path('app/public/produk');
+        if (!File::exists($storageProdukDir)) {
+            File::makeDirectory($storageProdukDir, 0755, true);
         }
 
+        // Folder sumber di public/produk
+        $publicProdukDir = public_path('produk');
+        if (!File::exists($publicProdukDir)) {
+            File::makeDirectory($publicProdukDir, 0755, true);
+        }
+
+        // Sinkronisasi file gambar antara public/produk dan storage/app/public/produk
+        if (File::exists($publicProdukDir)) {
+            $files = File::files($publicProdukDir);
+            foreach ($files as $file) {
+                $target = $storageProdukDir . DIRECTORY_SEPARATOR . $file->getFilename();
+                if (!File::exists($target)) {
+                    File::copy($file->getRealPath(), $target);
+                }
+            }
+        }
+
+        // 2. Daftar 13 Produk sesuai katalog-produk-mebel-ukir.md
         $produks = [
             [
-                'nama' => 'Sofa Modern Luxury 3-Seater Emerald',
-                'deskripsi' => 'Sofa ruang tamu elegan 3 dudukan dengan rangka kayu jati solid oven, busa high-density royal foam berlapis velvet emerald premium dengan aksen kaki stainless gold.',
-                'harga' => 4850000,
-                'filename' => 'sofa_luxury_emerald.jpg',
-                'url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=85',
+                'id' => 1,
+                'nama' => 'Kursi Ukir (1 Set)',
+                'deskripsi' => 'Set kursi tamu ukir kayu jati, terdiri dari sofa besar, sepasang kursi kecil, dan meja tengah, ukiran motif bunga dan sulur khas Madura. Ukuran: Sofa: P150×L60×T95 cm; kursi kecil: P70×60 cm; meja: P120×L55×T45 cm.',
+                'harga' => 32000000,
+                'foto' => 'produk/01_kursi-sofa-ukir-set.jpg',
             ],
             [
-                'nama' => 'Set Meja Makan Jati Scandinavian 6 Kursi',
-                'deskripsi' => 'Paket meja makan kayu jati perhutani grade A berkonsep Nordic Scandinavian. Dilengkapi 6 kursi ergonomis dengan sandaran lengkung dan dudukan empuk nyaman.',
-                'harga' => 5400000,
-                'filename' => 'meja_makan_scandinavian.jpg',
-                'url' => 'https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=1200&q=85',
+                'id' => 2,
+                'nama' => 'Podium/Mimbar Kayu Ukir Logo Garuda',
+                'deskripsi' => 'Podium kayu jati dengan lambang Garuda Pancasila berwarna emas dan papan nama "DESA PAKAMBAN LAOK", motif ukir batik pada badan podium.',
+                'harga' => 4500000,
+                'foto' => 'produk/02_podium-desa-pakamban-laok.jpg',
             ],
             [
-                'nama' => 'Lemari Pakaian 3 Pintu Duco Minimalis Modern',
-                'deskripsi' => 'Lemari pakaian kayu mahoni solid finishing cat duco putih matte anti rayap dan jamur. Dilengkapi cermin full body, gantungan baju luas, dan laci pakaian dalam bersekat.',
-                'harga' => 3950000,
-                'filename' => 'lemari_duco_minimalis.jpg',
-                'url' => 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=1200&q=85',
+                'id' => 3,
+                'nama' => 'Pintu Tarung Full Ukir',
+                'deskripsi' => 'Sepasang pintu kayu jati ukir penuh motif bunga dan sulur daun, bagian atas melengkung (arch top). Ukuran: 250×130 cm, tebal 4 cm.',
+                'harga' => 8000000,
+                'foto' => 'produk/03_pintu-tarung-full-ukir.jpg',
             ],
             [
-                'nama' => 'Tempat Tidur King Size Headboard Mewah Teak',
-                'deskripsi' => 'Dipan tempat tidur ukuran King 180x200 cm berbahan kayu jati tua pilihan dengan sandaran kepala empuk berbalut kain woven premium, kokoh dan tanpa bunyi.',
-                'harga' => 4750000,
-                'filename' => 'tempat_tidur_king_size.jpg',
-                'url' => 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=85',
+                'id' => 4,
+                'nama' => 'Logo NU Ukir',
+                'deskripsi' => 'Panel kayu ukir logo Nahdlatul Ulama (NU) dengan finishing prada emas, dilengkapi kaligrafi Arab dan bintang sembilan. Ukuran: 150×100 cm, tebal 3 cm.',
+                'harga' => 2000000,
+                'foto' => 'produk/04_logo-NU.jpg',
             ],
             [
-                'nama' => 'Pintu Utama Kayu Jati Ukir Klasik Jepara',
-                'deskripsi' => 'Sepasang daun pintu kupu tarung kayu jati solid tebal 4 cm dengan ukiran relief tradisional khas Jepara. Finishing natural dark walnut melamine doff tahan cuaca.',
-                'harga' => 6500000,
-                'filename' => 'pintu_ukir_jepara.jpg',
-                'url' => 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=85',
+                'id' => 5,
+                'nama' => 'Lemari 2 Pintu Sliding',
+                'deskripsi' => 'Lemari pakaian pintu geser (sliding) 2 pintu dengan 2 laci bawah, motif garis minimalis, finishing coklat tua.',
+                'harga' => 2200000,
+                'foto' => 'produk/05_lemari-2-pintu-sliding.jpg',
             ],
             [
-                'nama' => 'Credenza TV Minimalis Japandi Teak Wood',
-                'deskripsi' => 'Buffet TV minimalis panjang 180 cm kombinasi kayu jati natural dan aksen pintu rotan alami. Dilengkapi laci sistem push-to-open dan lubang manajemen kabel rapi.',
-                'harga' => 2850000,
-                'filename' => 'credenza_tv_japandi.jpg',
-                'url' => 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1200&q=85',
+                'id' => 6,
+                'nama' => 'Kursi Sidang 5 Set + Meja',
+                'deskripsi' => 'Meja dan 5 kursi sidang ukir kayu jati dengan jok bludru biru, ukiran prada warna-warni dan logo lambang di tengah meja.',
+                'harga' => 16500000,
+                'foto' => 'produk/06_kursi-sidang-5-set-meja.jpg',
             ],
             [
-                'nama' => 'Meja Kerja Direktur Kayu Jati Solid Natural',
-                'deskripsi' => 'Meja kantor dan kerja eksekutif berukuran 160x80 cm dari kayu jati perhutani utuh dengan serat kayu eksotis, laci berkunci, dan finishing natural coating ramah lingkungan.',
-                'harga' => 3600000,
-                'filename' => 'meja_kerja_direktur.jpg',
-                'url' => 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&w=1200&q=85',
+                'id' => 7,
+                'nama' => 'Pendopo/Gazebo Kayu Jati',
+                'deskripsi' => 'Bangunan pendopo terbuka kayu jati dengan atap joglo genteng tanah liat, tiang-tiang penyangga berukir.',
+                'harga' => 45000000,
+                'foto' => 'produk/07_pendopo-gazebo-jati.jpg',
             ],
             [
-                'nama' => 'Kursi Santai Lounge Armchair Retro Nordic',
-                'deskripsi' => 'Kursi santai single seat dengan rangka kayu jati lengkung ergonomis, bantalan busa tebal berlapis kain tweed lembut, sangat cocok untuk ruang baca atau santai keluarga.',
-                'harga' => 1950000,
-                'filename' => 'kursi_santai_lounge.jpg',
-                'url' => 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1200&q=85',
+                'id' => 8,
+                'nama' => 'Kursi Sofa Motif 1 (Set 3)',
+                'deskripsi' => 'Set sofa 3 buah (1 sofa panjang + 2 kursi single) dengan meja tengah, ukiran prada warna-warni motif bunga.',
+                'harga' => 10000000,
+                'foto' => 'produk/08_kursi-sofa-motif-1-set-3.jpg',
             ],
             [
-                'nama' => 'Kitchen Set Minimalis Kayu Jati & Granit Top',
-                'deskripsi' => 'Set kabinet dapur atas dan bawah custom dengan rangka jati solid anti-lembab, engsel hidrolik slow-motion, rak piring stainless, dan table top mewah.',
-                'harga' => 8900000,
-                'filename' => 'kitchen_set_minimalis.jpg',
-                'url' => 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=85',
+                'id' => 9,
+                'nama' => 'Blawong',
+                'deskripsi' => 'Panel ukir gantung (blawong) sepasang burung phoenix/merak dengan motif sulur, kayu jati. Ukuran: 65×45 cm, tebal 2 cm.',
+                'harga' => 250000,
+                'foto' => 'produk/09_blawong-65x45.jpg',
             ],
             [
-                'nama' => 'Rak Buku Partisi Ruangan Teak Industrial',
-                'deskripsi' => 'Rak display buku dan partisi sekat ruangan multifungsi berukuran 120x200 cm berbahan kayu jati solid modular dengan konstruksi kokoh tanpa goyang.',
-                'harga' => 3200000,
-                'filename' => 'rak_buku_partisi.jpg',
-                'url' => 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=1200&q=85',
+                'id' => 10,
+                'nama' => 'Lemari Minimalis 10 Pintu',
+                'deskripsi' => 'Lemari serbaguna minimalis 10 pintu dengan rak kaca dan ruang terbuka tengah, finishing natural kayu. Ukuran: P200×L65 cm, tinggi 190 cm.',
+                'harga' => 2500000,
+                'foto' => 'produk/10_lemari-minimalis-10-pintu.jpg',
             ],
             [
-                'nama' => 'Meja Rias Vanity Duco Cermin LED Touchscreen',
-                'deskripsi' => 'Meja rias modern warna broken white dengan cermin bulat berlampu LED 3 mode warna cahaya, laci aksesoris bersekat bludru, dan kursi puff senada.',
-                'harga' => 2650000,
-                'filename' => 'meja_rias_vanity.jpg',
-                'url' => 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=85',
+                'id' => 11,
+                'nama' => 'Blawong (Set 2 Motif)',
+                'deskripsi' => 'Sepasang panel ukir gantung motif burung dan bunga, warna prada emas dan ungu.',
+                'harga' => 500000,
+                'foto' => 'produk/11_blawong-set-2-motif.jpg',
             ],
             [
-                'nama' => 'Bale-Bale Daybed Santai Jati Jepara Minimalis',
-                'deskripsi' => 'Daybed santai bale-bale kayu jati berukuran 200x80 cm lengkap dengan kasur busa jok tebal dan 3 bantal peluk, cocok untuk teras depan atau ruang santai keluarga.',
-                'harga' => 3450000,
-                'filename' => 'bale_bale_daybed.jpg',
-                'url' => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=85',
+                'id' => 12,
+                'nama' => 'Ukiran 30×30 (Set 2)',
+                'deskripsi' => 'Panel ukir persegi motif bunga dan sulur daun, kayu jati, dijual berpasangan. Ukuran: 30×30 cm, tebal 2 cm.',
+                'harga' => 150000,
+                'foto' => 'produk/12_ukiran-30x30-set-2.jpg',
+            ],
+            [
+                'id' => 13,
+                'nama' => 'Lemari Rias Kaca',
+                'deskripsi' => 'Lemari rias dengan cermin besar berlampu, 2 lemari kaca samping dan 4 laci tengah. Ukuran: P150×L55 cm, tinggi 160 cm.',
+                'harga' => 2200000,
+                'foto' => 'produk/13_lemari-rias-kaca.jpg',
             ],
         ];
 
-        // Hapus data dummy lama jika ada
-        Produk::query()->delete();
+        // 3. Reset dan isi ulang tabel produks
+        Schema::disableForeignKeyConstraints();
+        Produk::truncate();
+        Schema::enableForeignKeyConstraints();
 
         foreach ($produks as $p) {
-            $destFile = $katalogPath . DIRECTORY_SEPARATOR . $p['filename'];
-            $relPath = 'katalog/' . $p['filename'];
-
-            // Unduh file gambar jika belum ada secara lokal
-            if (!File::exists($destFile)) {
-                try {
-                    $response = Http::timeout(15)->get($p['url']);
-                    if ($response->successful()) {
-                        File::put($destFile, $response->body());
-                    }
-                } catch (\Throwable $e) {
-                    Log::warning('Gagal download gambar produk: ' . $p['filename'] . ' - ' . $e->getMessage());
-                }
-            }
-
-            // Jika file berhasil tersimpan di lokal, gunakan path lokal, jika tidak gunakan URL langsung
-            $fotoValue = File::exists($destFile) ? $relPath : $p['url'];
-
-            Produk::create([
-                'nama' => $p['nama'],
-                'deskripsi' => $p['deskripsi'],
-                'harga' => $p['harga'],
-                'foto' => $fotoValue,
-            ]);
+            Produk::create($p);
         }
     }
 }
-

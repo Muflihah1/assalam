@@ -167,6 +167,56 @@
                 display: block;
             }
         }
+
+        /* Custom Teak Wood Pagination */
+        .pagination {
+            margin-bottom: 0;
+            gap: 4px;
+            display: flex;
+            align-items: center;
+        }
+        .pagination .page-link {
+            border-radius: 8px !important;
+            border: 1.5px solid var(--light-border);
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            transition: all 0.2s ease;
+            background-color: #ffffff;
+        }
+        .pagination .page-link:hover {
+            background-color: var(--wood-bg);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(93, 64, 55, 0.25);
+        }
+        .pagination .page-item.disabled .page-link {
+            background-color: #f8fafc;
+            color: #94a3b8;
+            border-color: #e2e8f0;
+        }
+        .pagination-clean nav > div.d-none.flex-sm-fill > div:first-child {
+            display: none !important;
+        }
+        .pagination-clean nav > div.d-flex.d-sm-none {
+            display: none !important;
+        }
+        .pagination-clean nav > div.d-none.flex-sm-fill {
+            display: flex !important;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .pagination-clean nav {
+            display: flex;
+            justify-content: flex-end;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -246,9 +296,7 @@
             <div class="d-flex align-items-center gap-3">
                 <!-- Ikon Profil Admin -->
                 <div class="d-flex align-items-center gap-2 interactive-icon" data-bs-toggle="modal" data-bs-target="#modalProfilAdmin" title="Lihat Profil Admin">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 38px; height: 38px; background-color: var(--primary-color);">
-                        <i class="fa-solid fa-user-shield fs-6"></i>
-                    </div>
+                    <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name ?? 'Admin' }}" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover; border-color: var(--primary-color) !important;">
                     <span class="fw-bold small d-none d-md-inline" style="color: var(--text-dark);">{{ Auth::user()->name ?? 'Administrator' }}</span>
                 </div>
 
@@ -304,9 +352,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4 text-center">
-                    <div class="border rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 75px; height: 75px; background-color: var(--light-bg); border-color: var(--light-border) !important;">
-                        <i class="fa-solid fa-user-tie fa-2x" style="color: var(--primary-color);"></i>
-                    </div>
+                    <img src="{{ Auth::user()->profile_photo_url }}" alt="Admin" class="rounded-circle border mb-3 shadow-sm" style="width: 80px; height: 80px; object-fit: cover; border-color: var(--primary-color) !important;">
                     <h5 class="fw-bold text-dark mb-1">{{ Auth::user()->name ?? 'Administrator' }}</h5>
                     <p class="small text-muted mb-3">{{ Auth::user()->email ?? 'admin@assalammebel.com' }}</p>
                     

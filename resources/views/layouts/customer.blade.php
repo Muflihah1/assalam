@@ -449,9 +449,7 @@
 
                 @auth
                     <a href="{{ route('customer.account') }}" class="d-flex align-items-center gap-2 text-decoration-none" title="Akun Saya">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 38px; height: 38px; background-color: var(--primary-color);">
-                            <i class="fa-solid fa-user small"></i>
-                        </div>
+                        <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover; border-color: var(--wood-border) !important;">
                         <span class="fw-bold small d-none d-md-inline text-dark">{{ Auth::user()->name }}</span>
                     </a>
                 @else
