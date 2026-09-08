@@ -323,28 +323,43 @@ class WhatsAppGatewayController extends Controller
         $port = config('laravel-whatsapp.web.port', 3000);
         $token = config('laravel-whatsapp.web.token', '');
 
+        // 1. Hentikan sesi WhatsApp Web & Chromium via API sidecar
         try {
-            // Hentikan sesi yang berjalan jika ada
-            Http::timeout(3)
+            Http::timeout(5)
                 ->withHeaders($token ? ['Authorization' => "Bearer {$token}"] : [])
                 ->post("http://{$host}:{$port}/sessions/main/stop");
         } catch (Throwable $e) {
             //
         }
 
+        usleep(500_000);
+
+        // 2. Pastikan Sidecar service hidup; jika mati, nyalakan via SidecarManager
+        $sidecarAlive = false;
         try {
-            $sidecar = app(SidecarManager::class);
-            if ($sidecar->isRunning()) {
-                $sidecar->stop();
-                sleep(1);
+            $healthRes = Http::timeout(2)
+                ->withHeaders($token ? ['Authorization' => "Bearer {$token}"] : [])
+                ->get("http://{$host}:{$port}/health");
+            if ($healthRes->successful()) {
+                $sidecarAlive = true;
             }
-            $sidecar->start();
-            sleep(1);
         } catch (Throwable $e) {
-            //
+            $sidecarAlive = false;
         }
 
-        // Boot kembali session main
+        if (!$sidecarAlive) {
+            try {
+                $sidecar = app(SidecarManager::class);
+                if (!$sidecar->isRunning()) {
+                    $sidecar->start();
+                    usleep(500_000);
+                }
+            } catch (Throwable $e) {
+                //
+            }
+        }
+
+        // 3. Boot kembali sesi 'main' (browser Chromium baru)
         try {
             Http::timeout(6)
                 ->withHeaders($token ? ['Authorization' => "Bearer {$token}"] : [])
@@ -353,7 +368,7 @@ class WhatsAppGatewayController extends Controller
             //
         }
 
-        return back()->with('success', 'Service WhatsApp Sidecar berhasil di-restart!');
+        return back()->with('success', 'Sesi WhatsApp berhasil di-restart dan browser siap memindai QR baru.');
     }
 
     /**
