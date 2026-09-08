@@ -80,9 +80,9 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.st
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Rute Khusus Login Admin
-Route::get('/admin/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
-Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
+// Rute Login Tunggal Terpadu (Mengalihkan /admin/login ke /login)
+Route::redirect('/admin/login', '/login')->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'authenticate'])->name('admin.login.submit');
 
 
 // 3. TRANSAKSI & AREA KHUSUS PELANGGAN (Wajib Login)
