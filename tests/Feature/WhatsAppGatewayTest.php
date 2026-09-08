@@ -4,13 +4,13 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\WaTemplate;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class WhatsAppGatewayTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     protected User $admin;
     protected User $customer;
@@ -21,21 +21,23 @@ class WhatsAppGatewayTest extends TestCase
 
         $this->admin = User::factory()->create([
             'role' => 'admin',
-            'email' => 'admin@assalam.test',
+            'email' => 'admin_' . uniqid() . '@assalam.test',
         ]);
 
         $this->customer = User::factory()->create([
             'role' => 'customer',
-            'email' => 'customer@assalam.test',
+            'email' => 'customer_' . uniqid() . '@assalam.test',
         ]);
 
-        WaTemplate::create([
-            'name' => 'Pesanan Baru Dibuat',
-            'code' => 'order_created',
-            'event_trigger' => 'Saat Pesanan Dibuat',
-            'content' => 'Halo {nama}, pesanan #{no_pesanan} ({produk}) berhasil dibuat.',
-            'is_active' => true,
-        ]);
+        WaTemplate::updateOrCreate(
+            ['code' => 'order_created'],
+            [
+                'name' => 'Pesanan Baru Dibuat',
+                'event_trigger' => 'Saat Pesanan Dibuat',
+                'content' => 'Halo {nama}, pesanan #{no_pesanan} ({produk}) berhasil dibuat.',
+                'is_active' => true,
+            ]
+        );
     }
 
     public function test_guest_cannot_access_whatsapp_gateway(): void
