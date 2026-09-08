@@ -101,9 +101,10 @@ if [ ! -d public/build ]; then
     npm run build || true
 fi
 
-# 10. Pastikan direktori sesi WhatsApp Web Sidecar tersedia
+# 10. Pastikan direktori sesi WhatsApp Web Sidecar tersedia dan file sidecar ter-patch
 mkdir -p storage/app/whatsapp-sidecar/sessions
 mkdir -p storage/logs
+php scripts/patch-whatsapp-sidecar.php || true
 
 echo "=== Setup Selesai! Menjalankan perintah utama: $@ ==="
 exec "$@"
