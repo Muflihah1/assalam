@@ -267,6 +267,15 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('admin.ulasan') }}" class="nav-link {{ request()->routeIs('admin.ulasan*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-comments"></i> Ulasan Produk
+                        @php $pendingReviews = \App\Models\ProductReview::where('status', 'Menunggu Persetujuan')->count(); @endphp
+                        @if($pendingReviews > 0)
+                            <span class="badge bg-danger rounded-pill ms-auto px-2 py-0.5" style="font-size: 0.72rem;">{{ $pendingReviews }}</span>
+                        @endif
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('admin.progres.produksi') }}" class="nav-link {{ request()->routeIs('admin.progres.produksi*') ? 'active' : '' }}">
                         <i class="fa-solid fa-gears"></i> Progres Produksi
                     </a>

@@ -15,6 +15,31 @@ use Illuminate\Support\Str;
 class CartController extends Controller
 {
     /**
+     * Cek apakah user yang login adalah admin (guard tambahan di level controller).
+     */
+    private function rejectAdmin(Request $request = null): bool
+    {
+        $user = $request?->user() ?? Auth::user();
+
+        return $user !== null && $user->role === 'admin';
+    }
+
+    /**
+     * Respon penolakan untuk akun admin yang mencoba bertransaksi.
+     */
+    private function adminBlockResponse(Request $request, string $action)
+    {
+        $message = 'Akun administrator tidak diizinkan ' . $action . '. Silakan gunakan akun pelanggan untuk bertransaksi.';
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => false, 'message' => $message], 403);
+        }
+
+        return redirect()
+            ->route('customer.katalog')
+            ->with('error', $message);
+    }
+    /**
      * Tampilkan Halaman Keranjang Belanja
      */
     public function index()
@@ -35,9 +60,14 @@ class CartController extends Controller
 
     /**
      * Tambah Produk Katalog ke Keranjang Belanja
+     * (Akun admin diblokir — hanya pelanggan yang boleh bertransaksi)
      */
     public function add(Request $request, $id)
     {
+        if ($this->rejectAdmin($request)) {
+            return $this->adminBlockResponse($request, 'mengelola keranjang belanja');
+        }
+
         $produk = Produk::findOrFail($id);
         $cart = session()->get('cart', []);
 
@@ -73,9 +103,14 @@ class CartController extends Controller
 
     /**
      * Ubah Kuantitas Item di Keranjang
+     * (Akun admin diblokir)
      */
     public function update(Request $request, $key)
     {
+        if ($this->rejectAdmin($request)) {
+            return $this->adminBlockResponse($request, 'mengelola keranjang belanja');
+        }
+
         $cart = session()->get('cart', []);
 
         if (isset($cart[$key])) {
@@ -105,9 +140,14 @@ class CartController extends Controller
 
     /**
      * Hapus Item dari Keranjang
+     * (Akun admin diblokir)
      */
     public function remove($key)
     {
+        if ($this->rejectAdmin()) {
+            return $this->adminBlockResponse(request(), 'mengelola keranjang belanja');
+        }
+
         $cart = session()->get('cart', []);
 
         if (isset($cart[$key])) {
@@ -122,9 +162,14 @@ class CartController extends Controller
 
     /**
      * Proses Checkout Keranjang Belanja Menjadi Pesanan Nyata
+     * (Akun admin diblokir — checkout hanya untuk pelanggan)
      */
     public function checkout(Request $request)
     {
+        if ($this->rejectAdmin($request)) {
+            return $this->adminBlockResponse($request, 'melakukan checkout pemesanan');
+        }
+
         $cart = session()->get('cart', []);
 
         if (empty($cart)) {

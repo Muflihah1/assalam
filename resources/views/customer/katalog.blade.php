@@ -192,7 +192,21 @@
                     </div>
                     
                     <div class="text-start">
-                        <h5 class="fw-bold text-dark mb-1">{{ $item->nama }}</h5>
+                        <a href="{{ route('customer.produk.detail', $item->id) }}" class="text-decoration-none">
+                            <h5 class="fw-bold text-dark mb-1">{{ $item->nama }}</h5>
+                        </a>
+                        @if($item->rating_count > 0)
+                            <div class="d-flex align-items-center gap-1 mb-2">
+                                <div style="font-size: 0.75rem;">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="fa-solid {{ $i <= round($item->rating_average) ? 'fa-star' : 'fa-star' }}" style="color: {{ $i <= round($item->rating_average) ? '#f59e0b' : '#d1d5db' }};"></i>
+                                    @endfor
+                                </div>
+                                <span class="text-muted" style="font-size: 0.72rem;">{{ number_format($item->rating_average, 1) }} ({{ $item->rating_count }} ulasan)</span>
+                            </div>
+                        @else
+                            <div class="mb-2"><span class="badge bg-light text-muted border" style="font-size: 0.68rem;">Belum ada ulasan</span></div>
+                        @endif
                         <p class="text-muted small mb-2">{{ Str::limit($item->deskripsi, 80) }}</p>
                         <h5 class="price-text mb-3">Rp {{ number_format($item->harga, 0, ',', '.') }}</h5>
                     </div>
@@ -207,9 +221,9 @@
                                 </button>
                             </form>
                             <!-- Tombol Detail / Review -->
-                            <button class="btn btn-outline-dark-theme flex-shrink-0" data-bs-toggle="modal" data-bs-target="#modalDetail{{ $item->id }}" title="Lihat Detail">
+                            <a href="{{ route('customer.produk.detail', $item->id) }}" class="btn btn-outline-dark-theme flex-shrink-0" title="Lihat Detail & Ulasan">
                                 <i class="fa-solid fa-circle-info"></i>
-                            </button>
+                            </a>
                         </div>
                         <a href="{{ route('customer.design', ['product_id' => $item->id]) }}" class="btn btn-outline-dark-theme text-decoration-none text-center">
                             <i class="fa-solid fa-pen-ruler me-1"></i> Kustomisasi Model Ini
@@ -230,9 +244,23 @@
                                     <span class="fw-bold fs-5 text-dark">{{ $item->nama }}</span>
                                 @endif
                             </div>
-                            <h4 class="fw-bold text-dark mb-2">{{ $item->nama }}</h4>
+                        <div class="text-start">
+                            <a href="{{ route('customer.produk.detail', $item->id) }}" class="text-decoration-none">
+                                <h4 class="fw-bold text-dark mb-2">{{ $item->nama }}</h4>
+                            </a>
+                            @if($item->rating_count > 0)
+                                <div class="d-flex align-items-center gap-1 mb-2">
+                                    <div style="font-size: 0.8rem;">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <i class="fa-solid fa-star" style="color: {{ $i <= round($item->rating_average) ? '#f59e0b' : '#d1d5db' }};"></i>
+                                        @endfor
+                                    </div>
+                                    <span class="text-muted small">{{ number_format($item->rating_average, 1) }} · {{ $item->rating_count }} ulasan</span>
+                                </div>
+                            @endif
                             <p class="text-muted small mb-3">{{ $item->deskripsi }}</p>
                             <h4 class="price-text mb-4">Rp {{ number_format($item->harga, 0, ',', '.') }}</h4>
+                        </div>
                             
                             <!-- Form Tambah dari Modal dengan Pilihan Jumlah Qty -->
                             <form action="{{ route('customer.cart.add', $item->id) }}" method="POST" class="mb-3">
@@ -250,6 +278,13 @@
                             </form>
                             
                             <div class="text-center pt-2 border-top">
+                                <a href="{{ route('customer.produk.detail', $item->id) }}" class="small text-decoration-none fw-bold d-block mb-1" style="color: var(--primary-color);">
+                                    @if($item->rating_count > 0)
+                                        <i class="fa-solid fa-comments me-1"></i> Baca {{ $item->rating_count }} Ulasan Pembeli →
+                                    @else
+                                        <i class="fa-solid fa-comments me-1"></i> Lihat Detail & Ulasan →
+                                    @endif
+                                </a>
                                 <a href="{{ route('customer.design', ['product_id' => $item->id]) }}" class="small text-decoration-none fw-bold" style="color: var(--primary-color);">
                                     Atau kustomisasi ukuran & bahan di Studio Custom →
                                 </a>

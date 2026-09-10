@@ -11,6 +11,8 @@ use App\Http\Controllers\Customer\CartController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 use App\Http\Controllers\Customer\AccountController as CustomerAccountController;
 use App\Http\Controllers\Admin\WhatsAppGatewayController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Customer\ReviewController;
 use App\Models\Produk;
 
 /*
@@ -65,11 +67,17 @@ Route::get('/katalog', function (\Illuminate\Http\Request $request) {
 Route::get('/design', [CustomerOrderController::class, 'design'])->name('customer.design');
 
 // Keranjang Belanja Publik (Tersimpan di Session)
+// Aksi transaksi dilindungi middleware 'customer' agar AKUN ADMIN tidak bisa bertransaksi
 Route::get('/cart', [CartController::class, 'index'])->name('customer.cart');
-Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('customer.cart.add');
-Route::post('/cart/update/{key}', [CartController::class, 'update'])->name('customer.cart.update');
-Route::delete('/cart/remove/{key}', [CartController::class, 'remove'])->name('customer.cart.remove');
+Route::middleware(['customer'])->group(function () {
+    Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('customer.cart.add');
+    Route::post('/cart/update/{key}', [CartController::class, 'update'])->name('customer.cart.update');
+    Route::delete('/cart/remove/{key}', [CartController::class, 'remove'])->name('customer.cart.remove');
+});
 
+
+// DETAIL PRODUK + ULASAN (Publik: tamu dapat membaca ulasan)
+Route::get('/produk/{id}', [ProductController::class, 'show'])->name('customer.produk.detail');
 
 // 2. AUTENTIKASI & REGISTRASI
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -85,8 +93,8 @@ Route::redirect('/admin/login', '/login')->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'authenticate'])->name('admin.login.submit');
 
 
-// 3. TRANSAKSI & AREA KHUSUS PELANGGAN (Wajib Login)
-Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(function () {
+// 3. TRANSAKSI & AREA KHUSUS PELANGGAN (Wajib Login & Bukan Akun Admin)
+Route::middleware(['auth', 'customer'])->prefix('customer')->name('customer.')->group(function () {
     
     // Checkout Keranjang Belanja
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
@@ -107,6 +115,10 @@ Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(functi
     Route::get('/account', [CustomerAccountController::class, 'index'])->name('account');
     Route::post('/account/profile', [CustomerAccountController::class, 'updateProfile'])->name('account.profile');
     Route::post('/account/password', [CustomerAccountController::class, 'updatePassword'])->name('account.password');
+
+    // Ulasan Produk (Komentar & Rating — khusus akun pelanggan)
+    Route::post('/produk/{id}/review', [ReviewController::class, 'store'])->name('produk.review.store');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('produk.review.destroy');
 });
 
 
@@ -138,6 +150,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Manajemen Progres Produksi
     Route::get('/progres-produksi/{id?}', [OrderManagementController::class, 'progresProduksi'])->name('progres.produksi');
     Route::put('/progres-produksi/{id}', [OrderManagementController::class, 'updateProgres'])->name('progres.update');
+
+    // Moderasi Ulasan Produk
+    Route::get('/ulasan', [\App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('ulasan');
+    Route::post('/ulasan/{id}/approve', [\App\Http\Controllers\Admin\ReviewController::class, 'approve'])->name('ulasan.approve');
+    Route::post('/ulasan/{id}/reject', [\App\Http\Controllers\Admin\ReviewController::class, 'reject'])->name('ulasan.reject');
+    Route::delete('/ulasan/{id}', [\App\Http\Controllers\Admin\ReviewController::class, 'destroy'])->name('ulasan.destroy');
 
     // Data Akun Pelanggan & Riwayat
     Route::get('/data-pelanggan', [AdminCustomerController::class, 'index'])->name('data.pelanggan');

@@ -179,7 +179,21 @@
                             @endif
                         </div>
                         <div>
-                            <h5 class="fw-bold mb-1 text-dark">{{ $item->nama }}</h5>
+                            <a href="{{ route('customer.produk.detail', $item->id) }}" class="text-decoration-none">
+                                <h5 class="fw-bold mb-1 text-dark">{{ $item->nama }}</h5>
+                            </a>
+                            @if($item->rating_count > 0)
+                                <div class="d-flex align-items-center gap-1 mb-2">
+                                    <div style="font-size: 0.75rem;">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <i class="fa-solid fa-star" style="color: {{ $i <= round($item->rating_average) ? '#f59e0b' : '#d1d5db' }};"></i>
+                                        @endfor
+                                    </div>
+                                    <span class="text-muted" style="font-size: 0.72rem;">{{ number_format($item->rating_average, 1) }} ({{ $item->rating_count }})</span>
+                                </div>
+                            @else
+                                <div class="mb-2"><span class="badge bg-light text-muted border" style="font-size: 0.68rem;">Baru</span></div>
+                            @endif
                             <p class="text-muted small mb-2">{{ Str::limit($item->deskripsi, 65) }}</p>
                             <h5 class="fw-extrabold mb-3" style="color: var(--primary-color);">Rp {{ number_format($item->harga, 0, ',', '.') }}</h5>
                         </div>
@@ -191,8 +205,11 @@
                                     <i class="fa-solid fa-cart-plus me-1"></i> + Keranjang
                                 </button>
                             </form>
+                            <a href="{{ route('customer.produk.detail', $item->id) }}" class="btn btn-outline-dark-theme text-decoration-none" title="Lihat Detail & Ulasan">
+                                <i class="fa-solid fa-circle-info"></i>
+                            </a>
                             <a href="{{ route('customer.design', ['product_id' => $item->id]) }}" class="btn btn-outline-dark-theme text-decoration-none" title="Kustomisasi Produk">
-                                <i class="fa-solid fa-pen-ruler"></i> Custom
+                                <i class="fa-solid fa-pen-ruler"></i>
                             </a>
                         </div>
                     </div>

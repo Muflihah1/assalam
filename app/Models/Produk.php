@@ -17,7 +17,23 @@ class Produk extends Model
         'foto',
     ];
 
-    protected $appends = ['foto_url', 'default_dimensions'];
+    protected $appends = ['foto_url', 'default_dimensions', 'rating_average', 'rating_count', 'sold_count'];
+
+    /**
+     * Ulasan produk (semua status — untuk moderasi admin).
+     */
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class, 'produk_id')->latest();
+    }
+
+    /**
+     * Ulasan yang sudah disetujui admin (tampil di halaman publik).
+     */
+    public function approvedReviews()
+    {
+        return $this->hasMany(ProductReview::class, 'produk_id')->where('status', 'Disetujui')->latest();
+    }
 
     /**
      * Accessor untuk URL foto produk yang valid (baik path storage lokal maupun direct URL)
@@ -43,6 +59,42 @@ class Produk extends Model
         }
 
         return Storage::url($this->foto);
+    }
+
+    /**
+     * Rating rata-rata dari ulasan yang disetujui (0 jika belum ada ulasan)
+     */
+    public function getRatingAverageAttribute(): float
+    {
+        return (float) $this->approvedReviews()->avg('rating');
+    }
+
+    /**
+     * Jumlah ulasan yang disetujui
+     */
+    public function getRatingCountAttribute(): int
+    {
+        return (int) $this->approvedReviews()->count();
+    }
+
+    /**
+     * Jumlah unit terjual (dihitung dari pesanan yang sudah melewati konfirmasi).
+     */
+    public function getSoldCountAttribute(): int
+    {
+        return (int) $this->orderItems()
+            ->whereHas('order', function ($q) {
+                $q->whereNotIn('order_status', ['Menunggu Konfirmasi', 'Ditolak', 'Dibatalkan']);
+            })
+            ->sum('quantity');
+    }
+
+    /**
+     * Item pesanan yang terhubung ke produk katalog ini.
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'produk_id');
     }
 
     /**

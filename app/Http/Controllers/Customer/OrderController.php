@@ -47,6 +47,17 @@ class OrderController extends Controller
             return redirect()->route('login')->with('error', 'Silakan masuk (login) atau daftar akun terlebih dahulu untuk mengajukan pesanan mebel custom!');
         }
 
+        // Guard: akun admin tidak boleh mengajukan desain/pesanan
+        if (Auth::user()->role === 'admin') {
+            $message = 'Akun administrator tidak diizinkan melakukan pengajuan desain atau pemesanan. Silakan gunakan akun pelanggan untuk bertransaksi.';
+
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 403);
+            }
+
+            return redirect()->route('customer.katalog')->with('error', $message);
+        }
+
         $request->validate([
             'product_id' => 'required|exists:produks,id',
             'category' => 'required|string|max:100',

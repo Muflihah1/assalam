@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             StudioSettingSeeder::class,
             ShippingCostSeeder::class,
             ProdukSeeder::class,
+            ProductReviewSeeder::class,
             OrderSeeder::class,
             WaTemplateSeeder::class,
             WaMessageLogSeeder::class,
