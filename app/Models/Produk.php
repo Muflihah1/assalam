@@ -17,7 +17,23 @@ class Produk extends Model
         'foto',
     ];
 
-    protected $appends = ['foto_url', 'default_dimensions', 'rating_average', 'rating_count', 'sold_count'];
+    protected $appends = ['foto_url', 'kategori', 'default_dimensions', 'rating_average', 'rating_count', 'sold_count'];
+
+    /**
+     * Kategori dinamis mebel berdasarkan nama produk
+     */
+    public function getKategoriAttribute(): string
+    {
+        $name = strtolower($this->nama ?? '');
+        if (str_contains($name, 'kursi') || str_contains($name, 'sofa')) return 'Kursi & Sofa';
+        if (str_contains($name, 'meja')) return 'Meja';
+        if (str_contains($name, 'lemari')) return 'Lemari';
+        if (str_contains($name, 'pintu')) return 'Pintu & Gebyok';
+        if (str_contains($name, 'podium') || str_contains($name, 'mimbar')) return 'Mimbar Podium';
+        if (str_contains($name, 'pendopo') || str_contains($name, 'gazebo')) return 'Gazebo / Pendopo';
+        if (str_contains($name, 'ukir') || str_contains($name, 'blawong') || str_contains($name, 'logo')) return 'Ukiran Seni Jepara';
+        return 'Mebel Solid';
+    }
 
     /**
      * Ulasan produk (semua status — untuk moderasi admin).
@@ -48,17 +64,17 @@ class Produk extends Model
             return $this->foto;
         }
 
-        // Cek jika file tersimpan di storage public
-        if (Storage::disk('public')->exists($this->foto)) {
-            return Storage::url($this->foto);
-        }
-
-        // Fallback jika file berada langsung di folder public/ (misal "produk/...")
+        // 1. Prioritaskan jika file berada langsung di folder public/ (misal "produk/01_...")
         if (file_exists(public_path($this->foto))) {
-            return asset($this->foto);
+            return '/' . ltrim($this->foto, '/');
         }
 
-        return Storage::url($this->foto);
+        // 2. Cek jika file tersimpan di storage/app/public/
+        if (Storage::disk('public')->exists($this->foto)) {
+            return '/storage/' . ltrim($this->foto, '/');
+        }
+
+        return '/' . ltrim($this->foto, '/');
     }
 
     /**

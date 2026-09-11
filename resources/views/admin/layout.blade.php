@@ -19,16 +19,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #5d4037;     /* Cokelat Mebel Kayu */
-            --primary-dark: #3e2723;      /* Deep Mahogany */
-            --secondary-color: #8d6e63;   /* Cokelat Sedang */
-            --accent-orange: #d77a61;     /* Terracotta */
-            --accent-gold: #d97706;       /* Amber Gold */
-            --light-bg: #faf6f0;          /* Warm Alabaster */
+            --primary-color: #3B2314;     /* Deep Teak Solid */
+            --primary-dark: #27160B;      /* Dark Mahogany */
+            --secondary-color: #5C3A21;   /* Warm Walnut */
+            --primary-subtle: #F6EDE4;    /* Warm Latte */
+            --accent-orange: #C86D3B;     /* Terracotta */
+            --accent-gold: #D97706;       /* Amber Gold */
+            --light-bg: #F8F9FA;          /* Clean Slate / Light Neutral */
             --light-card: #ffffff;        /* Pure White */
-            --light-border: #dcd4cc;      /* Soft Natural Border */
-            --text-dark: #2c221e;         /* Espresso Dark */
-            --text-muted: #796d66;        /* Taupe Muted */
+            --light-border: #E5E7EB;      /* Clean Soft Border */
+            --wood-bg: #FAF5F0;           /* Soft Cream Wood */
+            --wood-border: #D5C2B1;
+            --text-dark: #1F2937;         /* Charcoal Black */
+            --text-muted: #6B7280;        /* Muted Gray */
             --sidebar-width: 260px;
         }
 
@@ -370,7 +373,7 @@
             </div>
         @endif
 
-        @if($errors->any())
+        @if(isset($errors) && $errors->any())
             <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm" role="alert">
                 <div class="d-flex align-items-center gap-2 mb-1">
                     <i class="fa-solid fa-triangle-exclamation"></i>

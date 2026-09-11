@@ -77,7 +77,7 @@ Perintah `composer run dev` ini secara otomatis menjalankan seluruh layanan yang
 
 ### 🛒 1. Katalog Produk Nyata (Real Furniture Photography)
 - Koleksi furnitur kayu solid lengkap dengan foto asli beresolusi tinggi (bukan mockup).
-- Kategori: Sofa Luxury Velvet, Meja Makan Scandinavian Jati, Lemari Pakaian Duco 3 Pintu, King Size Bed Mewah, Pintu Ukir Klasik Jepara, Credenza TV Japandi, Meja Kerja Direktur, Kursi Lounge Nordic, Kitchen Set Minimalis Jati, Rak Buku Partisi, Meja Rias LED, Bale-Bale Daybed.
+- Kategori: Sofa Luxury Velvet, Meja Scandinavian Jati, Lemari Pakaian Duco 3 Pintu, King Size Bed Mewah, Pintu Ukir Klasik Jepara, Credenza TV Japandi, Meja Kerja Direktur, Kursi Lounge Nordic, Kitchen Set Minimalis Jati, Rak Buku Partisi, Meja Rias LED, Bale-Bale Daybed.
 - Modal detail interaktif dengan pemilihan kuantitas barang dan pembelian langsung ke keranjang.
 
 ### 🎨 2. Studio Custom Desain 3D

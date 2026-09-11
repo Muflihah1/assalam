@@ -1,320 +1,205 @@
 @extends('layouts.customer')
 
 @section('content')
-<style>
-    /* Product Cards Styling */
-    .product-card {
-        border: 1.5px solid var(--wood-border);
-        border-radius: 20px;
-        background: var(--light-card);
-        padding: 20px;
-        text-align: center;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        transition: all 0.3s ease;
-        box-shadow: 0 6px 18px rgba(93, 64, 55, 0.06);
-    }
+<div class="container-xl">
 
-    .product-card:hover {
-        border-color: var(--primary-color);
-        transform: translateY(-6px);
-        box-shadow: 0 15px 30px rgba(93, 64, 55, 0.15);
-    }
+    <!-- 1. BREADCRUMBS & CATALOG HEADER -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('customer.beranda') }}" class="text-decoration-none text-muted">Beranda</a></li>
+            <li class="breadcrumb-item active fw-bold text-dark" aria-current="page">Katalog Produk</li>
+        </ol>
+    </nav>
 
-    .product-img-holder {
-        border: 1.5px solid var(--light-border);
-        border-radius: 14px;
-        height: 220px;
-        background-color: #fdfaf6;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-main);
-        overflow: hidden;
-    }
-
-    .product-img-holder img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.4s ease;
-    }
-
-    .product-card:hover .product-img-holder img {
-        transform: scale(1.06);
-    }
-
-    /* Buttons Style */
-    .btn-orange {
-        background: var(--primary-color);
-        color: #ffffff;
-        font-weight: 700;
-        border: none;
-        border-radius: 10px;
-        padding: 9px 12px;
-        font-size: 0.875rem;
-        transition: all 0.2s;
-    }
-
-    .btn-orange:hover {
-        background: var(--secondary-color);
-        color: #ffffff;
-        box-shadow: 0 5px 15px rgba(93, 64, 55, 0.2);
-    }
-
-    .btn-outline-dark-theme {
-        border: 1.5px solid var(--wood-border);
-        background: var(--light-bg);
-        color: var(--text-main);
-        font-weight: 600;
-        border-radius: 10px;
-        font-size: 13px;
-        padding: 8px 12px;
-        transition: 0.2s;
-    }
-
-    .btn-outline-dark-theme:hover {
-        background: var(--wood-bg);
-        color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-
-    .price-text {
-        color: var(--primary-color);
-        font-weight: 800;
-    }
-
-    /* Modal Clean Theme */
-    .modal-content-custom {
-        background-color: var(--light-card);
-        border: 1.5px solid var(--light-border);
-        border-radius: 20px;
-        color: var(--text-main);
-    }
-</style>
-
-<div class="container-fluid px-2 px-md-4 py-2">
-
-    <!-- TITLE SEKSI KATALOG -->
-    <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
         <div>
-            <h3 class="fw-bold mb-1" style="color: var(--primary-color);">Katalog Produk Mebel</h3>
-            <p class="text-muted small mb-0">Temukan koleksi mebel siap beli atau kustomisasi sesuai ukuran ruangan Anda.</p>
+            <h2 class="section-title mb-1">Katalog Produk Mebel Solid</h2>
+            <p class="section-subtitle">
+                @if(!empty($keyword))
+                    Menampilkan hasil pencarian untuk: <strong class="text-dark">"{{ $keyword }}"</strong> ({{ $katalogs->count() }} produk)
+                @else
+                    Koleksi furniture kayu jati & mahoni solid sentra Karduluk Madura siap beli atau custom ({{ $katalogs->count() }} produk)
+                @endif
+            </p>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('customer.cart') }}" class="btn btn-outline-dark px-3 py-2 rounded-3 fw-bold">
-                <i class="fa-solid fa-cart-shopping me-1"></i> Lihat Keranjang
-            </a>
-            <a href="{{ route('customer.design') }}" class="btn btn-dark px-3 py-2 rounded-3 fw-bold" style="background-color: var(--primary-color); border: none;">
-                <i class="fa-solid fa-pen-ruler me-1"></i> Buka Studio Custom
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ route('customer.design') }}" class="btn btn-store-primary rounded-3 shadow-sm d-inline-flex align-items-center gap-2">
+                <i class="fa-solid fa-pen-ruler"></i>
+                <span>Studio Custom Furniture</span>
             </a>
         </div>
     </div>
 
-    <!-- KOTAK PENCARIAN KATALOG -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4 p-3" style="background-color: var(--light-card); border: 1.5px solid var(--light-border) !important;">
+    <!-- 2. QUICK CATEGORY PILLS BAR -->
+    @php
+        $activeKw = strtolower(trim($keyword ?? ''));
+        $quickCategories = [
+            '' => ['label' => 'Semua Produk', 'icon' => 'fa-cubes'],
+            'Kursi' => ['label' => 'Kursi & Sofa', 'icon' => 'fa-chair'],
+            'Meja' => ['label' => 'Meja', 'icon' => 'fa-table'],
+            'Lemari' => ['label' => 'Lemari Pakaian', 'icon' => 'fa-door-closed'],
+            'Pintu' => ['label' => 'Pintu & Gebyok', 'icon' => 'fa-door-open'],
+            'Ukir' => ['label' => 'Ukiran Klasik Karduluk', 'icon' => 'fa-gem'],
+            'Podium' => ['label' => 'Mimbar Podium', 'icon' => 'fa-landmark'],
+            'Pendopo' => ['label' => 'Gazebo / Pendopo', 'icon' => 'fa-house'],
+        ];
+    @endphp
+
+    <div class="d-flex gap-2 overflow-auto pb-3 mb-4" style="scrollbar-width: none;">
+        @foreach($quickCategories as $kw => $meta)
+            @php
+                $isActive = ($kw === '' && empty($activeKw)) || ($kw !== '' && str_contains($activeKw, strtolower($kw)));
+            @endphp
+            <a href="{{ $kw === '' ? route('customer.katalog') : route('customer.katalog', ['keyword' => $kw]) }}" 
+               class="btn btn-sm rounded-pill text-nowrap d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold transition-all {{ $isActive ? 'btn-dark' : 'btn-white border bg-white text-secondary' }}"
+               style="{{ $isActive ? 'background-color: var(--primary-color); border-color: var(--primary-color);' : '' }}">
+                <i class="fa-solid {{ $meta['icon'] }} {{ $isActive ? 'text-warning' : 'text-muted' }}"></i>
+                <span>{{ $meta['label'] }}</span>
+            </a>
+        @endforeach
+    </div>
+
+    <!-- 3. SEARCH & SORTING TOOLBAR -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 p-3 bg-white" style="border: 1px solid var(--border-color) !important;">
         <form action="{{ route('customer.katalog') }}" method="GET" class="row g-2 align-items-center">
-            <div class="col-md-9 col-lg-10">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" name="keyword" value="{{ request('keyword', request('q', $keyword ?? '')) }}" class="form-control border-start-0 ps-0" placeholder="Cari nama mebel, ukiran, atau kata kunci (contoh: Kursi Ukir, Pintu, Blawong, Lemari, Mimbar)...">
+            
+            <!-- Search Keyword Input -->
+            <div class="col-md-7 col-lg-8">
+                <div class="position-relative">
+                    <input type="text" 
+                           name="keyword" 
+                           value="{{ $keyword }}" 
+                           class="form-control rounded-pill ps-4 pe-5 py-2" 
+                           placeholder="Cari nama mebel, model, atau kata kunci (contoh: Kursi Tamu, Meja, Lemari)..."
+                           style="border: 1.5px solid var(--border-color);">
+                    <button type="submit" class="btn btn-sm position-absolute end-0 top-50 translate-middle-y me-2 rounded-circle text-muted">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
                 </div>
             </div>
-            <div class="col-md-3 col-lg-2 d-flex gap-2">
-                <button type="submit" class="btn btn-dark w-100 rounded-3 fw-bold" style="background-color: var(--primary-color); border: none;">
-                    <i class="fa-solid fa-magnifying-glass me-1"></i> Cari
-                </button>
-                @if(request('keyword') || request('q') || !empty($keyword))
-                    <a href="{{ route('customer.katalog') }}" class="btn btn-outline-secondary rounded-3" title="Reset Pencarian">
+
+            <!-- Sorting Select Dropdown -->
+            <div class="col-md-5 col-lg-4 d-flex gap-2 align-items-center">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted small py-2">
+                        <i class="fa-solid fa-arrow-down-wide-short me-1"></i> Urutkan:
+                    </span>
+                    <select name="sort" class="form-select border-start-0 py-2 small" onchange="this.form.submit()">
+                        <option value="latest" {{ ($sort ?? '') == 'latest' ? 'selected' : '' }}>Terbaru</option>
+                        <option value="price_asc" {{ ($sort ?? '') == 'price_asc' ? 'selected' : '' }}>Harga: Terendah ke Tertinggi</option>
+                        <option value="price_desc" {{ ($sort ?? '') == 'price_desc' ? 'selected' : '' }}>Harga: Tertinggi ke Terendah</option>
+                        <option value="name_asc" {{ ($sort ?? '') == 'name_asc' ? 'selected' : '' }}>Nama Produk: A - Z</option>
+                    </select>
+                </div>
+
+                @if(!empty($keyword))
+                    <a href="{{ route('customer.katalog') }}" class="btn btn-outline-secondary rounded-pill px-3" title="Reset Filter">
                         <i class="fa-solid fa-xmark"></i>
                     </a>
                 @endif
             </div>
+
         </form>
-
-        <!-- FILTER KATEGORI CEPAT -->
-        <div class="d-flex gap-2 overflow-auto pt-3 border-top mt-3" style="scrollbar-width: none;">
-            @php
-                $activeKw = strtolower($keyword ?? '');
-                $quickCategories = [
-                    '' => ['label' => 'Semua', 'icon' => 'fa-cubes'],
-                    'Kursi' => ['label' => 'Kursi & Sofa', 'icon' => 'fa-chair'],
-                    'Lemari' => ['label' => 'Lemari', 'icon' => 'fa-door-closed'],
-                    'Pintu' => ['label' => 'Pintu Tarung', 'icon' => 'fa-door-open'],
-                    'Ukir' => ['label' => 'Ukir & Relief', 'icon' => 'fa-gem'],
-                    'Blawong' => ['label' => 'Blawong', 'icon' => 'fa-feather'],
-                    'Podium' => ['label' => 'Podium / Mimbar', 'icon' => 'fa-landmark'],
-                    'Pendopo' => ['label' => 'Pendopo / Gazebo', 'icon' => 'fa-house'],
-                    'Meja' => ['label' => 'Meja', 'icon' => 'fa-table'],
-                ];
-            @endphp
-            @foreach($quickCategories as $key => $cat)
-                @php
-                    $isSelected = ($key === '' && empty($keyword)) || (!empty($key) && str_contains($activeKw, strtolower($key)));
-                @endphp
-                <a href="{{ $key === '' ? route('customer.katalog') : route('customer.katalog', ['keyword' => $key]) }}"
-                   class="btn btn-sm rounded-pill px-3 py-1.5 text-nowrap fw-bold d-flex align-items-center gap-1.5"
-                   style="{{ $isSelected ? 'background-color: var(--primary-color); border: 1.5px solid var(--primary-color); color: #ffffff;' : 'background-color: #ffffff; border: 1.5px solid var(--light-border); color: var(--text-main);' }}">
-                    <i class="fa-solid {{ $cat['icon'] }} small"></i>
-                    <span>{{ $cat['label'] }}</span>
-                </a>
-            @endforeach
-        </div>
-
-        @if(!empty($keyword))
-            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top flex-wrap gap-2">
-                <div class="small text-muted">
-                    <i class="fa-solid fa-filter me-1 text-primary"></i> Menampilkan hasil pencarian untuk: <strong>"{{ $keyword }}"</strong> ({{ $katalogs->count() }} produk ditemukan)
-                </div>
-                <a href="{{ route('customer.katalog') }}" class="small text-decoration-none fw-bold" style="color: var(--primary-color);">
-                    <i class="fa-solid fa-rotate-left me-1"></i> Tampilkan Semua Produk
-                </a>
-            </div>
-        @endif
     </div>
 
-    <!-- GRID PRODUK DINAMIS -->
-    <div class="row g-4">
-        @forelse($katalogs as $item)
-            <div class="col-lg-4 col-md-6">
-                <div class="product-card">
-                    <div class="product-img-holder mb-3">
-                        @if($item->foto_url)
-                            <img src="{{ $item->foto_url }}" alt="{{ $item->nama }}" loading="lazy">
-                        @else
-                            <div class="text-center p-3 text-muted">
-                                <i class="fa-solid fa-couch fa-2x mb-1" style="color: var(--primary-color);"></i>
-                                <span class="d-block fw-bold small text-dark">{{ $item->nama }}</span>
-                            </div>
-                        @endif
-                    </div>
-                    
-                    <div class="text-start">
-                        <a href="{{ route('customer.produk.detail', $item->id) }}" class="text-decoration-none">
-                            <h5 class="fw-bold text-dark mb-1">{{ $item->nama }}</h5>
-                        </a>
-                        @if($item->rating_count > 0)
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <div style="font-size: 0.75rem;">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <i class="fa-solid {{ $i <= round($item->rating_average) ? 'fa-star' : 'fa-star' }}" style="color: {{ $i <= round($item->rating_average) ? '#f59e0b' : '#d1d5db' }};"></i>
-                                    @endfor
-                                </div>
-                                <span class="text-muted" style="font-size: 0.72rem;">{{ number_format($item->rating_average, 1) }} ({{ $item->rating_count }} ulasan)</span>
-                            </div>
-                        @else
-                            <div class="mb-2"><span class="badge bg-light text-muted border" style="font-size: 0.68rem;">Belum ada ulasan</span></div>
-                        @endif
-                        <p class="text-muted small mb-2">{{ Str::limit($item->deskripsi, 80) }}</p>
-                        <h5 class="price-text mb-3">Rp {{ number_format($item->harga, 0, ',', '.') }}</h5>
-                    </div>
-
-                    <div class="d-flex flex-column gap-2 mt-auto pt-2 border-top" style="border-color: var(--light-border) !important;">
-                        <div class="d-flex gap-2">
-                            <!-- Form Tambah ke Keranjang Langsung -->
-                            <form action="{{ route('customer.cart.add', $item->id) }}" method="POST" class="w-100">
-                                @csrf
-                                <button type="submit" class="btn btn-orange w-100">
-                                    <i class="fa-solid fa-cart-plus me-1"></i> + Keranjang
-                                </button>
-                            </form>
-                            <!-- Tombol Detail / Review -->
-                            <a href="{{ route('customer.produk.detail', $item->id) }}" class="btn btn-outline-dark-theme flex-shrink-0" title="Lihat Detail & Ulasan">
-                                <i class="fa-solid fa-circle-info"></i>
-                            </a>
-                        </div>
-                        <a href="{{ route('customer.design', ['product_id' => $item->id]) }}" class="btn btn-outline-dark-theme text-decoration-none text-center">
-                            <i class="fa-solid fa-pen-ruler me-1"></i> Kustomisasi Model Ini
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MODAL DETAIL PRODUK DINAMIS PER ITEM -->
-            <div class="modal fade" id="modalDetail{{ $item->id }}" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content modal-content-custom p-4 shadow-lg">
-                        <div class="modal-body text-center p-0">
-                            <div class="product-img-holder mb-3" style="height: 240px;">
+    <!-- 4. RESPONSIVE PRODUCT GRID -->
+    @if($katalogs->count() > 0)
+        <div class="row g-3 g-md-4 mb-5">
+            @foreach($katalogs as $item)
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card-modern">
+                        
+                        <!-- Thumbnail Frame with Badges -->
+                        <div class="product-card-thumb">
+                            <a href="{{ route('customer.produk.detail', $item->id) }}">
                                 @if($item->foto_url)
-                                    <img src="{{ $item->foto_url }}" alt="{{ $item->nama }}">
+                                    <img src="{{ $item->foto_url }}" alt="{{ $item->nama }}" loading="lazy">
                                 @else
-                                    <span class="fw-bold fs-5 text-dark">{{ $item->nama }}</span>
+                                    <div class="product-thumb-placeholder">
+                                        <i class="fa-solid fa-couch fa-2x mb-2" style="color: var(--primary-light);"></i>
+                                        <span class="small text-muted fw-bold">Assalam Mebel</span>
+                                    </div>
+                                @endif
+                            </a>
+
+                            <!-- Overlay Badges -->
+                            <div class="product-badge-overlay">
+                                <span class="badge-tag-solid">Kayu Solid</span>
+                                @if($item->rating_count > 0)
+                                    <span class="badge-tag-rating">
+                                        <i class="fa-solid fa-star text-warning"></i> {{ number_format($item->rating_average, 1) }}
+                                    </span>
                                 @endif
                             </div>
-                        <div class="text-start">
-                            <a href="{{ route('customer.produk.detail', $item->id) }}" class="text-decoration-none">
-                                <h4 class="fw-bold text-dark mb-2">{{ $item->nama }}</h4>
-                            </a>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="product-card-body">
+                            <span class="product-card-category">{{ $item->kategori }}</span>
+                            <h6 class="product-card-title">
+                                <a href="{{ route('customer.produk.detail', $item->id) }}" title="{{ $item->nama }}">
+                                    {{ $item->nama }}
+                                </a>
+                            </h6>
+
                             @if($item->rating_count > 0)
                                 <div class="d-flex align-items-center gap-1 mb-2">
-                                    <div style="font-size: 0.8rem;">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <i class="fa-solid fa-star" style="color: {{ $i <= round($item->rating_average) ? '#f59e0b' : '#d1d5db' }};"></i>
-                                        @endfor
-                                    </div>
-                                    <span class="text-muted small">{{ number_format($item->rating_average, 1) }} · {{ $item->rating_count }} ulasan</span>
+                                    <small class="text-muted" style="font-size: 0.72rem;">
+                                        Terjual {{ $item->sold_count ?? 0 }} • ({{ $item->rating_count }} ulasan)
+                                    </small>
+                                </div>
+                            @else
+                                <div class="mb-2">
+                                    <small class="text-muted" style="font-size: 0.72rem;">Model Populer Karduluk</small>
                                 </div>
                             @endif
-                            <p class="text-muted small mb-3">{{ $item->deskripsi }}</p>
-                            <h4 class="price-text mb-4">Rp {{ number_format($item->harga, 0, ',', '.') }}</h4>
-                        </div>
-                            
-                            <!-- Form Tambah dari Modal dengan Pilihan Jumlah Qty -->
-                            <form action="{{ route('customer.cart.add', $item->id) }}" method="POST" class="mb-3">
-                                @csrf
-                                <div class="d-flex justify-content-center align-items-center gap-2 mb-3">
-                                    <label class="small fw-bold text-muted">Jumlah:</label>
-                                    <input type="number" name="quantity" value="1" min="1" max="50" class="form-control text-center" style="width: 80px; border-radius: 8px;">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-outline-secondary w-50 py-2.5 rounded-3 fw-bold" data-bs-dismiss="modal">Tutup</button>
-                                    <button type="submit" class="btn btn-orange py-2.5 rounded-3 w-50 fw-bold">
-                                        <i class="fa-solid fa-cart-plus me-1"></i> Beli & Masuk Keranjang
-                                    </button>
-                                </div>
-                            </form>
-                            
-                            <div class="text-center pt-2 border-top">
-                                <a href="{{ route('customer.produk.detail', $item->id) }}" class="small text-decoration-none fw-bold d-block mb-1" style="color: var(--primary-color);">
-                                    @if($item->rating_count > 0)
-                                        <i class="fa-solid fa-comments me-1"></i> Baca {{ $item->rating_count }} Ulasan Pembeli →
-                                    @else
-                                        <i class="fa-solid fa-comments me-1"></i> Lihat Detail & Ulasan →
-                                    @endif
-                                </a>
-                                <a href="{{ route('customer.design', ['product_id' => $item->id]) }}" class="small text-decoration-none fw-bold" style="color: var(--primary-color);">
-                                    Atau kustomisasi ukuran & bahan di Studio Custom →
-                                </a>
+
+                            <div class="product-card-price">
+                                Rp {{ number_format($item->harga, 0, ',', '.') }}
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div class="col-12 text-center py-5">
-                <div class="product-card py-5">
-                    <i class="fa-solid fa-couch fa-3x text-muted mb-3" style="color: var(--secondary-color) !important;"></i>
-                    @if(!empty($keyword))
-                        <h5 class="fw-bold text-dark mb-2">Produk Tidak Ditemukan</h5>
-                        <p class="text-muted small mb-4">Tidak ada produk katalog yang cocok dengan kata kunci "<strong>{{ $keyword }}</strong>".</p>
-                        <div class="d-flex justify-content-center gap-2 flex-wrap">
-                            <a href="{{ route('customer.katalog') }}" class="btn btn-outline-dark rounded-3 px-4 py-2 small fw-bold">
-                                <i class="fa-solid fa-rotate-left me-1"></i> Tampilkan Semua Produk
-                            </a>
-                            <a href="{{ route('customer.design') }}" class="btn btn-dark rounded-3 px-4 py-2 small fw-bold" style="background-color: var(--primary-color); border: none;">
-                                <i class="fa-solid fa-pen-ruler me-1"></i> Rancang di Studio Custom
+
+                        <!-- Card Action Buttons -->
+                        <div class="product-card-footer">
+                            <button type="button" 
+                                    class="btn btn-store-primary w-100 btn-sm" 
+                                    onclick="window.addToCart({{ $item->id }}, 1, this)"
+                                    title="Tambah ke Keranjang">
+                                <i class="fa-solid fa-cart-plus me-1"></i> + Keranjang
+                            </button>
+                            <a href="{{ route('customer.design', ['product_id' => $item->id]) }}" 
+                               class="btn-store-icon" 
+                               title="Kustomisasi Ukuran di Studio">
+                                <i class="fa-solid fa-pen-ruler"></i>
                             </a>
                         </div>
-                    @else
-                        <p class="text-muted mb-0">Belum ada produk katalog yang ditambahkan.</p>
-                    @endif
+
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @else
+        <!-- EMPTY STATE (Pencarian Tidak Ditemukan) -->
+        <div class="card border-0 shadow-sm rounded-4 text-center p-5 mb-5 bg-white" style="border: 1px solid var(--border-color) !important;">
+            <div class="py-4">
+                <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center text-muted mb-3" style="width: 72px; height: 72px;">
+                    <i class="fa-solid fa-magnifying-glass fa-2x"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">Produk Tidak Ditemukan</h4>
+                <p class="text-muted small mb-4" style="max-width: 480px; margin: 0 auto;">
+                    Kami tidak menemukan mebel yang cocok dengan kata kunci <strong>"{{ $keyword }}"</strong>. Coba periksa ejaan atau gunakan kata kunci lain seperti kursi, meja, atau lemari.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{{ route('customer.katalog') }}" class="btn btn-store-primary px-4 py-2 rounded-3">
+                        <i class="fa-solid fa-rotate-left me-1"></i> Tampilkan Semua Produk
+                    </a>
+                    <a href="{{ route('customer.design') }}" class="btn btn-store-secondary px-4 py-2 rounded-3">
+                        <i class="fa-solid fa-pen-ruler me-1"></i> Buat Pesanan Custom
+                    </a>
                 </div>
             </div>
-        @endforelse
-    </div>
+        </div>
+    @endif
 
 </div>
 @endsection

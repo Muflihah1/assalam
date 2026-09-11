@@ -2,141 +2,75 @@
 
 @section('content')
 <style>
-    /* Studio Card */
-    .studio-card {
-        background-color: var(--light-card);
-        border: 1.5px solid var(--light-border);
-        border-radius: 24px;
-        box-shadow: 0 10px 30px rgba(93, 64, 55, 0.05);
-        transition: all 0.3s ease;
+    /* ==========================================================================
+       STUDIO CUSTOM MEBEL KAYU JATI - CLEAN, MODERN & RESPONSIVE
+       ========================================================================== */
+
+    .custom-workbench-card {
+        background: #ffffff;
+        border: 2px solid var(--border-color);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 4px 18px rgba(59, 35, 20, 0.04);
+        transition: all 0.25s ease;
     }
 
-    .form-control-custom, .form-select-custom {
-        background-color: #fdfbf7 !important;
-        border: 1.5px solid var(--wood-border) !important;
-        color: var(--text-main) !important;
-        border-radius: 12px;
-        padding: 10px 14px;
-        font-weight: 500;
-        transition: all 0.2s ease;
+    .custom-workbench-card:hover {
+        box-shadow: 0 8px 26px rgba(59, 35, 20, 0.08);
     }
 
-    .form-control-custom:focus, .form-select-custom:focus {
-        border-color: var(--accent-gold) !important;
-        box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.12) !important;
-        background-color: #ffffff !important;
-    }
-
-    .form-label-custom {
-        color: var(--text-main);
-        font-weight: 700;
-        font-size: 0.9rem;
-        margin-bottom: 6px;
-    }
-
-    .dimension-label {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+    .custom-section-title {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 8px;
         margin-bottom: 4px;
     }
 
-    /* Modern Dimension Box & Stepper Styling */
-    .dimension-section-container {
-        background: #ffffff;
-        border: 2px solid var(--wood-border);
-        border-radius: 20px;
-        padding: 22px 24px;
-        box-shadow: 0 4px 20px rgba(93, 64, 55, 0.05);
-        margin-bottom: 24px;
-    }
-
+    /* Dimension Stepper Component */
     .dim-card {
-        background: #faf7f2;
-        border: 2px solid #dfd2c4;
-        border-radius: 14px;
-        padding: 14px;
+        background: #FAF8F5;
+        border: 2px solid var(--border-color);
+        border-radius: 16px;
+        padding: 16px;
+        transition: all 0.2s ease;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .dim-card:hover, .dim-card:focus-within {
+    .dim-card:focus-within, .dim-card:hover {
         background: #ffffff;
         border-color: var(--primary-color);
-        box-shadow: 0 6px 18px rgba(93, 64, 55, 0.1);
+        box-shadow: 0 6px 18px rgba(59, 35, 20, 0.08);
         transform: translateY(-2px);
     }
 
-    .dim-card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        min-height: 28px;
-        margin-bottom: 10px;
-    }
-
-    .dim-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 26px;
-        height: 26px;
-        border-radius: 8px;
-        background: var(--primary-color);
-        color: #ffffff;
-        font-size: 0.78rem;
-        font-weight: 800;
-        box-shadow: 0 2px 5px rgba(93, 64, 55, 0.2);
-        flex-shrink: 0;
-    }
-
-    .dim-name {
-        font-size: 0.88rem;
-        font-weight: 700;
-        color: #2d241e;
-        letter-spacing: -0.01em;
-    }
-
-    .dim-diff-tag {
-        font-size: 0.7rem;
-        font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 20px;
-        background: #f0ebe4;
-        color: #7d6b5c;
-        border: 1px solid #d9cbbe;
-        transition: all 0.2s ease;
-    }
-
-    /* Stepper Component with Distinct Buttons & Clear Borders */
     .dim-stepper {
         display: flex;
         align-items: center;
-        justify-content: space-between;
         gap: 6px;
-        margin-bottom: 8px;
+        margin-top: 10px;
+        margin-bottom: 6px;
     }
 
     .dim-btn {
-        width: 36px;
-        height: 38px;
+        width: 38px;
+        height: 40px;
         border-radius: 10px;
-        border: 2px solid #d4c2b0;
+        border: 2px solid #dfd2c4;
         background: #ffffff;
-        color: #5d4037;
-        font-size: 0.82rem;
-        font-weight: 700;
+        color: var(--primary-color);
+        font-size: 0.95rem;
+        font-weight: 800;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 2px 4px rgba(93, 64, 55, 0.05);
+        transition: all 0.2s ease;
         flex-shrink: 0;
     }
 
@@ -144,13 +78,6 @@
         background: var(--primary-color);
         border-color: var(--primary-color);
         color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(93, 64, 55, 0.2);
-    }
-
-    .dim-btn:active {
-        transform: translateY(1px);
-        box-shadow: 0 1px 2px rgba(93, 64, 55, 0.1);
     }
 
     .dim-input-wrap {
@@ -158,31 +85,27 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 38px;
+        height: 40px;
         background: #ffffff;
-        border: 2px solid #d4c2b0;
+        border: 2px solid #dfd2c4;
         border-radius: 10px;
-        padding: 0 6px;
-        box-shadow: inset 0 1px 3px rgba(93, 64, 55, 0.04);
-        transition: all 0.2s ease;
+        padding: 0 8px;
     }
 
     .dim-card:focus-within .dim-input-wrap {
         border-color: var(--accent-gold);
-        box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
     }
 
     .dim-input {
         width: 100%;
-        max-width: 54px;
+        max-width: 65px;
         border: none !important;
         outline: none !important;
-        box-shadow: none !important;
         background: transparent !important;
         text-align: center;
         font-weight: 800;
-        font-size: 1.15rem;
-        color: #2d241e;
+        font-size: 1.25rem;
+        color: var(--text-dark);
         padding: 0;
         -moz-appearance: textfield;
     }
@@ -193,339 +116,218 @@
         margin: 0;
     }
 
-    .dim-unit {
-        font-size: 0.78rem;
-        font-weight: 700;
-        color: #8c6d52;
-        user-select: none;
-        background: #faf4ed;
-        border: 1px solid #ebdcd0;
-        border-radius: 6px;
-        padding: 2px 6px;
-        margin-left: 2px;
-        flex-shrink: 0;
-    }
-
-    .dim-limits {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.7rem;
-        color: #8c7664;
-        padding: 0 2px;
-        font-weight: 600;
-    }
-
-    /* Craftsman Notes Card Styling */
-    .craftsman-note-card {
-        background: #ffffff;
-        border: 2px solid var(--wood-border);
-        border-left: 5px solid var(--accent-gold);
-        border-radius: 16px;
-        padding: 18px 20px;
-        margin-bottom: 22px;
-        box-shadow: 0 4px 18px rgba(93, 64, 55, 0.04);
-        transition: all 0.25s ease;
-    }
-
-    .craftsman-note-card:hover, .craftsman-note-card:focus-within {
-        box-shadow: 0 6px 22px rgba(93, 64, 55, 0.09);
-        border-color: var(--primary-color);
-        border-left-color: var(--accent-gold);
-    }
-
-    .craftsman-note-title {
-        font-size: 0.92rem;
-        font-weight: 700;
-        color: #2d241e;
-    }
-
-    .craftsman-note-badge {
-        background: #faf4ed;
-        color: var(--primary-color);
-        border: 1.5px solid var(--wood-border);
-        font-size: 0.72rem;
-    }
-
-    .craftsman-textarea {
-        background: #faf7f2 !important;
-        border: 2px solid #dfd2c4 !important;
-        border-radius: 12px !important;
-        padding: 12px 16px !important;
-        font-size: 0.88rem !important;
-        font-weight: 500 !important;
-        color: #2d241e !important;
-        line-height: 1.55 !important;
-        transition: all 0.2s ease !important;
-        resize: vertical;
-        box-shadow: inset 0 1px 3px rgba(93, 64, 55, 0.03);
-    }
-
-    .craftsman-textarea:focus {
-        background: #ffffff !important;
-        border-color: var(--accent-gold) !important;
-        box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15) !important;
-    }
-
-    .craftsman-textarea::placeholder {
-        color: #a39282 !important;
-        font-style: italic;
+    /* 2D Schematic Blueprint Card */
+    .schematic-card {
+        background: linear-gradient(135deg, #24140B 0%, #3B2314 100%);
+        border-radius: 18px;
+        padding: 20px;
+        color: #ffffff;
     }
 
     /* Color Swatch Box */
     .color-swatch-box {
-        background: linear-gradient(135deg, #fdfbf7 0%, var(--wood-bg) 100%);
-        border: 1.5px solid var(--wood-border);
-        border-radius: 20px;
+        background: #FAF8F5;
+        border: 2px solid var(--border-color);
+        border-radius: 18px;
         padding: 20px;
     }
 
-    .swatch-group-title {
-        font-size: 0.75rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--text-muted);
-        margin-bottom: 8px;
-        margin-top: 14px;
-    }
-
-    .color-swatch-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
     .color-swatch-btn {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         border: 2.5px solid #ffffff;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         padding: 0;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.14);
     }
 
-    .color-swatch-btn:hover { 
-        transform: scale(1.2); 
+    .color-swatch-btn:hover {
+        transform: scale(1.18);
     }
-    
+
     .color-swatch-btn.active {
         border-color: var(--primary-color) !important;
-        box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.4), 0 4px 10px rgba(0,0,0,0.15);
+        box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.4), 0 4px 10px rgba(0,0,0,0.2);
         transform: scale(1.15);
     }
 
     .custom-color-picker-wrapper {
         position: relative;
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         overflow: hidden;
         cursor: pointer;
         background: conic-gradient(from 0deg, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
-        border: 2px solid #ffffff;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+        border: 2.5px solid #ffffff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.14);
     }
 
     .custom-color-input {
         position: absolute;
-        top: -10px; left: -10px;
-        width: 60px; height: 60px;
-        opacity: 0; cursor: pointer;
-    }
-
-    .live-preview-circle {
-        width: 48px; height: 48px;
-        border-radius: 50%;
-        border: 3px solid #ffffff;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        transition: background-color 0.3s ease;
-    }
-
-    /* Buttons */
-    .btn-orange {
-        background: var(--primary-color);
-        color: #ffffff;
-        font-weight: 700;
-        border: none;
-        border-radius: 14px;
-        padding: 14px 24px;
-        box-shadow: 0 8px 20px rgba(93, 64, 55, 0.2);
-        transition: all 0.3s ease;
-    }
-
-    .btn-orange:hover {
-        background: var(--secondary-color);
-        color: #ffffff;
-        transform: translateY(-2px);
-    }
-
-    .price-display {
-        color: var(--primary-color);
-        font-weight: 800;
-        font-size: 1.45rem;
-    }
-
-    .teak-guarantee-card {
-        background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
-        border: 1.5px solid #f59e0b;
-        border-radius: 16px;
-        padding: 16px 20px;
-    }
-
-    .product-select-modal-card {
-        border: 1.5px solid var(--light-border);
-        border-radius: 16px;
-        transition: all 0.2s;
+        top: -10px;
+        left: -10px;
+        width: 60px;
+        height: 60px;
+        opacity: 0;
         cursor: pointer;
     }
 
-    .product-select-modal-card:hover {
+    /* File Upload Drop Area */
+    .file-upload-dropzone {
+        background: #FAF8F5;
+        border: 2px dashed #cfbeae;
+        border-radius: 16px;
+        padding: 24px;
+        text-align: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .file-upload-dropzone:hover {
+        background: #ffffff;
         border-color: var(--primary-color);
-        transform: translateY(-3px);
-        box-shadow: 0 6px 18px rgba(93, 64, 55, 0.1);
+    }
+
+    /* Sticky Pricing Sidebar */
+    .pricing-summary-card {
+        background: #ffffff;
+        border: 2px solid var(--border-color);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 8px 28px rgba(59, 35, 20, 0.06);
+    }
+
+    @media (min-width: 992px) {
+        .pricing-summary-card {
+            position: sticky;
+            top: 24px;
+        }
     }
 </style>
 
-<div class="container-fluid px-2 px-md-4 py-2">
+<div class="container-xl">
 
-    <!-- HEADER INTERAKTIF -->
-    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 pb-3 border-bottom gap-3" style="border-color: var(--light-border) !important;">
+    <!-- 1. HEADER HALAMAN CUSTOM MEBEL -->
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 pb-3 border-bottom gap-3">
         <div>
-            <span class="badge px-3 py-1 rounded-pill fw-bold mb-2 shadow-2xs" style="background-color: rgba(217, 119, 6, 0.15); color: var(--accent-gold); font-size: 0.75rem;">
-                <i class="fa-solid fa-tree me-1"></i> 100% KAYU JATI SOLID PERHUTANI
-            </span>
-            <h3 class="fw-bold mb-1 text-dark">Studio Custom Mebel Kayu Jati</h3>
-            <p class="text-muted small mb-0">Pilih model produk mebel jati favorit Anda, sesuaikan ukuran presisi dan pilihan warna finishing sesuai selera ruangan.</p>
+            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                <span class="badge px-3 py-1.5 rounded-pill fw-bold" style="background-color: var(--primary-subtle); color: var(--primary-color); font-size: 0.75rem;">
+                    <i class="fa-solid fa-tree me-1 text-warning"></i> 100% KAYU JATI SOLID PERHUTANI
+                </span>
+                <span class="badge px-3 py-1.5 rounded-pill fw-bold bg-warning text-dark" style="font-size: 0.75rem;">
+                    BEBAS KUSTOMISASI UKURAN & FINISHING
+                </span>
+            </div>
+            <h2 class="fw-bold text-dark mb-1 fs-3">Pemesanan Custom Mebel Kayu Jati</h2>
+            <p class="text-muted small mb-0">
+                Pilih model mebel favorit Anda, sesuaikan ukuran presisi (Panjang, Lebar, Tinggi), tentukan warna finishing kayu jati, dan sertakan gambar referensi untuk diproduksi langsung oleh pengrajin ukir Karduluk Sumenep.
+            </p>
         </div>
-        <div class="d-flex align-items-center gap-2">
+
+        <div class="d-flex align-items-center gap-2 flex-wrap">
             <button type="button" class="btn btn-outline-dark rounded-pill px-3 py-2 fw-semibold small shadow-2xs" data-bs-toggle="modal" data-bs-target="#modalSelectProduct">
-                <i class="fa-solid fa-arrows-rotate me-1 text-warning"></i> Ganti Model Produk Dasar
+                <i class="fa-solid fa-arrows-rotate me-1 text-warning"></i> Ganti Model Produk
             </button>
-            <a href="{{ route('customer.katalog') }}" class="btn btn-light border rounded-pill px-3 py-2 small fw-semibold">
-                <i class="fa-solid fa-bag-shopping me-1"></i> Katalog
+            <a href="{{ route('customer.workshop') }}" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-semibold small">
+                <i class="fa-solid fa-store me-1 text-warning"></i> Profil Workshop Karduluk
             </a>
         </div>
     </div>
 
-    <!-- FORM CUSTOM UTAMA -->
+    <!-- 2. FORM UTAMA CUSTOM MEBEL (POST TO CUSTOMER.DESIGN.ORDER) -->
     <form id="formCustomMebel" action="{{ route('customer.design.order') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        <!-- KARTU PRODUK DASAR KATALOG -->
-        @if(isset($selectedProduct) && $selectedProduct)
-            <div class="mb-4 p-3.5 rounded-4 d-flex align-items-center justify-content-between flex-wrap gap-3 shadow-sm" style="background: linear-gradient(135deg, rgba(217, 119, 6, 0.1) 0%, rgba(93, 64, 55, 0.08) 100%); border: 1.5px solid var(--accent-gold);">
-                <div class="d-flex align-items-center gap-3">
-                    @if($selectedProduct->foto_url)
-                        <img src="{{ $selectedProduct->foto_url }}" alt="{{ $selectedProduct->nama }}" style="width: 78px; height: 78px; border-radius: 14px; object-fit: cover; border: 2.5px solid #ffffff;" class="shadow-2xs">
-                    @else
-                        <div class="bg-white rounded-3 d-flex align-items-center justify-content-center border" style="width: 78px; height: 78px;">
-                            <i class="fa-solid fa-couch fa-2x text-warning"></i>
-                        </div>
-                    @endif
-                    <div>
-                        <span class="badge px-2.5 py-1 rounded-pill fw-bold bg-warning text-dark mb-1" style="font-size: 0.7rem;">
-                            MODEL PRODUK DASAR KATALOG
-                        </span>
-                        <h5 class="fw-bold text-dark mb-0">{{ $selectedProduct->nama }}</h5>
-                        <div class="small text-muted mt-0.5">
-                            Kategori: <strong class="text-dark">{{ $selectedProduct->kategori ?? 'Furniture Kayu Jati' }}</strong> | 
-                            Harga Dasar: <strong style="color: var(--primary-color);">Rp {{ number_format($selectedProduct->harga, 0, ',', '.') }}</strong>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 py-1.5 shadow-2xs fw-bold" data-bs-toggle="modal" data-bs-target="#modalSelectProduct" style="background-color: var(--primary-color); border: none;">
-                        <i class="fa-solid fa-shuffle me-1"></i> Ubah Pilihan Produk
-                    </button>
-                </div>
-            </div>
-            <input type="hidden" name="product_id" id="inputProductId" value="{{ $selectedProduct->id }}">
-            <input type="hidden" id="rawBasePrice" value="{{ $selectedProduct->harga }}">
-            <input type="hidden" name="category" id="inputKategori" value="{{ $selectedProduct->kategori ?? 'Furniture Kayu Jati' }}">
-        @endif
-
+        <!-- Error / Validation Alert Container -->
         <div id="validationAlert" class="alert alert-danger d-none rounded-4 mb-4 shadow-sm"></div>
 
-        <div class="row g-4">
-            <!-- SISI KIRI: FORM PARAMETER (UKURAN & WARNA) -->
-            <div class="col-lg-7">
-                <div class="studio-card p-4 p-md-5">
-                    <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom" style="border-color: var(--light-border) !important;">
-                        <h5 class="fw-bold text-dark mb-0">
-                            <i class="fa-solid fa-sliders me-2" style="color: var(--accent-gold);"></i>Penyesuaian Dimensi & Finishing
-                        </h5>
-                        <span class="badge bg-light text-dark border px-3 py-1.5 rounded-pill">Khusus Kayu Jati</span>
-                    </div>
+        @php
+            $defaultDim = (isset($selectedProduct) && $selectedProduct) ? $selectedProduct->default_dimensions : ['length' => 180, 'width' => 80, 'height' => 75];
+            $stdP = $defaultDim['length'] ?? 180;
+            $stdL = $defaultDim['width'] ?? 80;
+            $stdT = $defaultDim['height'] ?? 75;
+            $productCategory = (isset($selectedProduct) && $selectedProduct) ? ($selectedProduct->kategori ?? 'Furniture Kayu Jati') : 'Furniture Kayu Jati';
+        @endphp
 
-                    <!-- 1. MATERIAL KAYU JATI (HANYA SATU PILIHAN: KAYU JATI) -->
-                    <div class="mb-4">
-                        <label class="form-label-custom">Pilihan Material Kayu Utama</label>
-                        <div class="teak-guarantee-card d-flex align-items-start gap-3 shadow-2xs">
-                            <div class="rounded-circle p-2 bg-warning text-dark flex-shrink-0 mt-0.5 shadow-sm">
-                                <i class="fa-solid fa-award fa-lg"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-1">
-                                    <h6 class="fw-bold text-dark mb-0">Kayu Jati Solid Grade A (Perhutani)</h6>
-                                    <span class="badge bg-dark text-white rounded-pill px-2.5 py-0.5 small" style="font-size: 0.7rem;">PILIHAN TUNGGAL TERBAIK</span>
+        <!-- Hidden Form Fields Required by OrderController::store -->
+        <input type="hidden" name="product_id" id="inputProductId" value="{{ isset($selectedProduct) ? $selectedProduct->id : ($katalogs->first()->id ?? 1) }}">
+        <input type="hidden" name="category" id="inputCategory" value="{{ $productCategory }}">
+        <input type="hidden" name="wood_material" id="inputWoodMaterial" value="Kayu Jati Solid Grade A (Perhutani)">
+        <input type="hidden" name="color_name" id="color_name_input" value="Amber Gold (Jati Alami)">
+        <input type="hidden" name="color_hex" id="final_color_hex_input" value="#d97706">
+        <input type="hidden" name="tone_percent" id="tone_percent_input" value="100">
+        <input type="hidden" id="rawBasePrice" value="{{ isset($selectedProduct) ? $selectedProduct->harga : 3500000 }}">
+
+        <div class="row g-4 mb-5">
+            
+            <!-- SISI KIRI: PARAMETER CUSTOM (MODEL, UKURAN, WARNA, SKETSA, CATATAN) -->
+            <div class="col-lg-7">
+                <div class="d-flex flex-column gap-4">
+
+                    <!-- KARTU 1: MODEL DASAR KATALOG TERPILIH -->
+                    @if(isset($selectedProduct) && $selectedProduct)
+                        <div class="custom-workbench-card p-3 p-md-4" style="border-left: 5px solid var(--accent-gold);">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="{{ $selectedProduct->foto_url ?? asset('images/no-image.jpg') }}" alt="{{ $selectedProduct->nama }}" style="width: 76px; height: 76px; border-radius: 14px; object-fit: cover;" class="border shadow-2xs">
+                                    <div>
+                                        <span class="badge bg-warning text-dark fw-bold px-2.5 py-1 rounded-pill mb-1" style="font-size: 0.68rem;">
+                                            MODEL PRODUK DASAR KATALOG
+                                        </span>
+                                        <h5 class="fw-bold text-dark mb-0 fs-6">{{ $selectedProduct->nama }}</h5>
+                                        <div class="small text-muted mt-0.5" style="font-size: 0.8rem;">
+                                            Kategori: <strong class="text-dark">{{ $selectedProduct->kategori ?? 'Furniture Kayu Jati' }}</strong> • 
+                                            Harga Dasar: <strong class="text-dark">Rp {{ number_format($selectedProduct->harga, 0, ',', '.') }}</strong>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p class="text-muted small mb-0" style="font-size: 0.8rem; line-height: 1.45;">
-                                    Seluruh pesanan mebel custom di Assalam dikerjakan secara eksklusif menggunakan <strong>100% Kayu Jati Solid Grade A</strong> dari Perhutani. Memiliki serat emas alami yang mewah, kaya minyak alami (anti rayap & anti bubuk), kokoh, dan bergaransi bertahan puluhan tahun.
-                                </p>
+                                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1.5 fw-bold" data-bs-toggle="modal" data-bs-target="#modalSelectProduct" style="font-size: 0.78rem;">
+                                    <i class="fa-solid fa-shuffle me-1"></i> Ganti Model Lain
+                                </button>
                             </div>
                         </div>
-                        <input type="hidden" name="wood_material" id="inputMaterial" value="Kayu Jati Solid Grade A (Perhutani)">
-                    </div>
+                    @endif
 
-                    <!-- 2. DIMENSI UKURAN PRESISI (P, L, T) -->
-                    @php
-                        $defaultDim = (isset($selectedProduct) && $selectedProduct) ? $selectedProduct->default_dimensions : ['length' => 180, 'width' => 80, 'height' => 75];
-                        $stdP = $defaultDim['length'];
-                        $stdL = $defaultDim['width'];
-                        $stdT = $defaultDim['height'];
-                    @endphp
-                    <div class="dimension-section-container">
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 pb-2 border-bottom" style="border-color: #ebdcd0 !important;">
+                    <!-- KARTU 2: PENYESUAIAN UKURAN / DIMENSI PRESISI (cm) -->
+                    <div class="custom-workbench-card">
+                        <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                             <div>
-                                <label class="form-label-custom mb-0 d-flex align-items-center gap-2">
-                                    <i class="fa-solid fa-ruler-combined" style="color: var(--accent-gold);"></i>
-                                    <span>Dimensi & Ukuran Presisi (cm)</span>
-                                </label>
-                                <div class="small text-muted mt-0.5" style="font-size: 0.78rem;">
+                                <h5 class="custom-section-title">
+                                    <i class="fa-solid fa-ruler-combined text-warning"></i> 1. Dimensi & Ukuran Presisi (cm)
+                                </h5>
+                                <small class="text-muted" style="font-size: 0.75rem;">
                                     Ukuran standar model: <strong id="labelStandardDim" class="text-dark">{{ $stdP }} × {{ $stdL }} × {{ $stdT }} cm</strong>
-                                </div>
+                                </small>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3 fw-semibold" onclick="resetToStandardDim()" title="Kembalikan nilai ke ukuran standar produk ini" style="font-size: 0.78rem; border-color: #cfbeae;">
+                            <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-3 py-1 small fw-semibold" onclick="resetToStandardDim()" title="Kembalikan nilai ke ukuran standar produk">
                                 <i class="fa-solid fa-rotate-left me-1 text-warning"></i> Reset Standar
                             </button>
                         </div>
 
-                        <div class="row g-3">
+                        <!-- 3 Kartu Stepper Ukuran -->
+                        <div class="row g-3 mb-3">
                             <!-- PANJANG -->
                             <div class="col-md-4">
                                 <div class="dim-card">
-                                    <div class="dim-card-header">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="dim-badge">P</span>
-                                            <span class="dim-name">Panjang</span>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-1.5">
+                                            <span class="badge bg-dark text-white rounded-2 px-1.5 py-0.5 fw-bold" style="font-size: 0.72rem;">P</span>
+                                            <strong class="small text-dark">Panjang</strong>
                                         </div>
-                                        <span id="diffP" class="dim-diff-tag">Standar</span>
+                                        <span id="diffP" class="badge bg-light text-muted border" style="font-size: 0.68rem;">Standar</span>
                                     </div>
                                     <div class="dim-stepper">
-                                        <button type="button" class="dim-btn" onclick="stepDimension('inputPanjang', -5)" title="Kurangi 5 cm">
-                                            <i class="fa-solid fa-minus"></i>
-                                        </button>
+                                        <button type="button" class="dim-btn" onclick="stepDimension('inputPanjang', -5)" title="Kurangi 5 cm">-</button>
                                         <div class="dim-input-wrap">
-                                            <input type="number" name="length_cm" id="inputPanjang" class="dim-input" value="{{ $stdP }}" oninput="onDimInput()" min="20" max="600" required>
-                                            <span class="dim-unit">cm</span>
+                                            <input type="number" name="length_cm" id="inputPanjang" class="dim-input" value="{{ $stdP }}" min="20" max="600" oninput="onDimInput()" required>
+                                            <small class="text-muted fw-bold" style="font-size: 0.75rem;">cm</small>
                                         </div>
-                                        <button type="button" class="dim-btn" onclick="stepDimension('inputPanjang', 5)" title="Tambah 5 cm">
-                                            <i class="fa-solid fa-plus"></i>
-                                        </button>
+                                        <button type="button" class="dim-btn" onclick="stepDimension('inputPanjang', 5)" title="Tambah 5 cm">+</button>
                                     </div>
-                                    <div class="dim-limits">
+                                    <div class="d-flex justify-content-between text-muted" style="font-size: 0.68rem;">
                                         <span>Min: 20 cm</span>
                                         <span>Maks: 600 cm</span>
                                     </div>
@@ -535,55 +337,47 @@
                             <!-- LEBAR -->
                             <div class="col-md-4">
                                 <div class="dim-card">
-                                    <div class="dim-card-header">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="dim-badge">L</span>
-                                            <span class="dim-name">Lebar</span>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-1.5">
+                                            <span class="badge bg-dark text-white rounded-2 px-1.5 py-0.5 fw-bold" style="font-size: 0.72rem;">L</span>
+                                            <strong class="small text-dark">Lebar</strong>
                                         </div>
-                                        <span id="diffL" class="dim-diff-tag">Standar</span>
+                                        <span id="diffL" class="badge bg-light text-muted border" style="font-size: 0.68rem;">Standar</span>
                                     </div>
                                     <div class="dim-stepper">
-                                        <button type="button" class="dim-btn" onclick="stepDimension('inputLebar', -5)" title="Kurangi 5 cm">
-                                            <i class="fa-solid fa-minus"></i>
-                                        </button>
+                                        <button type="button" class="dim-btn" onclick="stepDimension('inputLebar', -5)" title="Kurangi 5 cm">-</button>
                                         <div class="dim-input-wrap">
-                                            <input type="number" name="width_cm" id="inputLebar" class="dim-input" value="{{ $stdL }}" oninput="onDimInput()" min="4" max="500" required>
-                                            <span class="dim-unit">cm</span>
+                                            <input type="number" name="width_cm" id="inputLebar" class="dim-input" value="{{ $stdL }}" min="4" max="500" oninput="onDimInput()" required>
+                                            <small class="text-muted fw-bold" style="font-size: 0.75rem;">cm</small>
                                         </div>
-                                        <button type="button" class="dim-btn" onclick="stepDimension('inputLebar', 5)" title="Tambah 5 cm">
-                                            <i class="fa-solid fa-plus"></i>
-                                        </button>
+                                        <button type="button" class="dim-btn" onclick="stepDimension('inputLebar', 5)" title="Tambah 5 cm">+</button>
                                     </div>
-                                    <div class="dim-limits">
+                                    <div class="d-flex justify-content-between text-muted" style="font-size: 0.68rem;">
                                         <span>Min: 4 cm</span>
                                         <span>Maks: 500 cm</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- TINGGI / TEBAL -->
+                            <!-- TINGGI -->
                             <div class="col-md-4">
                                 <div class="dim-card">
-                                    <div class="dim-card-header">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="dim-badge">T</span>
-                                            <span class="dim-name">Tinggi <small class="text-muted fw-normal" style="font-size: 0.72rem;">/ Tebal</small></span>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-1.5">
+                                            <span class="badge bg-dark text-white rounded-2 px-1.5 py-0.5 fw-bold" style="font-size: 0.72rem;">T</span>
+                                            <strong class="small text-dark">Tinggi / Tebal</strong>
                                         </div>
-                                        <span id="diffT" class="dim-diff-tag">Standar</span>
+                                        <span id="diffT" class="badge bg-light text-muted border" style="font-size: 0.68rem;">Standar</span>
                                     </div>
                                     <div class="dim-stepper">
-                                        <button type="button" class="dim-btn" onclick="stepDimension('inputTinggi', -5)" title="Kurangi 5 cm">
-                                            <i class="fa-solid fa-minus"></i>
-                                        </button>
+                                        <button type="button" class="dim-btn" onclick="stepDimension('inputTinggi', -5)" title="Kurangi 5 cm">-</button>
                                         <div class="dim-input-wrap">
-                                            <input type="number" name="height_cm" id="inputTinggi" class="dim-input" value="{{ $stdT }}" oninput="onDimInput()" min="2" max="500" required>
-                                            <span class="dim-unit">cm</span>
+                                            <input type="number" name="height_cm" id="inputTinggi" class="dim-input" value="{{ $stdT }}" min="2" max="500" oninput="onDimInput()" required>
+                                            <small class="text-muted fw-bold" style="font-size: 0.75rem;">cm</small>
                                         </div>
-                                        <button type="button" class="dim-btn" onclick="stepDimension('inputTinggi', 5)" title="Tambah 5 cm">
-                                            <i class="fa-solid fa-plus"></i>
-                                        </button>
+                                        <button type="button" class="dim-btn" onclick="stepDimension('inputTinggi', 5)" title="Tambah 5 cm">+</button>
                                     </div>
-                                    <div class="dim-limits">
+                                    <div class="d-flex justify-content-between text-muted" style="font-size: 0.68rem;">
                                         <span>Min: 2 cm</span>
                                         <span>Maks: 500 cm</span>
                                     </div>
@@ -591,210 +385,287 @@
                             </div>
                         </div>
 
-                        <div class="mt-3 pt-2.5 border-top d-flex align-items-center gap-2 text-muted" style="border-color: #eeddcc !important; font-size: 0.75rem;">
-                            <i class="fa-solid fa-circle-check text-success flex-shrink-0"></i>
-                            <span>Ukuran otomatis disinkronkan dengan model mebel jati. Geser dengan tombol <strong>[-] / [+]</strong> kelipatan 5 cm atau ketik angka langsung.</span>
-                        </div>
-                    </div>
-
-                    <!-- 3. PEMILIHAN WARNA SWATCHES & SLIDER FINISHING JATI -->
-                    <div class="mb-4">
-                        <label class="form-label-custom">Pilihan Warna Finishing Kayu Jati</label>
-
-                        <div class="color-swatch-box">
-                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom" style="border-color: var(--wood-border) !important;">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="live-preview-circle" id="live-color-preview" style="background-color: #d97706;"></div>
+                        <!-- Diagram Skematik Ukuran Ruangan -->
+                        <div class="schematic-card">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-cube text-warning fs-5"></i>
                                     <div>
-                                        <h6 class="fw-bold mb-0 text-dark" id="selected-color-name">Amber Gold (Jati Alami)</h6>
-                                        <small class="text-muted fw-semibold" id="selected-color-hex">HEX: #D97706</small>
+                                        <strong class="d-block small text-white">Ringkasan Kubikasi Ruang Kayu Jati</strong>
+                                        <small class="text-white-50" style="font-size: 0.7rem;">Dihitung otomatis untuk menentukan kebutuhan bahan balok kayu jati solid</small>
                                     </div>
                                 </div>
-                                <span class="badge fw-bold px-3 py-1.5 rounded-pill shadow-sm" style="background-color: #ffffff; color: var(--text-main); border: 1.5px solid var(--wood-border);" id="brightness-badge">Tone: 100%</span>
+                                <span class="badge bg-warning text-dark fw-bold px-2.5 py-1 rounded-pill" id="badgeTotalVolume" style="font-size: 0.75rem;">
+                                    1.08 m³
+                                </span>
                             </div>
-
-                            <div class="mb-3 px-1">
-                                <label class="form-label text-muted small fw-bold mb-1">Sesuaikan Kecerahan Tone Finishing (Doff - Glossy)</label>
-                                <input type="range" class="form-range" id="brightness-slider" min="40" max="160" value="100" oninput="adjustBrightness(this.value)" style="accent-color: var(--primary-color);">
-                            </div>
-
-                            <input type="hidden" name="color_hex" id="final_color_hex_input" value="#d97706">
-                            <input type="hidden" name="color_name" id="color_name_input" value="Amber Gold (Jati Alami)">
-                            <input type="hidden" name="tone_percent" id="tone_percent_input" value="100">
-
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="swatch-group-title m-0"><i class="fa-solid fa-palette text-warning me-1"></i> Custom Color Picker</span>
-                                <div class="custom-color-picker-wrapper" title="Klik untuk memilih warna kustom bebas">
-                                    <input type="color" class="custom-color-input" id="customColorPicker" value="#d97706" onchange="selectCustomColor(this.value)">
+                            <div class="row g-2 text-center pt-2 border-top border-secondary border-opacity-50">
+                                <div class="col-4">
+                                    <small class="text-white-50 d-block" style="font-size: 0.7rem;">Panjang (X)</small>
+                                    <strong class="text-warning fs-6" id="schemP">{{ $stdP }} cm</strong>
+                                </div>
+                                <div class="col-4 border-start border-end border-secondary border-opacity-50">
+                                    <small class="text-white-50 d-block" style="font-size: 0.7rem;">Lebar (Z)</small>
+                                    <strong class="text-warning fs-6" id="schemL">{{ $stdL }} cm</strong>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-white-50 d-block" style="font-size: 0.7rem;">Tinggi (Y)</small>
+                                    <strong class="text-warning fs-6" id="schemT">{{ $stdT }} cm</strong>
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
-                            <div class="swatch-group-title"><i class="fa-solid fa-tree text-warning me-1"></i> Finishing Klasik Kayu Jati</div>
-                            <div class="color-swatch-container">
-                                <button type="button" class="color-swatch-btn" style="background-color: #fde68a;" onclick="selectBaseColor('#fde68a', 'Natural Pine Jati', this)" title="Natural Pine Jati"></button>
-                                <button type="button" class="color-swatch-btn active" style="background-color: #d97706;" onclick="selectBaseColor('#d97706', 'Amber Gold (Jati Alami)', this)" title="Amber Gold"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #c85a32;" onclick="selectBaseColor('#c85a32', 'Terracotta Jati', this)" title="Terracotta Jati"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #8d6e63;" onclick="selectBaseColor('#8d6e63', 'Salak Brown Classic', this)" title="Salak Brown Classic"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #4a2c2a;" onclick="selectBaseColor('#4a2c2a', 'Dark Walnut Teak', this)" title="Dark Walnut Teak"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #2c221e;" onclick="selectBaseColor('#2c221e', 'Espresso Dark Jati', this)" title="Espresso Dark Jati"></button>
+                    <!-- KARTU 3: PILIHAN WARNA & FINISHING KAYU JATI ASLI -->
+                    <div class="custom-workbench-card">
+                        <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                            <div>
+                                <h5 class="custom-section-title">
+                                    <i class="fa-solid fa-palette text-warning"></i> 2. Pilihan Warna Finishing Kayu Jati
+                                </h5>
+                                <small class="text-muted" style="font-size: 0.75rem;">Menggunakan cat melamine & wood stain khusus kayu jati solid</small>
                             </div>
-
-                            <div class="swatch-group-title"><i class="fa-solid fa-swatchbook text-warning me-1"></i> Finishing Duco Modern</div>
-                            <div class="color-swatch-container">
-                                <button type="button" class="color-swatch-btn" style="background-color: #ffffff;" onclick="selectBaseColor('#ffffff', 'Duco Pure White', this)" title="Duco Pure White"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #cbd5e1;" onclick="selectBaseColor('#cbd5e1', 'Light Platinum Grey', this)" title="Light Grey"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #1e293b;" onclick="selectBaseColor('#1e293b', 'Charcoal Matte Black', this)" title="Charcoal Matte"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #15803d;" onclick="selectBaseColor('#15803d', 'Emerald Forest', this)" title="Emerald Forest"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #1e3a8a;" onclick="selectBaseColor('#1e3a8a', 'Royal Navy', this)" title="Royal Navy"></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 4. UPLOAD SKETSA & CATATAN PENGRAJIN -->
-                    <div class="mb-4">
-                        <label class="form-label-custom d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-cloud-arrow-up" style="color: var(--accent-gold);"></i>
-                            <span>Upload Referensi Gambar/Sketsa (Opsional)</span>
-                        </label>
-                        <input type="file" name="sketch_image" class="form-control form-control-custom" accept="image/*">
-                        <small class="text-muted mt-1.5 d-block" style="font-size: 0.75rem;">Mendukung foto sketsa atau denah ruangan (JPG, PNG, WEBP Maks. 5MB)</small>
-                    </div>
-
-                    <div class="craftsman-note-card">
-                        <div class="d-flex align-items-center justify-content-between mb-2.5 flex-wrap gap-2">
-                            <label class="craftsman-note-title mb-0 d-flex align-items-center gap-2">
-                                <i class="fa-solid fa-clipboard-list" style="color: var(--accent-gold); font-size: 1.05rem;"></i>
-                                <span>Catatan</span>
-                            </label>
-                        </div>
-                        <textarea name="notes" id="inputCatatan" class="form-control craftsman-textarea" rows="3" placeholder="Tuliskan instruksi kustom Anda di sini (contoh: ukiran kaki model lengkung Jepara, sandaran dilapisi busa empuk, finishing natural semi-gloss, dll.)..."></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SISI KANAN: ESTIMASI BIAYA, METODE DANA & AKSI PESAN -->
-            <div class="col-lg-5">
-                <div class="studio-card p-4 p-md-5 position-sticky" style="top: 20px;">
-                    <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom" style="border-color: var(--light-border) !important;">
-                        <h5 class="fw-bold text-dark mb-0">
-                            <i class="fa-solid fa-receipt me-2" style="color: var(--accent-gold);"></i>Estimasi & Skema Biaya
-                        </h5>
-                    </div>
-
-                    <div class="d-flex justify-content-between mb-2.5">
-                        <span class="text-muted fw-medium small">Harga Dasar Model Produk:</span>
-                        <span class="fw-bold text-dark small" id="displayHargaDasarKatalog">
-                            Rp {{ isset($selectedProduct) ? number_format($selectedProduct->harga, 0, ',', '.') : '0' }}
-                        </span>
-                    </div>
-
-                    <div class="d-flex justify-content-between mb-2.5">
-                        <span class="text-muted fw-medium small">Faktor Ukuran & Kayu Jati:</span>
-                        <span class="fw-bold text-dark small" id="displayHargaMebel">Rp 0</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between mb-3">
-                        <span class="text-muted fw-medium small">Ongkos Kirim Standar:</span>
-                        <span class="fw-bold text-dark small">Rp 50.000</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between mb-3 pb-2 border-bottom">
-                        <span class="text-dark fw-bold">Total Tagihan Mebel:</span>
-                        <strong class="text-dark fs-5" id="displayTotalPesanan">Rp 0</strong>
-                    </div>
-
-                    <!-- BOX SKEMA DP 50% -->
-                    <div class="d-flex align-items-center justify-content-between mb-3 p-3 rounded-4" style="background-color: var(--wood-bg); border: 1.5px solid var(--wood-border);">
-                        <div>
-                            <span class="text-muted d-block small fw-bold text-uppercase">Wajib Pembayaran DP (50%)</span>
-                            <span class="fw-bold text-dark small">Untuk Memulai Produksi</span>
-                        </div>
-                        <span class="price-display" id="displayDP">Rp 0</span>
-                    </div>
-
-                    <!-- BOX SISA PELUNASAN 50% -->
-                    <div class="p-3 rounded-4 mb-4 border bg-white shadow-2xs">
-                        <div class="d-flex align-items-center justify-content-between mb-1">
-                            <span class="text-muted small fw-bold">Sisa Pelunasan (50%):</span>
-                            <strong class="text-danger fs-6" id="displaySisaPelunasan">Rp 0</strong>
-                        </div>
-                        <p class="text-muted small mb-0" style="font-size: 0.72rem; line-height: 1.35;">
-                            <i class="fa-solid fa-circle-info text-primary me-1"></i>
-                            Sisa pelunasan 50% dibayarkan saat mebel telah <strong>selesai diproduksi di workshop (Tahap 6 Finishing & QC)</strong> dengan bukti foto hasil jadi sebelum dikirim.
-                        </p>
-                    </div>
-
-                    <!-- HANYA SATU METODE RESMI: DANA -->
-                    <div class="mb-4">
-                        <label class="form-label-custom d-block mb-1">Metode Pembayaran Resmi</label>
-                        <div class="p-3 bg-light rounded-3 border d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center gap-2.5">
-                                <div class="p-1.5 bg-white rounded-2 border shadow-2xs">
-                                    <span class="badge text-white px-2 py-1 fw-bold" style="background-color: #118eea;">DANA</span>
-                                </div>
-                                <div>
-                                    <strong class="text-dark d-block small">{{ \App\Models\Setting::get('payment_dana_name', 'Assalam Mebel Official') }}</strong>
-                                    <span class="text-muted font-monospace small">{{ \App\Models\Setting::get('payment_dana_number', '0852-3456-7890') }}</span>
-                                </div>
-                            </div>
-                            <span class="badge bg-success-subtle text-success border border-success rounded-pill px-2.5 py-1 small">
-                                <i class="fa-solid fa-check me-1"></i> Metode Resmi
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small">
+                                <i class="fa-solid fa-certificate me-1"></i> Jati Grade A
                             </span>
                         </div>
-                        <input type="hidden" name="payment_method" value="dana">
-                    </div>
 
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-orange py-3 fs-6" type="button" onclick="bukaModalReview()">
-                            <i class="fa-solid fa-paper-plane me-2"></i> Ajukan Desain & Pesan Sekarang
-                        </button>
-                        <div class="text-center mt-2">
-                            <small class="text-muted"><i class="fa-solid fa-shield-halved me-1 text-success"></i> Transaksi Terverifikasi & Bergaransi Kayu Jati Asli</small>
+                        <!-- Jaminan Material Kayu Jati -->
+                        <div class="p-3 rounded-4 mb-3 d-flex align-items-center gap-3" style="background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); border: 1.5px solid #f59e0b;">
+                            <div class="rounded-circle p-2 bg-warning text-dark flex-shrink-0">
+                                <i class="fa-solid fa-award fa-lg"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <strong class="d-block text-dark small">100% Kayu Jati Solid Grade A (Perhutani)</strong>
+                                <small class="text-muted" style="font-size: 0.75rem; line-height: 1.4;">
+                                    Seluruh pesanan custom diproduksi secara eksklusif menggunakan kayu jati solid legal Perhutani, kaya minyak alami (anti rayap & anti bubuk), dan diproses oven kering standar ekspor.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="color-swatch-box">
+                            <!-- Live Preview Dot & Color Name -->
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div id="liveColorDot" style="width: 44px; height: 44px; border-radius: 50%; background-color: #d97706; border: 3px solid #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.18);"></div>
+                                    <div>
+                                        <h6 class="fw-bold text-dark mb-0 fs-6" id="displayColorName">Amber Gold (Jati Alami)</h6>
+                                        <small class="text-muted font-monospace fw-semibold" id="displayColorHex">HEX: #D97706</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="small text-muted fw-bold d-none d-sm-inline">Warna Kustom:</span>
+                                    <div class="custom-color-picker-wrapper" title="Klik untuk memilih warna bebas">
+                                        <input type="color" class="custom-color-input" id="customColorPicker" value="#d97706" onchange="selectCustomColor(this.value)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slider Kilau Finishing (Doff - Glossy) -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <small class="text-muted fw-bold" style="font-size: 0.75rem;">Tingkat Kilau Finishing (Doff - Glossy):</small>
+                                    <span class="badge bg-white text-dark border small shadow-2xs" id="badgeGlossiness">Semi-Gloss (100%)</span>
+                                </div>
+                                <input type="range" class="form-range" id="brightnessSlider" min="40" max="160" value="100" oninput="adjustBrightness(this.value)" style="accent-color: var(--primary-color);">
+                            </div>
+
+                            <!-- Preset Palet: Finishing Klasik Jati -->
+                            <small class="text-muted fw-bold d-block mb-1.5" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                <i class="fa-solid fa-tree text-warning me-1"></i> Finishing Tradisional Natural Wood
+                            </small>
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                <button type="button" class="color-swatch-btn" style="background-color: #f5deb3;" onclick="selectBaseColor('#f5deb3', 'Natural Jati Muda (Bleached)', this)" title="Natural Jati Muda"></button>
+                                <button type="button" class="color-swatch-btn active" style="background-color: #d97706;" onclick="selectBaseColor('#d97706', 'Amber Gold (Jati Alami)', this)" title="Amber Gold (Jati Alami)"></button>
+                                <button type="button" class="color-swatch-btn" style="background-color: #b45309;" onclick="selectBaseColor('#b45309', 'Salak Brown Classic', this)" title="Salak Brown Classic"></button>
+                                <button type="button" class="color-swatch-btn" style="background-color: #78350f;" onclick="selectBaseColor('#78350f', 'Dark Walnut Teak', this)" title="Dark Walnut Teak"></button>
+                                <button type="button" class="color-swatch-btn" style="background-color: #3b2314;" onclick="selectBaseColor('#3b2314', 'Deep Teak Charcoal', this)" title="Deep Teak Charcoal"></button>
+                                <button type="button" class="color-swatch-btn" style="background-color: #1f140e;" onclick="selectBaseColor('#1f140e', 'Espresso Dark Black', this)" title="Espresso Dark Black"></button>
+                            </div>
+
+                            <!-- Preset Palet: Finishing Duco Modern -->
+                            <small class="text-muted fw-bold d-block mb-1.5" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                <i class="fa-solid fa-swatchbook text-warning me-1"></i> Finishing Duco Mewah
+                            </small>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="color-swatch-btn" style="background-color: #ffffff;" onclick="selectBaseColor('#ffffff', 'Duco Pure White', this)" title="Duco Pure White"></button>
+                                <button type="button" class="color-swatch-btn" style="background-color: #cbd5e1;" onclick="selectBaseColor('#cbd5e1', 'Light Platinum Grey', this)" title="Light Platinum Grey"></button>
+                                <button type="button" class="color-swatch-btn" style="background-color: #1e293b;" onclick="selectBaseColor('#1e293b', 'Matte Navy Charcoal', this)" title="Matte Navy Charcoal"></button>
+                                <button type="button" class="color-swatch-btn" style="background-color: #166534;" onclick="selectBaseColor('#166534', 'Emerald Royal Green', this)" title="Emerald Royal Green"></button>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- KARTU 4: UPLOAD BERKAS SKETSA / FOTO REFERENSI RUANGAN -->
+                    <div class="custom-workbench-card">
+                        <h5 class="custom-section-title mb-2">
+                            <i class="fa-solid fa-cloud-arrow-up text-warning"></i> 3. Upload Sketsa / Foto Referensi Ruangan (Opsional)
+                        </h5>
+                        <p class="text-muted small mb-3" style="font-size: 0.78rem;">
+                            Anda dapat melampirkan gambar sketsa coretan tangan, denah arsitek, atau foto referensi mebel dari internet untuk memudahkan pengrajin kami menyesuaikan detail konstruksi.
+                        </p>
+
+                        <div class="file-upload-dropzone" onclick="document.getElementById('inputSketchFile').click()">
+                            <i class="fa-solid fa-image fa-2x text-warning mb-2"></i>
+                            <strong class="d-block text-dark small mb-1" id="fileUploadLabel">Klik untuk memilih file foto / sketsa</strong>
+                            <small class="text-muted d-block" style="font-size: 0.72rem;">Mendukung format JPG, PNG, WEBP (Maksimal 5MB)</small>
+                            <div id="imagePreviewBox" class="mt-2 d-none">
+                                <img id="imagePreviewImg" src="#" alt="Pratinjau Sketsa" style="max-height: 140px; border-radius: 10px;" class="border shadow-sm">
+                            </div>
+                        </div>
+                        <input type="file" name="sketch_image" id="inputSketchFile" class="d-none" accept="image/*" onchange="handleFileSelected(this)">
+                    </div>
+
+                    <!-- KARTU 5: CATATAN KHUSUS UNTUK PENGRAJIN KARDULUK -->
+                    <div class="custom-workbench-card">
+                        <h5 class="custom-section-title mb-2">
+                            <i class="fa-solid fa-clipboard-list text-warning"></i> 4. Catatan & Instruksi Khusus Pengrajin
+                        </h5>
+                        <textarea name="notes" id="inputCatatan" class="form-control rounded-3" rows="3" placeholder="Tuliskan permintaan khusus Anda di sini (contoh: ukiran kaki model melengkung khas ukir Karduluk, bevel daun meja dibuat rounded 2cm, busa dudukan empuk royal foam, dll.)..."></textarea>
+                    </div>
+
                 </div>
             </div>
+
+            <!-- SISI KANAN: RINGKASAN PESANAN, ESTIMASI BIAYA & SKEMA DP 50% (STICKY) -->
+            <div class="col-lg-5">
+                <div class="pricing-summary-card">
+                    
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                        <h5 class="fw-bold text-dark mb-0 fs-6">
+                            <i class="fa-solid fa-receipt text-warning me-2"></i>Ringkasan & Biaya Pesanan
+                        </h5>
+                        <span class="badge bg-light text-muted border px-2.5 py-1 small">Estimasi Otomatis</span>
+                    </div>
+
+                    <!-- Parameter Terpilih Preview -->
+                    <div class="p-3 bg-light rounded-4 border mb-3 small">
+                        <div class="d-flex justify-content-between mb-1.5">
+                            <span class="text-muted">Model Mebel:</span>
+                            <strong class="text-dark text-truncate" style="max-width: 170px;">{{ $selectedProduct->nama ?? 'Custom Mebel' }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1.5">
+                            <span class="text-muted">Dimensi:</span>
+                            <strong class="text-dark" id="summaryDimDisplay">{{ $stdP }} × {{ $stdL }} × {{ $stdT }} cm</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1.5">
+                            <span class="text-muted">Finishing:</span>
+                            <strong class="text-dark" id="summaryColorDisplay">Amber Gold (Jati Alami)</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Bahan Kayu:</span>
+                            <strong class="text-success">100% Jati Solid Grade A</strong>
+                        </div>
+                    </div>
+
+                    <!-- Breakdown Biaya Transparan -->
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Harga Dasar Katalog:</span>
+                        <strong class="text-dark" id="dispBasePrice">Rp 0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Penyesuaian Kubikasi Jati:</span>
+                        <strong class="text-dark" id="dispHargaMebel">Rp 0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 pb-2 border-bottom small">
+                        <span class="text-muted">Ongkos Kirim Standar:</span>
+                        <strong class="text-dark">Rp 50.000</strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-bold text-dark">Total Tagihan Mebel:</span>
+                        <span class="fw-bold text-dark fs-5" id="dispTotalTagihan">Rp 0</span>
+                    </div>
+
+                    <!-- Skema DP 50% Box Wajib -->
+                    <div class="p-3 rounded-4 mb-3" style="background-color: var(--primary-subtle); border: 1.5px solid var(--accent-gold);">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <div>
+                                <span class="badge bg-warning text-dark fw-bold px-2 py-0.5 rounded-pill mb-0.5" style="font-size: 0.68rem;">WAJIB PEMBAYARAN</span>
+                                <strong class="d-block text-dark small">Uang Muka Produksi (DP 50%)</strong>
+                            </div>
+                            <span class="fw-bold text-success fs-5" id="dispDP">Rp 0</span>
+                        </div>
+                        <small class="text-muted d-block" style="font-size: 0.72rem; line-height: 1.4;">
+                            Uang muka 50% diperlukan agar kayu jati dapat dipotong dan masuk antrean pengerjaan pengrajin di workshop Karduluk Sumenep.
+                        </small>
+                    </div>
+
+                    <!-- Sisa Pelunasan 50% Info Box -->
+                    <div class="p-2.5 bg-white rounded-3 border mb-3 small d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted d-block" style="font-size: 0.72rem;">Sisa Pelunasan (50%):</span>
+                            <strong class="text-danger fs-6" id="dispSisaPelunasan">Rp 0</strong>
+                        </div>
+                        <span class="badge bg-light text-muted border" style="font-size: 0.68rem;">Saat Siap Kirim</span>
+                    </div>
+
+                    <!-- Rekening Resmi DANA -->
+                    <div class="p-2.5 rounded-3 border bg-white d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge text-white px-2 py-1 fw-bold" style="background-color: #118eea;">DANA</span>
+                            <div>
+                                <strong class="d-block small text-dark">{{ \App\Models\Setting::get('payment_dana_name', 'Assalam Mebel Official') }}</strong>
+                                <span class="text-muted font-monospace small" style="font-size: 0.75rem;">{{ \App\Models\Setting::get('payment_dana_number', '0852-3456-7890') }}</span>
+                            </div>
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success rounded-pill px-2 py-0.5 small">Metode Resmi</span>
+                    </div>
+                    <input type="hidden" name="payment_method" value="dana">
+
+                    <!-- Tombol Aksi Submit Pesanan -->
+                    <button type="button" class="btn btn-store-primary w-100 py-3 rounded-4 fw-bold fs-6 shadow-sm" onclick="bukaModalReview()">
+                        <i class="fa-solid fa-paper-plane me-2"></i> Ajukan Pesanan Custom Mebel
+                    </button>
+                    <div class="text-center mt-2.5">
+                        <small class="text-muted" style="font-size: 0.74rem;">
+                            <i class="fa-solid fa-shield-halved text-success me-1"></i> Transaksi Terverifikasi & Garansi Kayu Solid Sentra Karduluk Madura
+                        </small>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
 
-        <!-- MODAL KONFIRMASI REVIEW SEBELUM SUBMIT -->
+        <!-- MODAL KONFIRMASI REVIEW SPESIFIKASI SEBELUM SUBMIT -->
         <div class="modal fade" id="modalReviewDesain" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content rounded-4 p-4 text-center border-0 shadow-lg" style="background-color: var(--light-card);">
-                    <div class="mb-3">
-                        <span class="badge px-3 py-1.5 rounded-pill fw-bold" style="background-color: rgba(217, 119, 6, 0.15); color: var(--accent-gold);">
-                            KONFIRMASI PENGAJUAN PESANAN
+                <div class="modal-content rounded-4 p-4 text-center border-0 shadow-lg">
+                    <div class="mb-2">
+                        <span class="badge px-3 py-1.5 rounded-pill fw-bold bg-warning text-dark">
+                            KONFIRMASI PENGAJUAN PESANAN CUSTOM
                         </span>
                     </div>
-                    <h4 class="fw-bold text-dark mb-1">Rincian Desain Mebel Custom</h4>
-                    <p class="text-muted small mb-4">Pastikan data spesifikasi kayu jati & dimensi berikut sudah sesuai sebelum dikirim ke pengrajin.</p>
+                    <h4 class="fw-bold text-dark mb-1">Rincian Spesifikasi Desain</h4>
+                    <p class="text-muted small mb-4">Pastikan seluruh data ukuran & warna finishing berikut sudah sesuai sebelum diajukan ke pengrajin.</p>
 
-                    <div class="text-start mb-4 mx-auto p-4 rounded-4 w-100" style="max-width: 550px; background-color: var(--wood-bg); border: 1.5px solid var(--wood-border);">
-                        <p class="mb-1 small text-muted">Model Produk : <span class="text-dark fw-bold" id="rev_model">-</span></p>
-                        <p class="mb-1 small text-muted">Kategori : <span class="text-dark fw-bold" id="rev_kategori">-</span></p>
-                        <p class="mb-1 small text-muted">Dimensi : <span class="text-dark fw-bold" id="rev_dimensi">-</span></p>
-                        <p class="mb-1 small text-muted">Material Kayu : <span class="text-success fw-bold" id="rev_material">Kayu Jati Solid Grade A (Perhutani)</span></p>
-                        <p class="mb-1 small text-muted">Finishing Warna : <span class="text-dark fw-bold" id="rev_warna">-</span></p>
-                        <p class="mb-1 small text-muted" id="rev_notes_box" style="display: none;">Catatan Khusus : <span class="text-warning-emphasis fw-bold" id="rev_notes">-</span></p>
-                        <p class="mb-1 small text-muted">Metode Bayar : <span class="badge bg-primary text-white">DANA</span></p>
-                        <hr class="my-2" style="border-color: var(--wood-border);">
+                    <div class="text-start mb-4 mx-auto p-4 rounded-4 w-100" style="max-width: 580px; background-color: var(--bg-warm); border: 2px solid var(--border-color);">
+                        <p class="mb-1.5 small text-muted">Model Produk Dasar : <span class="text-dark fw-bold" id="rev_model">-</span></p>
+                        <p class="mb-1.5 small text-muted">Kategori Mebel : <span class="text-dark fw-bold" id="rev_kategori">-</span></p>
+                        <p class="mb-1.5 small text-muted">Dimensi Ukuran Presisi : <span class="text-dark fw-bold" id="rev_dimensi">-</span></p>
+                        <p class="mb-1.5 small text-muted">Material Kayu : <span class="text-success fw-bold">100% Kayu Jati Solid Grade A (Perhutani)</span></p>
+                        <p class="mb-1.5 small text-muted">Finishing Warna : <span class="text-dark fw-bold" id="rev_warna">-</span></p>
+                        <p class="mb-1.5 small text-muted" id="rev_notes_box" style="display: none;">Catatan Khusus : <span class="text-warning-emphasis fw-bold" id="rev_notes">-</span></p>
+                        <p class="mb-1.5 small text-muted">Metode Pembayaran : <span class="badge bg-primary text-white">DANA Official</span></p>
+                        <hr class="my-2.5">
                         <div class="d-flex justify-content-between mb-1">
-                            <span class="text-muted small">Total Tagihan :</span>
+                            <span class="text-muted small">Total Tagihan:</span>
                             <strong class="text-dark" id="rev_total">-</strong>
                         </div>
                         <div class="d-flex justify-content-between mb-1">
-                            <span class="text-muted small">Wajib DP (50%) :</span>
+                            <span class="text-muted small">Wajib DP (50%):</span>
                             <strong class="text-success" id="rev_dp">-</strong>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span class="text-muted small">Sisa Pelunasan (50%) :</span>
+                            <span class="text-muted small">Sisa Pelunasan (50%):</span>
                             <strong class="text-danger" id="rev_sisa">-</strong>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-center gap-3">
-                        <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-3 fw-bold" data-bs-dismiss="modal">Kembali</button>
-                        <button type="submit" class="btn btn-orange px-5 py-2">
-                            <i class="fa-solid fa-check me-1"></i> Konfirmasi & Ajukan Pesanan
+                        <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-bold" data-bs-dismiss="modal">Kembali</button>
+                        <button type="submit" class="btn btn-store-primary px-5 py-2 rounded-pill fw-bold">
+                            <i class="fa-solid fa-check me-1 text-warning"></i> Konfirmasi & Ajukan Pesanan
                         </button>
                     </div>
                 </div>
@@ -804,34 +675,35 @@
     </form>
 </div>
 
-<!-- MODAL PILIH PRODUK DASAR KATALOG -->
+<!-- MODAL PILIH PRODUK DASAR DARI KATALOG -->
 <div class="modal fade" id="modalSelectProduct" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content rounded-4 border-0 shadow-lg">
             <div class="modal-header text-white rounded-top-4" style="background-color: var(--primary-color);">
                 <h5 class="modal-title fs-6 fw-bold">
-                    <i class="fa-solid fa-couch me-2"></i> Pilih Model Produk Dasar dari Katalog
+                    <i class="fa-solid fa-couch me-2 text-warning"></i> Pilih Model Produk Dasar dari Katalog
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <p class="text-muted small mb-3">Klik salah satu produk mebel di bawah ini untuk dijadikan model dasar kustomisasi Anda:</p>
+                <p class="text-muted small mb-3">Pilih salah satu produk mebel asli dari katalog kami untuk dijadikan dasar kustomisasi dimensi & warna:</p>
                 <div class="row g-3">
                     @forelse($katalogs as $prod)
                         <div class="col-md-6 col-lg-4">
-                            <div class="p-3 product-select-modal-card h-100 d-flex flex-column justify-content-between {{ (isset($selectedProduct) && $selectedProduct->id == $prod->id) ? 'border-warning bg-warning-subtle' : 'bg-white' }}"
+                            <div class="p-3 bg-white border rounded-4 h-100 d-flex flex-column justify-content-between {{ (isset($selectedProduct) && $selectedProduct->id == $prod->id) ? 'border-warning shadow-sm' : '' }}"
+                                 style="cursor: pointer; transition: all 0.2s;"
                                  onclick="window.location.href='{{ route('customer.design', ['product_id' => $prod->id]) }}'">
                                 <div>
                                     <div class="rounded-3 overflow-hidden mb-2 border text-center bg-light" style="height: 120px;">
                                         @if($prod->foto_url)
-                                            <img src="{{ $prod->foto_url }}" alt="{{ $prod->nama }}" class="w-100 h-100" style="object-fit: cover;">
+                                            <img src="{{ $prod->foto_url }}" alt="{{ $prod->nama }}" class="w-100 h-100 object-fit-cover">
                                         @else
                                             <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
                                                 <i class="fa-solid fa-image fa-2x"></i>
                                             </div>
                                         @endif
                                     </div>
-                                    <h6 class="fw-bold text-dark mb-1" style="font-size: 0.85rem;">{{ $prod->nama }}</h6>
+                                    <h6 class="fw-bold text-dark mb-1 small">{{ $prod->nama }}</h6>
                                     <span class="badge bg-light text-muted border small mb-2" style="font-size: 0.7rem;">{{ $prod->kategori ?? 'Mebel Jati' }}</span>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between pt-2 border-top">
@@ -839,7 +711,7 @@
                                     @if(isset($selectedProduct) && $selectedProduct->id == $prod->id)
                                         <span class="badge bg-success text-white small">Aktif</span>
                                     @else
-                                        <span class="btn btn-xs btn-outline-dark rounded-pill py-0.5 px-2 fw-semibold" style="font-size: 0.72rem;">Pilih</span>
+                                        <span class="btn btn-xs btn-outline-dark rounded-pill py-0.5 px-2.5 fw-semibold" style="font-size: 0.72rem;">Pilih</span>
                                     @endif
                                 </div>
                             </div>
@@ -853,49 +725,66 @@
     </div>
 </div>
 
+<!-- CLIENT JAVASCRIPT LOGIC -->
 <script>
-    let currentBaseHex = "#d97706";
-    let currentColorName = "Amber Gold (Jati Alami)";
+    let currentBaseHex = '#d97706';
+    let currentColorName = 'Amber Gold (Jati Alami)';
+    let currentTonePercent = 100;
 
+    const stdLength = {{ $stdP }};
+    const stdWidth = {{ $stdL }};
+    const stdHeight = {{ $stdT }};
+
+    /**
+     * Pilihan Warna Finishing
+     */
     function selectBaseColor(hex, name, element) {
         document.querySelectorAll('.color-swatch-btn').forEach(btn => btn.classList.remove('active'));
         if (element) element.classList.add('active');
 
         currentBaseHex = hex;
         currentColorName = name;
-        document.getElementById('brightness-slider').value = 100;
         document.getElementById('customColorPicker').value = hex;
 
-        updateColorOutput(hex, 100);
+        updateColorDisplay(hex);
     }
 
     function selectCustomColor(hex) {
         document.querySelectorAll('.color-swatch-btn').forEach(btn => btn.classList.remove('active'));
         currentBaseHex = hex;
-        currentColorName = "Custom Selection";
-        document.getElementById('brightness-slider').value = 100;
+        currentColorName = 'Custom Selection';
 
-        updateColorOutput(hex, 100);
+        updateColorDisplay(hex);
     }
 
     function adjustBrightness(value) {
-        updateColorOutput(currentBaseHex, value);
+        currentTonePercent = value;
+        const badge = document.getElementById('badgeGlossiness');
+        if (value < 80) {
+            badge.innerText = `Doff / Matte (${value}%)`;
+        } else if (value > 120) {
+            badge.innerText = `High-Gloss (${value}%)`;
+        } else {
+            badge.innerText = `Semi-Gloss (${value}%)`;
+        }
+
+        updateColorDisplay(currentBaseHex);
     }
 
-    function updateColorOutput(hex, brightnessPercent) {
-        const adjustedHex = applyBrightness(hex, brightnessPercent);
+    function updateColorDisplay(hex) {
+        const adjustedHex = applyToneToHex(hex, currentTonePercent);
 
-        document.getElementById('live-color-preview').style.backgroundColor = adjustedHex;
-        document.getElementById('selected-color-name').innerText = currentColorName;
-        document.getElementById('selected-color-hex').innerText = "HEX: " + adjustedHex.toUpperCase();
-        document.getElementById('brightness-badge').innerText = "Tone: " + brightnessPercent + "%";
+        document.getElementById('liveColorDot').style.backgroundColor = adjustedHex;
+        document.getElementById('displayColorName').innerText = currentColorName;
+        document.getElementById('displayColorHex').innerText = 'HEX: ' + adjustedHex.toUpperCase();
+        document.getElementById('summaryColorDisplay').innerText = `${currentColorName} (${adjustedHex.toUpperCase()})`;
 
         document.getElementById('final_color_hex_input').value = adjustedHex;
         document.getElementById('color_name_input').value = currentColorName;
-        document.getElementById('tone_percent_input').value = brightnessPercent;
+        document.getElementById('tone_percent_input').value = currentTonePercent;
     }
 
-    function applyBrightness(hex, percent) {
+    function applyToneToHex(hex, percent) {
         let num = parseInt(hex.replace("#", ""), 16),
             amt = Math.round(2.55 * (percent - 100)),
             R = (num >> 16) + amt,
@@ -909,10 +798,9 @@
         ).toString(16).slice(1);
     }
 
-    const stdLength = {{ $stdP }};
-    const stdWidth = {{ $stdL }};
-    const stdHeight = {{ $stdT }};
-
+    /**
+     * Penyesuaian Dimensi & Perhitungan Biaya
+     */
     function stepDimension(inputId, delta) {
         const input = document.getElementById(inputId);
         let val = parseFloat(input.value) || 0;
@@ -945,19 +833,28 @@
         updateSingleBadge('diffP', p - stdLength);
         updateSingleBadge('diffL', l - stdWidth);
         updateSingleBadge('diffT', t - stdHeight);
+
+        // Update Schematic Blueprint Display
+        document.getElementById('schemP').innerText = p + ' cm';
+        document.getElementById('schemL').innerText = l + ' cm';
+        document.getElementById('schemT').innerText = t + ' cm';
+        document.getElementById('summaryDimDisplay').innerText = `${p} × ${l} × ${t} cm`;
+
+        let volume = (p * l * t) / 1000000;
+        document.getElementById('badgeTotalVolume').innerText = volume.toFixed(2) + ' m³';
     }
 
     function updateSingleBadge(badgeId, diff) {
         const badge = document.getElementById(badgeId);
         if (!badge) return;
         if (diff === 0) {
-            badge.className = 'dim-diff-tag';
+            badge.className = 'badge bg-light text-muted border';
             badge.innerText = 'Standar';
         } else if (diff > 0) {
-            badge.className = 'dim-diff-tag bg-success-subtle text-success border border-success';
+            badge.className = 'badge bg-success-subtle text-success border border-success';
             badge.innerText = '+' + diff + ' cm';
         } else {
-            badge.className = 'dim-diff-tag bg-warning-subtle text-warning-emphasis border border-warning';
+            badge.className = 'badge bg-warning-subtle text-warning-emphasis border border-warning';
             badge.innerText = diff + ' cm';
         }
     }
@@ -967,7 +864,6 @@
         let l = parseFloat(document.getElementById('inputLebar').value) || stdWidth;
         let t = parseFloat(document.getElementById('inputTinggi').value) || stdHeight;
 
-        // Ambil harga dasar katalog
         let rawBase = parseFloat(document.getElementById('rawBasePrice')?.value) || 3500000;
         let standardVolume = (stdLength * stdWidth * stdHeight) / 1000000;
         if (standardVolume <= 0) standardVolume = 1;
@@ -980,14 +876,37 @@
         let dp = Math.round(total * 0.5);
         let sisa = total - dp;
 
-        document.getElementById('displayHargaMebel').innerText = 'Rp ' + hargaMebel.toLocaleString('id-ID');
-        document.getElementById('displayTotalPesanan').innerText = 'Rp ' + total.toLocaleString('id-ID');
-        document.getElementById('displayDP').innerText = 'Rp ' + dp.toLocaleString('id-ID');
-        document.getElementById('displaySisaPelunasan').innerText = 'Rp ' + sisa.toLocaleString('id-ID');
+        document.getElementById('dispBasePrice').innerText = 'Rp ' + rawBase.toLocaleString('id-ID');
+        document.getElementById('dispHargaMebel').innerText = 'Rp ' + hargaMebel.toLocaleString('id-ID');
+        document.getElementById('dispTotalTagihan').innerText = 'Rp ' + total.toLocaleString('id-ID');
+        document.getElementById('dispDP').innerText = 'Rp ' + dp.toLocaleString('id-ID');
+        document.getElementById('dispSisaPelunasan').innerText = 'Rp ' + sisa.toLocaleString('id-ID');
     }
 
+    /**
+     * File Upload Handler dengan Pratinjau
+     */
+    function handleFileSelected(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            document.getElementById('fileUploadLabel').innerHTML = `<i class="fa-solid fa-file-check text-success me-1"></i> File dipilih: <strong>${file.name}</strong> (${(file.size / 1024).toFixed(0)} KB)`;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewBox = document.getElementById('imagePreviewBox');
+                const previewImg = document.getElementById('imagePreviewImg');
+                previewImg.src = e.target.result;
+                previewBox.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    /**
+     * Validasi & Buka Modal Review
+     */
     function bukaModalReview() {
-        let alertBox = document.getElementById('validationAlert');
+        const alertBox = document.getElementById('validationAlert');
         alertBox.classList.add('d-none');
         alertBox.innerHTML = '';
 
@@ -1013,24 +932,24 @@
         }
 
         if (errors.length > 0) {
-            alertBox.innerHTML = '<strong class="d-block mb-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Mohon periksa kembali input ukuran & warna:</strong><ul class="mb-0 ps-3">' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
+            alertBox.innerHTML = '<strong class="d-block mb-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Mohon periksa kembali formulir kustom:</strong><ul class="mb-0 ps-3">' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
             alertBox.classList.remove('d-none');
             alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
-        let modelTitle = "{{ isset($selectedProduct) ? addslashes($selectedProduct->nama) : 'Custom Furniture' }}";
-        let kategori = "{{ isset($selectedProduct) ? addslashes($selectedProduct->kategori ?? 'Mebel Jati') : 'Furniture' }}";
+        let modelTitle = "{{ isset($selectedProduct) ? addslashes($selectedProduct->nama) : 'Custom Mebel' }}";
+        let kategori = "{{ isset($selectedProduct) ? addslashes($selectedProduct->kategori ?? 'Furniture Kayu Jati') : 'Furniture Kayu Jati' }}";
 
         document.getElementById('rev_model').innerText = modelTitle;
         document.getElementById('rev_kategori').innerText = kategori;
         document.getElementById('rev_dimensi').innerText = `${p} × ${l} × ${t} cm`;
-        document.getElementById('rev_warna').innerText = warna + " (" + hex + ")";
-        document.getElementById('rev_total').innerText = document.getElementById('displayTotalPesanan').innerText;
-        document.getElementById('rev_dp').innerText = document.getElementById('displayDP').innerText;
-        document.getElementById('rev_sisa').innerText = document.getElementById('displaySisaPelunasan').innerText;
+        document.getElementById('rev_warna').innerText = `${warna} (${hex})`;
+        document.getElementById('rev_total').innerText = document.getElementById('dispTotalTagihan').innerText;
+        document.getElementById('rev_dp').innerText = document.getElementById('dispDP').innerText;
+        document.getElementById('rev_sisa').innerText = document.getElementById('dispSisaPelunasan').innerText;
 
-        let notesBox = document.getElementById('rev_notes_box');
+        const notesBox = document.getElementById('rev_notes_box');
         if (notesBox) {
             if (notes) {
                 document.getElementById('rev_notes').innerText = `"${notes}"`;
@@ -1040,11 +959,11 @@
             }
         }
 
-        let modal = new bootstrap.Modal(document.getElementById('modalReviewDesain'));
+        const modal = new bootstrap.Modal(document.getElementById('modalReviewDesain'));
         modal.show();
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener('DOMContentLoaded', () => {
         updateDimDiffBadges();
         hitungHargaReal();
     });

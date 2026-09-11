@@ -60,7 +60,7 @@ class WaMessageLogSeeder extends Seeder
                 'recipient_name' => 'Rina Kartika',
                 'recipient_phone' => '6285987654321',
                 'template_code' => 'order_created',
-                'message_body' => "Halo *Rina Kartika*,\n\nTerima kasih telah memesan mebel premium di *Assalam Mebel*! 🪵\n\n📌 *Detail Pesanan:*\n• No. Pesanan: *#" . ($rinaOrder?->order_number ?? 'ORD-8822') . "*\n• Produk: *Meja Makan Trembesi Solid*\n• Estimasi Total: *Rp 8.200.000*\n• Tagihan DP (50%): *Rp 4.100.000*\n\nSilakan transfer pembayaran DP agar pesanan Anda dapat segera dijadwalkan ke dapur produksi pengrajin kami.\n\n🔗 Pantau progres pesanan Anda di:\n" . url('/customer/progress'),
+                'message_body' => "Halo *Rina Kartika*,\n\nTerima kasih telah memesan mebel premium di *Assalam Mebel*! 🪵\n\n📌 *Detail Pesanan:*\n• No. Pesanan: *#" . ($rinaOrder?->order_number ?? 'ORD-8822') . "*\n• Produk: *Meja Trembesi Solid*\n• Estimasi Total: *Rp 8.200.000*\n• Tagihan DP (50%): *Rp 4.100.000*\n\nSilakan transfer pembayaran DP agar pesanan Anda dapat segera dijadwalkan ke dapur produksi pengrajin kami.\n\n🔗 Pantau progres pesanan Anda di:\n" . url('/customer/progress'),
                 'status' => 'Failed',
                 'response_payload' => json_encode(['error' => 'Connection to WhatsApp Web Sidecar timeout. Retry requested.']),
                 'retry_count' => 1,

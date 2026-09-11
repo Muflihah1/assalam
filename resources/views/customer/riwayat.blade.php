@@ -100,7 +100,7 @@
     }
 </style>
 
-<div class="container-fluid px-2 px-md-4 py-2">
+<div class="container-xl">
 
     <!-- HEADER / JUDUL HALAMAN -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">

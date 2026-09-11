@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\OrderManagementController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
@@ -23,13 +24,15 @@ use App\Models\Produk;
 
 // 1. HALAMAN UTAMA PUBLIK (Bebas Akses Tanpa Login)
 Route::get('/', function () {
-    $produks = Produk::latest()->take(6)->get();
-    return view('customer.beranda', compact('produks'));
+    $produks = Produk::orderBy('id', 'asc')->get();
+    $reviews = \App\Models\ProductReview::with(['user', 'produk'])->where('status', 'Disetujui')->latest()->take(6)->get();
+    return view('customer.beranda', compact('produks', 'reviews'));
 })->name('beranda');
 
 Route::get('/beranda', function () {
-    $produks = Produk::latest()->take(6)->get();
-    return view('customer.beranda', compact('produks'));
+    $produks = Produk::orderBy('id', 'asc')->get();
+    $reviews = \App\Models\ProductReview::with(['user', 'produk'])->where('status', 'Disetujui')->latest()->take(6)->get();
+    return view('customer.beranda', compact('produks', 'reviews'));
 })->name('customer.beranda');
 
 Route::get('/katalog', function (\Illuminate\Http\Request $request) {
@@ -59,12 +62,28 @@ Route::get('/katalog', function (\Illuminate\Http\Request $request) {
         });
     }
 
-    $katalogs = $query->latest()->get();
-    return view('customer.katalog', compact('katalogs', 'keyword'));
+    $sort = $request->input('sort', 'latest');
+    if ($sort === 'price_asc') {
+        $query->orderBy('harga', 'asc');
+    } elseif ($sort === 'price_desc') {
+        $query->orderBy('harga', 'desc');
+    } elseif ($sort === 'name_asc') {
+        $query->orderBy('nama', 'asc');
+    } else {
+        $query->latest();
+    }
+
+    $katalogs = $query->get();
+    return view('customer.katalog', compact('katalogs', 'keyword', 'sort'));
 })->name('customer.katalog');
 
 // Studio Desain Interaktif (Bebas Dieksplorasi Tamu/Publik)
 Route::get('/design', [CustomerOrderController::class, 'design'])->name('customer.design');
+
+// Halaman Workshop & Batas Wilayah Pengiriman Se-Madura (Publik)
+Route::get('/workshop', function () {
+    return view('customer.workshop');
+})->name('customer.workshop');
 
 // Keranjang Belanja Publik (Tersimpan di Session)
 // Aksi transaksi dilindungi middleware 'customer' agar AKUN ADMIN tidak bisa bertransaksi
@@ -87,6 +106,17 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Rute Lupa Password via OTP WhatsApp
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showRequestForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendOtp'])->name('password.send_otp');
+
+Route::get('/verify-otp', [ForgotPasswordController::class, 'showVerifyOtpForm'])->name('password.verify_otp_view');
+Route::post('/verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name('password.verify_otp');
+Route::post('/resend-otp', [ForgotPasswordController::class, 'resendOtp'])->name('password.resend_otp');
+
+Route::get('/reset-password', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('password.reset_view');
+Route::post('/reset-password', [ForgotPasswordController::class, 'updatePassword'])->name('password.update');
 
 // Rute Login Tunggal Terpadu (Mengalihkan /admin/login ke /login)
 Route::redirect('/admin/login', '/login')->name('admin.login');

@@ -53,6 +53,11 @@ class Order extends Model
         return $this->hasMany(OrderItem::class, 'order_id');
     }
 
+    public function orderItems()
+    {
+        return $this->items();
+    }
+
     public function progresses()
     {
         return $this->hasMany(OrderProgress::class, 'order_id')->orderBy('step_number', 'asc');

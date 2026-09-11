@@ -48,6 +48,13 @@ class WaTemplateSeeder extends Seeder
                 'content' => "Halo *{nama}*,\n\nPesanan furniture *#{no_pesanan}* (*{produk}*) telah selesai diproduksi dan kini dalam perjalanan menuju alamat Anda! 🚚📦\n\nSemoga furniture kayu solid dari Assalam Mebel mempercantik ruangan Anda dan awet berpuluh-puluh tahun. Jangan ragu menghubungi kami jika memerlukan panduan perawatan mebel kayu solid.\n\nTerima kasih telah berbelanja di *Assalam Mebel*! ❤️",
                 'is_active' => true,
             ],
+            [
+                'code' => 'otp_forgot_password',
+                'name' => 'OTP Reset Kata Sandi (Lupa Password)',
+                'event_trigger' => 'Saat Pengguna Meminta Reset Password',
+                'content' => "Halo *{nama}*,\n\nBerikut adalah kode OTP verifikasi untuk mengatur ulang kata sandi (reset password) akun Assalam Mebel Jepara Anda:\n\n🔑 *{otp}*\n\nKode ini berlaku selama {menit} menit. Demi keamanan akun Anda, JANGAN bagikan kode ini kepada siapa pun termasuk pihak Assalam Mebel.\n\nJika Anda tidak meminta perubahan kata sandi, silakan abaikan pesan ini.\n\nSalam hangat,\n*Assalam Mebel Jepara*",
+                'is_active' => true,
+            ],
         ];
 
         foreach ($templates as $tmpl) {

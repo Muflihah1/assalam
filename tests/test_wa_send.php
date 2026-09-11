@@ -20,7 +20,7 @@ $templates = [
     'order_created' => [
         'nama' => $recipient,
         'no_pesanan' => 'ORD-2026-9901',
-        'produk' => 'Set Meja Makan Jati Solid Trembesi Jepara',
+        'produk' => 'Set Meja Jati Solid Trembesi Jepara',
         'total_harga' => '8.500.000',
         'dp_amount' => '4.250.000',
         'link_tracking' => 'http://127.0.0.1:8000/customer/progress',
@@ -28,14 +28,14 @@ $templates = [
     'dp_verified' => [
         'nama' => $recipient,
         'no_pesanan' => 'ORD-2026-9901',
-        'produk' => 'Set Meja Makan Jati Solid Trembesi Jepara',
+        'produk' => 'Set Meja Jati Solid Trembesi Jepara',
         'dp_amount' => '4.250.000',
         'link_tracking' => 'http://127.0.0.1:8000/customer/progress',
     ],
     'progress_updated' => [
         'nama' => $recipient,
         'no_pesanan' => 'ORD-2026-9901',
-        'produk' => 'Set Meja Makan Jati Solid Trembesi Jepara',
+        'produk' => 'Set Meja Jati Solid Trembesi Jepara',
         'tahap' => 'Perakitan & Finishing Natural',
         'catatan' => 'Penyatuan sambungan kayu purus dan penghalusan serat alami jati telah selesai.',
         'link_tracking' => 'http://127.0.0.1:8000/customer/progress',
@@ -43,13 +43,13 @@ $templates = [
     'payment_completed' => [
         'nama' => $recipient,
         'no_pesanan' => 'ORD-2026-9901',
-        'produk' => 'Set Meja Makan Jati Solid Trembesi Jepara',
+        'produk' => 'Set Meja Jati Solid Trembesi Jepara',
         'link_tracking' => 'http://127.0.0.1:8000/customer/progress',
     ],
     'order_finished' => [
         'nama' => $recipient,
         'no_pesanan' => 'ORD-2026-9901',
-        'produk' => 'Set Meja Makan Jati Solid Trembesi Jepara',
+        'produk' => 'Set Meja Jati Solid Trembesi Jepara',
     ],
 ];
 

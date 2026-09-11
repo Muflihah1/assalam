@@ -79,6 +79,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Password reset OTP tokens
+     */
+    public function passwordResetOtps()
+    {
+        return $this->hasMany(PasswordResetOtp::class);
+    }
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>

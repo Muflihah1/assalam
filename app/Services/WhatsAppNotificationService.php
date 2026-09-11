@@ -248,6 +248,38 @@ class WhatsAppNotificationService
     }
 
     /**
+     * Kirim kode OTP Lupa Password ke WhatsApp pengguna
+     */
+    public function sendOtpForgotPassword($user, string $otpCode, int $expiresMinutes = 5): ?WaMessageLog
+    {
+        $phone = $user->whatsapp_number;
+        if (!$phone) {
+            return null;
+        }
+
+        $template = WaTemplate::where('code', 'otp_forgot_password')->where('is_active', true)->first();
+
+        $variables = [
+            'nama' => $user->name,
+            'otp' => $otpCode,
+            'menit' => (string) $expiresMinutes,
+        ];
+
+        if ($template) {
+            $message = self::parseTemplate($template->content, $variables);
+        } else {
+            $message = "Halo *{$user->name}*,\n\nBerikut adalah kode OTP verifikasi untuk mengatur ulang kata sandi (reset password) akun Assalam Mebel Jepara Anda:\n\n🔑 *{$otpCode}*\n\nKode ini berlaku selama {$expiresMinutes} menit. Demi keamanan akun Anda, JANGAN bagikan kode ini kepada siapa pun termasuk pihak Assalam Mebel.\n\nJika Anda tidak meminta perubahan kata sandi, silakan abaikan pesan ini.\n\nSalam hangat,\n*Assalam Mebel Jepara*";
+        }
+
+        return $this->sendMessage(
+            recipientPhone: $phone,
+            recipientName: $user->name,
+            messageBody: $message,
+            templateCode: 'otp_forgot_password'
+        );
+    }
+
+    /**
      * Eksekusi pengiriman pesan & pencatatan log
      */
     public function sendMessage(

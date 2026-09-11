@@ -109,7 +109,7 @@
     }
 </style>
 
-<div class="container-fluid px-2 px-md-4 py-2">
+<div class="container-xl">
 
     <!-- HEADER JUDUL -->
     <div class="mb-4">
@@ -190,7 +190,7 @@
         </div>
     @endif
 
-    @if($errors->any())
+    @if(isset($errors) && $errors->any())
         <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
             <strong class="d-block mb-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Terjadi kesalahan pada pengisian form:</strong>
             <ul class="mb-0 ps-3">

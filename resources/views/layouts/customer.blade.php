@@ -3,614 +3,532 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assalam Mebel - Toko & Custom Mebel Kayu Solid Premium</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ config('app.name', 'Assalam Mebel') }} - Toko & Custom Mebel Kayu Solid Karduluk Sumenep (Madura)</title>
+    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
-    <!-- Google Fonts -->
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Bootstrap CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome Icons -->
+    
+    <!-- Font Awesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Swiper.js CSS (Touch Slider) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-    <style>
-    :root {
-        --sidebar-width: 260px;
-        --transition-smooth: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
-        
-        /* Tema Latte / Warm Wood Premium */
-        --light-bg: #faf6f0;          /* Warm Alabaster Background */
-        --light-card: #ffffff;        /* Pure White Card */
-        --light-border: #dcd4cc;      /* Natural Wood Border */
-        --primary-color: #5d4037;     /* Cokelat Mebel Kayu */
-        --primary-dark: #3e2723;      /* Deep Mahogany */
-        --secondary-color: #8d6e63;   /* Cokelat Sedang */
-        --accent-orange: #d77a61;     /* Terracotta Warm */
-        --accent-gold: #d97706;       /* Amber Gold */
-        --text-main: #2c221e;         /* Espresso Dark */
-        --text-muted: #796d66;        /* Muted Taupe */
-        --wood-bg: #edd6bd;           /* Krem Kayu */
-        --wood-border: #bfa084;
-    }
+    <!-- Leaflet.js CSS & JS for Interactive Map & Coverage Boundary (Se-Madura) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Batas Geografis Resmi Pulau Madura (GeoJSON) -->
+    <script src="{{ asset('js/madura-boundary.js') }}"></script>
 
-    body {
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-        background-color: var(--light-bg) !important;
-        color: var(--text-main);
-        overflow-x: hidden;
-    }
+    <!-- Assalam E-Commerce Design System (Anti-AI Slop) -->
+    <link rel="stylesheet" href="{{ asset('css/ecommerce.css') }}">
 
-    /* --- SIDEBAR BASE --- */
-    .sidebar {
-        width: var(--sidebar-width);
-        height: 100vh;
-        position: fixed;
-        top: 0;
-        left: 0;
-        background-color: var(--light-card) !important;
-        border-right: 1.5px solid var(--light-border);
-        z-index: 1050;
-        transition: var(--transition-smooth);
-        box-shadow: 5px 0 20px rgba(93, 64, 55, 0.03);
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* HEADER SIDEBAR */
-    .sidebar-header {
-        padding: 15px 20px;
-        border-bottom: 1.5px solid var(--light-border);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 72px;
-        background-color: var(--light-card) !important;
-    }
-
-    .sidebar-brand {
-        font-weight: 800;
-        font-size: 1.05rem;
-        color: var(--primary-color);
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        line-height: 1.2;
-    }
-
-    /* Tombol Toggle Sidebar */
-    .btn-toggle-sidebar {
-        background: var(--light-bg);
-        border: 1px solid var(--light-border);
-        border-radius: 8px;
-        padding: 4px 10px;
-        cursor: pointer;
-        font-size: 1rem;
-        color: var(--text-main);
-        transition: var(--transition-smooth);
-    }
-
-    .btn-toggle-sidebar:hover {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-        color: #ffffff;
-    }
-
-    /* MENU SIDEBAR */
-    .sidebar-menu {
-        list-style: none;
-        padding: 15px 0;
-        margin: 0;
-    }
-
-    .sidebar-menu li a {
-        display: flex;
-        align-items: center;
-        padding: 13px 22px;
-        color: var(--text-main);
-        text-decoration: none;
-        font-size: 0.95rem;
-        font-weight: 600;
-        transition: var(--transition-smooth);
-    }
-
-    .sidebar-menu li a i {
-        font-size: 1.2rem;
-        width: 36px;
-        color: var(--text-muted);
-        transition: transform 0.3s ease, color 0.3s ease;
-    }
-
-    .sidebar-menu li a:hover {
-        background-color: rgba(93, 64, 55, 0.08);
-        color: var(--primary-color);
-        padding-left: 26px;
-    }
-
-    .sidebar-menu li a:hover i {
-        transform: scale(1.15);
-        color: var(--primary-color);
-    }
-
-    .sidebar-menu li a.active {
-        background-color: var(--primary-color);
-        color: #ffffff;
-        font-weight: 700;
-    }
-
-    .sidebar-menu li a.active i {
-        color: #ffffff;
-    }
-
-    /* --- MAIN WRAPPER --- */
-    .main-wrapper {
-        margin-left: var(--sidebar-width);
-        transition: var(--transition-smooth);
-        min-height: 100vh;
-        background-color: var(--light-bg) !important;
-    }
-
-    /* --- EFEK SLIDE TUTUP SIDEBAR --- */
-    .sidebar.hide-sidebar {
-        transform: translateX(-100%);
-        box-shadow: none;
-    }
-
-    .main-wrapper.full-width {
-        margin-left: 0;
-    }
-
-    /* --- TOP NAVBAR --- */
-    .top-navbar {
-        padding: 12px 24px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        background: var(--light-card) !important;
-        height: 72px;
-        border-bottom: 1.5px solid var(--light-border);
-    }
-
-    .btn-open-sidebar {
-        display: none;
-        background: var(--light-bg);
-        border: 1px solid var(--light-border);
-        border-radius: 8px;
-        padding: 5px 12px;
-        cursor: pointer;
-        font-size: 1.1rem;
-        color: var(--text-main);
-        transition: var(--transition-smooth);
-    }
-
-    .btn-open-sidebar:hover {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-        color: #ffffff;
-    }
-
-    .main-wrapper.full-width .btn-open-sidebar {
-        display: block;
-    }
-
-    .search-bar {
-        position: relative;
-        flex-grow: 1;
-        max-width: 400px;
-    }
-
-    .search-bar input {
-        background-color: var(--light-bg) !important;
-        border: 1.5px solid var(--light-border);
-        color: var(--text-main);
-        border-radius: 20px;
-        padding-left: 40px;
-        height: 40px;
-        font-weight: 500;
-        transition: var(--transition-smooth);
-    }
-
-    .search-bar input::placeholder {
-        color: var(--text-muted);
-    }
-
-    .search-bar input:focus {
-        box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.15);
-        border-color: var(--primary-color);
-        background-color: #ffffff !important;
-    }
-
-    .search-bar i {
-        position: absolute;
-        left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-muted);
-    }
-
-    .nav-actions {
-        margin-left: auto;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .cart-badge-icon {
-        position: relative;
-        font-size: 1.35rem;
-        color: var(--text-main);
-        text-decoration: none;
-        padding: 6px 10px;
-        border-radius: 10px;
-        background: var(--light-bg);
-        border: 1px solid var(--light-border);
-        transition: all 0.2s ease;
-    }
-
-    .cart-badge-icon:hover {
-        background: var(--wood-bg);
-        color: var(--primary-color);
-        transform: scale(1.05);
-    }
-
-    .cart-badge-count {
-        position: absolute;
-        top: -6px;
-        right: -6px;
-        background-color: var(--accent-orange);
-        color: #ffffff;
-        font-size: 0.72rem;
-        font-weight: 800;
-        padding: 2px 7px;
-        border-radius: 20px;
-        border: 2px solid #ffffff;
-    }
-
-    .btn-auth-nav {
-        font-size: 0.85rem;
-        font-weight: 700;
-        padding: 7px 16px;
-        border-radius: 10px;
-        text-decoration: none;
-        transition: all 0.2s;
-    }
-
-    /* Mobile Backdrop */
-    .sidebar-backdrop {
-        display: none;
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0, 0, 0, 0.4);
-        z-index: 1040;
-    }
-
-    @media (max-width: 768px) {
-        .sidebar {
-            transform: translateX(-100%);
-        }
-        .sidebar.show-mobile {
-            transform: translateX(0);
-        }
-        .main-wrapper {
-            margin-left: 0 !important;
-        }
-        .btn-open-sidebar {
-            display: block !important;
-        }
-        .sidebar-backdrop.active {
-            display: block;
-        }
-    }
-</style>
+    @stack('styles')
 </head>
 <body>
 
-    <!-- BACKDROP MOBILE -->
-    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar" id="mySidebar">
-        <div class="d-flex flex-column h-100 justify-content-between">
-            <div>
-                <!-- Header Sidebar (Judul + Garis 3) -->
-                <div class="sidebar-header">
-                    <a href="{{ route('customer.beranda') }}" class="sidebar-brand text-decoration-none d-flex align-items-center gap-2">
-                        <img src="{{ asset('logo.png') }}" alt="Assalam Mebel" style="max-height: 42px; width: auto; object-fit: contain;">
+    <!-- 1. TOP ANNOUNCEMENT BAR -->
+    <div class="top-announcement-bar d-none d-md-block">
+        <div class="container-xl">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <span><i class="fa-solid fa-certificate text-warning me-1"></i> 100% Kayu Solid Legalitas Perhutani (Jati & Mahoni)</span>
+                    <span class="opacity-50">|</span>
+                    <span><i class="fa-solid fa-shield-halved text-warning me-1"></i> Garansi Konstruksi & Finishing Presisi</span>
+                </div>
+                <div class="d-flex align-items-center gap-4">
+                    <a href="{{ route('customer.design') }}">
+                        <i class="fa-solid fa-pen-ruler text-warning me-1"></i> Studio Custom Furniture
                     </a>
-                    <!-- Tombol Garis 3 untuk Menutup -->
-                    <button class="btn-toggle-sidebar" id="closeBtn" title="Tutup Sidebar">
-                        <i class="fa-solid fa-bars-staggered"></i>
+                    <a href="https://wa.me/6281234567890" target="_blank" rel="noopener">
+                        <i class="fa-brands fa-whatsapp text-success me-1"></i> CS WhatsApp: 0812-3456-7890
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN STORE HEADER -->
+    <header class="main-header py-2 py-lg-3">
+        <div class="container-xl">
+            <div class="d-flex align-items-center justify-content-between gap-2 gap-md-4">
+                
+                <!-- Left: Hamburger (Mobile) & Brand Logo -->
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn d-lg-none p-2 border-0 text-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuOffcanvas" aria-controls="mobileMenuOffcanvas" aria-label="Buka Menu">
+                        <i class="fa-solid fa-bars-staggered fs-5"></i>
                     </button>
+                    
+                    <a href="{{ route('customer.beranda') }}" class="header-brand text-decoration-none d-flex align-items-center gap-2">
+                        <img src="{{ asset('logo.png') }}" alt="Assalam Mebel">
+                    </a>
                 </div>
 
-                <ul class="sidebar-menu">
-                    <li>
-                        <a href="{{ route('customer.beranda') }}" class="{{ request()->routeIs('customer.beranda') || request()->is('/') ? 'active' : '' }}">
-                            <i class="fa-solid fa-house"></i>
-                            <span>Beranda</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('customer.katalog') }}" class="{{ request()->routeIs('customer.katalog') ? 'active' : '' }}">
-                            <i class="fa-solid fa-basket-shopping"></i>
-                            <span>Katalog Produk</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('customer.design') }}" class="{{ request()->routeIs('customer.design') ? 'active' : '' }}">
-                            <i class="fa-solid fa-pen-ruler"></i>
-                            <span>Studio Custom</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('customer.cart') }}" class="{{ request()->routeIs('customer.cart') ? 'active' : '' }}">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                            <span>Keranjang Belanja</span>
-                            @php $cartCount = count(session('cart', [])); @endphp
-                            @if($cartCount > 0)
-                                <span class="badge rounded-pill bg-danger ms-auto">{{ $cartCount }}</span>
-                            @endif
-                        </a>
-                    </li>
+                <!-- Center: Big Live Search Bar (Desktop) -->
+                <div class="store-search-box d-none d-md-block flex-grow-1 mx-lg-4">
+                    <form action="{{ route('customer.katalog') }}" method="GET" class="position-relative">
+                        <input type="text" name="keyword" value="{{ request('keyword', request('q', '')) }}" class="form-control" placeholder="Cari mebel jati, kursi ukir, mimbar podium, Meja, lemari..." autocomplete="off">
+                        <button type="submit" class="btn-search" title="Cari Produk">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </form>
+                </div>
 
-                    <li class="px-3 py-2">
+                <!-- Right: Header Action Buttons -->
+                <div class="d-flex align-items-center gap-2 gap-md-3">
+                    
+                    <!-- Search Icon Toggle for Small Mobile -->
+                    <button class="btn d-md-none p-2 text-dark border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSearchCollapse" aria-expanded="false" aria-label="Cari Produk">
+                        <i class="fa-solid fa-magnifying-glass fs-5"></i>
+                    </button>
+
+                    <!-- Cart Button with Dynamic Badge -->
+                    @php $cartCount = count(session('cart', [])); @endphp
+                    <a href="{{ route('customer.cart') }}" class="header-cart-btn text-decoration-none d-inline-flex align-items-center" title="Keranjang Belanja">
+                        <i class="fa-solid fa-basket-shopping fs-5"></i>
+                        <span class="d-none d-sm-inline ms-2">Keranjang</span>
+                        <span class="cart-counter-badge" id="headerCartBadge" style="{{ $cartCount > 0 ? '' : 'display:none;' }}">
+                            {{ $cartCount }}
+                        </span>
+                    </a>
+
+                    <!-- User Account / Auth Buttons -->
                     @auth
-                        <li>
-                            <a href="{{ route('customer.progress') }}" class="{{ request()->routeIs('customer.progress') ? 'active' : '' }}">
-                                <i class="fa-solid fa-chart-line"></i>
-                                <span>Progres Pesanan</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('customer.riwayat') }}" class="{{ request()->routeIs('customer.riwayat') ? 'active' : '' }}">
-                                <i class="fa-solid fa-file-invoice"></i>
-                                <span>Riwayat Pesanan</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('customer.account') }}" class="{{ request()->routeIs('customer.account') ? 'active' : '' }}">
-                                <i class="fa-solid fa-user"></i>
-                                <span>Akun Saya</span>
-                            </a>
-                        </li>
+                        <div class="dropdown">
+                            <button class="header-action-btn dropdown-toggle border-0" type="button" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 32px; height: 32px; background-color: var(--primary-color);">
+                                    <i class="fa-solid fa-user small"></i>
+                                </div>
+                                <span class="d-none d-xl-inline text-truncate" style="max-width: 120px;">{{ Auth::user()->name }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2" aria-labelledby="userMenuDropdown" style="min-width: 220px;">
+                                <li class="px-3 py-2 border-bottom mb-1">
+                                    <span class="d-block fw-bold text-dark text-truncate">{{ Auth::user()->name }}</span>
+                                    <small class="text-muted d-block text-truncate" style="font-size: 0.75rem;">{{ Auth::user()->email }}</small>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 rounded-3 d-flex align-items-center gap-2" href="{{ route('customer.account') }}">
+                                        <i class="fa-solid fa-user-gear text-muted"></i> Akun Saya
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 rounded-3 d-flex align-items-center gap-2" href="{{ route('customer.progress') }}">
+                                        <i class="fa-solid fa-truck-fast text-muted"></i> Lacak Pesanan
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 rounded-3 d-flex align-items-center gap-2" href="{{ route('customer.riwayat') }}">
+                                        <i class="fa-solid fa-file-invoice text-muted"></i> Riwayat Transaksi
+                                    </a>
+                                </li>
+                                @if(Auth::user()->role === 'admin')
+                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li>
+                                        <a class="dropdown-item py-2 rounded-3 text-primary d-flex align-items-center gap-2" href="{{ route('admin.dashboard') }}">
+                                            <i class="fa-solid fa-shield-halved"></i> Panel Administrator
+                                        </a>
+                                    </li>
+                                @endif
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item py-2 rounded-3 text-danger d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-power-off"></i> Keluar
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
                     @else
-                        <li>
-                            <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active' : '' }}">
-                                <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                                <span>Masuk / Login</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="{{ route('login') }}" class="btn btn-sm btn-store-secondary d-none d-sm-inline-flex">
+                                Masuk
                             </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? 'active' : '' }}">
-                                <i class="fa-solid fa-user-plus"></i>
-                                <span>Daftar Akun Baru</span>
+                            <a href="{{ route('register') }}" class="btn btn-sm btn-store-primary">
+                                Daftar
                             </a>
-                        </li>
+                        </div>
                     @endauth
-                </ul>
+
+                </div>
+
             </div>
 
-            <!-- Footer User Sidebar -->
-            <div class="p-3 border-top" style="border-color: var(--light-border) !important; background-color: var(--light-bg);">
+            <!-- Mobile Search Collapse Bar -->
+            <div class="collapse d-md-none mt-2 pt-2 border-top" id="mobileSearchCollapse">
+                <form action="{{ route('customer.katalog') }}" method="GET" class="position-relative">
+                    <input type="text" name="keyword" value="{{ request('keyword', request('q', '')) }}" class="form-control rounded-pill pe-5 ps-3 py-2" placeholder="Cari mebel jati..." autocomplete="off">
+                    <button type="submit" class="btn btn-sm position-absolute end-0 top-50 translate-middle-y me-2 rounded-circle text-muted">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- 3. MAIN NAVIGATION BAR (DESKTOP) -->
+    <nav class="category-nav-strip d-none d-lg-block">
+        <div class="container-xl">
+            <div class="d-flex align-items-center gap-1">
+                <a href="{{ route('customer.beranda') }}" class="nav-link-ecommerce {{ request()->routeIs('customer.beranda') || request()->is('/') ? 'active' : '' }}">
+                    <i class="fa-solid fa-house"></i> Beranda
+                </a>
+                <a href="{{ route('customer.katalog') }}" class="nav-link-ecommerce {{ request()->routeIs('customer.katalog') ? 'active' : '' }}">
+                    <i class="fa-solid fa-couch"></i> Katalog Produk
+                </a>
+                <a href="{{ route('customer.design') }}" class="nav-link-ecommerce {{ request()->routeIs('customer.design') ? 'active' : '' }}">
+                    <i class="fa-solid fa-pen-ruler"></i> Custom Mebel
+                    <span class="badge px-2 py-0.5 rounded-pill bg-warning text-dark fw-bold ms-1" style="font-size: 0.68rem;">Bisa Custom</span>
+                </a>
+                <a href="{{ route('customer.progress') }}" class="nav-link-ecommerce {{ request()->routeIs('customer.progress') ? 'active' : '' }}">
+                    <i class="fa-solid fa-truck-fast"></i> Lacak Pesanan
+                </a>
                 @auth
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <div class="d-flex align-items-center gap-2 overflow-hidden">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 36px; height: 36px; background-color: var(--primary-color);">
-                                <i class="fa-solid fa-user small"></i>
+                    <a href="{{ route('customer.riwayat') }}" class="nav-link-ecommerce {{ request()->routeIs('customer.riwayat') ? 'active' : '' }}">
+                        <i class="fa-solid fa-file-invoice"></i> Riwayat Transaksi
+                    </a>
+                @endauth
+                <a href="{{ route('customer.workshop') }}" class="nav-link-ecommerce {{ request()->routeIs('customer.workshop') ? 'active' : '' }}">
+                    <i class="fa-solid fa-store"></i> Workshop Karduluk
+                </a>
+                <a href="https://wa.me/6285234567890" target="_blank" rel="noopener" class="nav-link-ecommerce ms-auto text-success fw-bold">
+                    <i class="fa-brands fa-whatsapp fs-6"></i> Bantuan CS WhatsApp
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 4. FLASH ALERTS CONTAINER -->
+    <div class="container-xl pt-3">
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+                <i class="fa-solid fa-circle-check fs-5 text-success"></i>
+                <div class="flex-grow-1 fw-semibold small">{{ session('success') }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+                <i class="fa-solid fa-triangle-exclamation fs-5 text-danger"></i>
+                <div class="flex-grow-1 fw-semibold small">{{ session('error') }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(isset($errors) && $errors->any())
+            <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm border-0" role="alert">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="fa-solid fa-circle-exclamation fs-5 text-danger"></i>
+                    <strong class="small">Periksa kembali formulir yang diisi:</strong>
+                </div>
+                <ul class="mb-0 ps-3 small">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    </div>
+
+    <!-- 5. MAIN CONTENT WRAPPER -->
+    <main class="main-content-area py-2 py-lg-4">
+        @yield('content')
+    </main>
+
+    <!-- 6. COMPREHENSIVE E-COMMERCE FOOTER -->
+    <footer class="ecommerce-footer" id="tentangToko">
+        <div class="container-xl pb-5">
+            <div class="row g-4">
+                
+                <!-- Col 1: Store Bio & Identity -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="mb-3">
+                        <img src="{{ asset('logo-white.png') }}" alt="Assalam Mebel" style="max-height: 48px; width: auto;" onerror="this.src='{{ asset('logo.png') }}'">
+                    </div>
+                    <p class="small text-muted-light mb-4 pe-lg-3">
+                        Spesialis produsen dan supplier mebel kayu jati & mahoni solid asli sentra ukir Karduluk, Sumenep. Kami melayani pembelian mebel siap pakai maupun pemesanan custom ukuran presisi dengan layanan pengiriman eksklusif se-Pulau Madura.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="footer-social-btn" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="footer-social-btn" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://wa.me/6285234567890" target="_blank" class="footer-social-btn" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="#" class="footer-social-btn" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Col 2: Navigasi Belanja -->
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h6 class="footer-heading">Navigasi</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                        <li><a href="{{ route('customer.beranda') }}">Beranda Toko</a></li>
+                        <li><a href="{{ route('customer.katalog') }}">Semua Katalog</a></li>
+                        <li><a href="{{ route('customer.design') }}">Custom Mebel</a></li>
+                        <li><a href="{{ route('customer.cart') }}">Keranjang Belanja</a></li>
+                        <li><a href="{{ route('customer.progress') }}">Lacak Pesanan</a></li>
+                        <li><a href="{{ route('customer.workshop') }}">Workshop Karduluk</a></li>
+                        <li><a href="{{ route('customer.riwayat') }}">Riwayat Transaksi</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Kategori Populer -->
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h6 class="footer-heading">Kategori Mebel</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                        <li><a href="{{ route('customer.katalog', ['keyword' => 'Kursi']) }}">Kursi & Sofa Tamu</a></li>
+                        <li><a href="{{ route('customer.katalog', ['keyword' => 'Meja']) }}">Meja Kayu</a></li>
+                        <li><a href="{{ route('customer.katalog', ['keyword' => 'Lemari']) }}">Lemari Pakaian</a></li>
+                        <li><a href="{{ route('customer.katalog', ['keyword' => 'Pintu']) }}">Pintu Ukir Gebyok</a></li>
+                        <li><a href="{{ route('customer.katalog', ['keyword' => 'Podium']) }}">Podium & Mimbar</a></li>
+                        <li><a href="{{ route('customer.katalog', ['keyword' => 'Pendopo']) }}">Gazebo & Pendopo</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Keunggulan & Garansi Kayu Solid -->
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="footer-heading">Garansi Kayu Solid</h6>
+                    <div class="p-3 rounded-4 mb-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                            <i class="fa-solid fa-tree fa-2x text-warning"></i>
+                            <div>
+                                <strong class="d-block text-white small">Kayu Solid Legal Perhutani</strong>
+                                <small class="text-muted-light" style="font-size: 0.76rem;">Diproses oven kering (kiln dry) standar ekspor anti-rayap.</small>
                             </div>
-                            <div class="text-truncate">
-                                <span class="d-block fw-bold small text-dark text-truncate">{{ Auth::user()->name }}</span>
-                                <small class="text-muted d-block text-truncate" style="font-size: 0.72rem;">{{ Auth::user()->email }}</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="fa-solid fa-handshake-angle fa-2x text-warning"></i>
+                            <div>
+                                <strong class="d-block text-white small">Skema DP 50% Aman</strong>
+                                <small class="text-muted-light" style="font-size: 0.76rem;">Uang muka 50% untuk produksi, pelunasan saat barang siap kirim.</small>
                             </div>
                         </div>
                     </div>
-                    <form action="{{ route('logout') }}" method="POST" class="mt-2">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-danger btn-sm w-100 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-1.5 py-1.5 shadow-2xs">
-                            <i class="fa-solid fa-power-off"></i>
-                            <span>Keluar / Logout</span>
-                        </button>
-                    </form>
-                @else
-                    <div class="text-center">
-                        <span class="small text-muted d-block mb-2">Belum memiliki akun?</span>
-                        <a href="{{ route('register') }}" class="btn btn-sm btn-dark w-100 rounded-3 fw-bold" style="background-color: var(--primary-color); border: none;">
-                            Daftar Sekarang
-                        </a>
+                    <div class="small text-muted-light">
+                        <i class="fa-solid fa-location-dot text-danger me-1"></i> Workshop: VPR6+PH7, Somangkaan, Karduluk, Pragaan, Sumenep, Madura
                     </div>
-                @endauth
+                </div>
+
+            </div>
+
+            <!-- Footer Bottom Strip -->
+            <div class="footer-bottom-strip d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    &copy; {{ date('Y') }} <strong>Assalam Mebel</strong>. Seluruh hak cipta dilindungi. Pengrajin Mebel Kayu Solid Asli.
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="small text-muted-light">Dibuat dengan dedikasi pengrajin kayu Indonesia</span>
+                </div>
             </div>
         </div>
-    </div>
+    </footer>
 
-    <!-- KONTEN UTAMA -->
-    <div class="main-wrapper" id="mainWrapper">
-        <div class="top-navbar">
-            <!-- Tombol Garis 3 Buka Sidebar -->
-            <button class="btn-open-sidebar" id="openBtn" title="Buka Sidebar">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-
-            <!-- Brand Tagline Badge -->
-            <div class="d-none d-md-flex align-items-center gap-2">
-                <span class="badge px-3 py-2 rounded-pill fw-bold" style="background-color: rgba(93, 64, 55, 0.08); color: var(--primary-color); font-size: 0.82rem;">
-                    <i class="fa-solid fa-award text-warning me-1"></i> Toko & Custom Mebel Kayu Solid Premium
-                </span>
-            </div>
-
-            <!-- Icon Kanan Topbar (Keranjang + Auth / Profile) -->
-            <div class="nav-actions">
-                @php $cartCount = count(session('cart', [])); @endphp
-                <a href="{{ route('customer.cart') }}" class="cart-badge-icon" title="Keranjang Belanja">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                    @if($cartCount > 0)
-                        <span class="cart-badge-count">{{ $cartCount }}</span>
-                    @endif
-                </a>
-
+    <!-- 7. MOBILE OFFCANVAS MENU DRAWER -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenuOffcanvas" aria-labelledby="mobileMenuOffcanvasLabel">
+        <div class="offcanvas-header border-bottom py-3">
+            <a href="{{ route('customer.beranda') }}" class="text-decoration-none">
+                <img src="{{ asset('logo.png') }}" alt="Assalam Mebel" style="max-height: 38px;">
+            </a>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            
+            <!-- User Status in Offcanvas -->
+            <div class="p-3 bg-white border-bottom">
                 @auth
-                    @if(Auth::user()->role === 'admin')
-                        @php
-                            $topbarPendingOrders = \App\Models\Order::where('order_status', 'Menunggu Konfirmasi')
-                                ->orWhere('payment_status', 'Menunggu Verifikasi DP')
-                                ->count();
-                        @endphp
-                        <a href="{{ route('admin.dashboard') }}" class="btn btn-sm btn-dark rounded-pill px-3 py-1.5 fw-bold d-flex align-items-center gap-1.5 shadow-2xs" style="background-color: var(--primary-color); border: none;" title="Buka Control Panel Administrator">
-                            <i class="fa-solid fa-shield-halved text-warning"></i>
-                            <span class="d-none d-sm-inline">Panel Admin</span>
-                            @if($topbarPendingOrders > 0)
-                                <span class="badge bg-danger text-white rounded-pill px-1.5 py-0.5" style="font-size: 0.68rem;">{{ $topbarPendingOrders }}</span>
-                            @endif
-                        </a>
-                    @endif
-
-                    <!-- Dropdown User Profil & Logout -->
-                    <div class="dropdown">
-                        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none dropdown-toggle" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover; border-color: var(--wood-border) !important;">
-                            <span class="fw-bold small d-none d-md-inline text-dark">{{ Auth::user()->name }}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-lg rounded-3 border py-1.5" aria-labelledby="userMenuDropdown" style="min-width: 210px; font-size: 0.85rem;">
-                            <li class="px-3 py-2 border-bottom">
-                                <strong class="d-block text-dark">{{ Auth::user()->name }}</strong>
-                                <small class="text-muted">{{ Auth::user()->email }}</small>
-                            </li>
-                            @if(Auth::user()->role === 'admin')
-                                <li>
-                                    <a class="dropdown-item py-2 fw-bold text-warning-emphasis d-flex align-items-center gap-2" href="{{ route('admin.pesanan.masuk') }}">
-                                        <i class="fa-solid fa-inbox text-warning" style="width: 18px;"></i>
-                                        <span>Pesanan Masuk (Admin)</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('admin.pengaturan') }}">
-                                        <i class="fa-solid fa-sliders text-primary" style="width: 18px;"></i>
-                                        <span>Pengaturan Toko & DANA</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('admin.dashboard') }}">
-                                        <i class="fa-solid fa-gauge text-secondary" style="width: 18px;"></i>
-                                        <span>Dashboard Admin</span>
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider my-1"></li>
-                            @endif
-                            <li>
-                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('customer.account') }}">
-                                    <i class="fa-solid fa-user text-primary" style="width: 18px;"></i>
-                                    <span>Akun Saya</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('customer.riwayat') }}">
-                                    <i class="fa-solid fa-file-invoice text-success" style="width: 18px;"></i>
-                                    <span>Riwayat Pesanan</span>
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider my-1"></li>
-                            <li>
-                                <form action="{{ route('logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item py-2 text-danger d-flex align-items-center gap-2 fw-semibold">
-                                        <i class="fa-solid fa-power-off text-danger" style="width: 18px;"></i>
-                                        <span>Keluar / Logout</span>
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 38px; height: 38px; background-color: var(--primary-color);">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <span class="d-block fw-bold small text-dark text-truncate">{{ Auth::user()->name }}</span>
+                            <small class="text-muted d-block text-truncate" style="font-size: 0.72rem;">{{ Auth::user()->email }}</small>
+                        </div>
                     </div>
                 @else
                     <div class="d-flex gap-2">
-                        <a href="{{ route('login') }}" class="btn btn-outline-dark btn-auth-nav">
-                            Masuk
-                        </a>
-                        <a href="{{ route('register') }}" class="btn btn-dark btn-auth-nav d-none d-sm-inline" style="background-color: var(--primary-color); border: none;">
-                            Daftar
-                        </a>
+                        <a href="{{ route('login') }}" class="btn btn-sm btn-store-secondary w-50 fw-bold">Masuk</a>
+                        <a href="{{ route('register') }}" class="btn btn-sm btn-store-primary w-50 fw-bold">Daftar</a>
                     </div>
                 @endauth
             </div>
-        </div>
 
-        <!-- Flash Messages -->
-        <div class="px-4 pt-3">
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm" role="alert">
-                    <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm" role="alert">
-                    <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            @if(isset($errors) && $errors->any())
-                <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm" role="alert">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <strong class="small">Periksa kembali data yang dimasukkan:</strong>
+            <!-- Navigation Links -->
+            <div class="py-2">
+                <a href="{{ route('customer.beranda') }}" class="nav-item-mobile {{ request()->routeIs('customer.beranda') || request()->is('/') ? 'active' : '' }}">
+                    <i class="fa-solid fa-house"></i> Beranda
+                </a>
+                <a href="{{ route('customer.katalog') }}" class="nav-item-mobile {{ request()->routeIs('customer.katalog') ? 'active' : '' }}">
+                    <i class="fa-solid fa-couch"></i> Katalog Produk
+                </a>
+                <a href="{{ route('customer.design') }}" class="nav-item-mobile {{ request()->routeIs('customer.design') ? 'active' : '' }}">
+                    <i class="fa-solid fa-pen-ruler"></i> Custom Mebel
+                </a>
+                <a href="{{ route('customer.cart') }}" class="nav-item-mobile {{ request()->routeIs('customer.cart') ? 'active' : '' }}">
+                    <i class="fa-solid fa-basket-shopping"></i> Keranjang Belanja
+                    @if($cartCount > 0)
+                        <span class="badge rounded-pill bg-danger ms-auto">{{ $cartCount }}</span>
+                    @endif
+                </a>
+                <a href="{{ route('customer.progress') }}" class="nav-item-mobile {{ request()->routeIs('customer.progress') ? 'active' : '' }}">
+                    <i class="fa-solid fa-truck-fast"></i> Lacak Pesanan
+                </a>
+                <a href="{{ route('customer.workshop') }}" class="nav-item-mobile {{ request()->routeIs('customer.workshop') ? 'active' : '' }}">
+                    <i class="fa-solid fa-store"></i> Workshop Karduluk
+                </a>
+                @auth
+                    <a href="{{ route('customer.riwayat') }}" class="nav-item-mobile {{ request()->routeIs('customer.riwayat') ? 'active' : '' }}">
+                        <i class="fa-solid fa-file-invoice"></i> Riwayat Transaksi
+                    </a>
+                    <a href="{{ route('customer.account') }}" class="nav-item-mobile {{ request()->routeIs('customer.account') ? 'active' : '' }}">
+                        <i class="fa-solid fa-user-gear"></i> Pengaturan Akun
+                    </a>
+                    <div class="p-3 mt-2">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger w-100 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 py-2">
+                                <i class="fa-solid fa-power-off"></i> Keluar
+                            </button>
+                        </form>
                     </div>
-                    <ul class="mb-0 ps-3 small">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-        </div>
+                @endauth
+            </div>
 
-        <div class="p-3 p-md-4">
-            @yield('content')
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- 8. MOBILE BOTTOM NAVIGATION BAR (App-Like Sticky Navigation) -->
+    <nav class="mobile-bottom-nav d-lg-none">
+        <a href="{{ route('customer.beranda') }}" class="mobile-nav-item {{ request()->routeIs('customer.beranda') || request()->is('/') ? 'active' : '' }}">
+            <i class="fa-solid fa-house"></i>
+            <span>Beranda</span>
+        </a>
+        <a href="{{ route('customer.katalog') }}" class="mobile-nav-item {{ request()->routeIs('customer.katalog') ? 'active' : '' }}">
+            <i class="fa-solid fa-couch"></i>
+            <span>Katalog</span>
+        </a>
+        <a href="{{ route('customer.design') }}" class="mobile-nav-item {{ request()->routeIs('customer.design') ? 'active' : '' }}">
+            <i class="fa-solid fa-pen-ruler"></i>
+            <span>Custom</span>
+        </a>
+        <a href="{{ route('customer.progress') }}" class="mobile-nav-item {{ request()->routeIs('customer.progress') || request()->routeIs('customer.riwayat') ? 'active' : '' }}">
+            <i class="fa-solid fa-truck-fast"></i>
+            <span>Lacak</span>
+        </a>
+        <a href="{{ Auth::check() ? route('customer.account') : route('login') }}" class="mobile-nav-item {{ request()->routeIs('customer.account') || request()->routeIs('login') ? 'active' : '' }}">
+            <i class="fa-solid fa-user"></i>
+            <span>{{ Auth::check() ? 'Akun' : 'Masuk' }}</span>
+        </a>
+    </nav>
+
+    <!-- Bootstrap 5.3 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- JavaScript Slide Sidebar & Mobile Drawer -->
-    <script>
-        const closeBtn = document.getElementById('closeBtn');
-        const openBtn = document.getElementById('openBtn');
-        const sidebar = document.getElementById('mySidebar');
-        const mainWrapper = document.getElementById('mainWrapper');
-        const backdrop = document.getElementById('sidebarBackdrop');
-
-        closeBtn.addEventListener('click', function() {
-            if (window.innerWidth <= 768) {
-                sidebar.classList.remove('show-mobile');
-                backdrop.classList.remove('active');
-            } else {
-                sidebar.classList.add('hide-sidebar');
-                mainWrapper.classList.add('full-width');
-            }
-        });
-
-        openBtn.addEventListener('click', function() {
-            if (window.innerWidth <= 768) {
-                sidebar.classList.add('show-mobile');
-                backdrop.classList.add('active');
-            } else {
-                sidebar.classList.remove('hide-sidebar');
-                mainWrapper.classList.remove('full-width');
-            }
-        });
-
-        if (backdrop) {
-            backdrop.addEventListener('click', function() {
-                sidebar.classList.remove('show-mobile');
-                backdrop.classList.remove('active');
-            });
-        }
-    </script>
     
+    <!-- SweetAlert2 (Modern Notification Toast) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Swiper.js Slider Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Global E-Commerce Scripts (Instant AJAX Add to Cart & Counter) -->
+    <script>
+        // Global Add-to-Cart Function via JSON
+        window.addToCart = function(productId, quantity = 1, buttonElement = null) {
+            let originalHtml = '';
+            if (buttonElement) {
+                originalHtml = buttonElement.innerHTML;
+                buttonElement.disabled = true;
+                buttonElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            }
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const targetUrl = "{{ route('customer.cart.add', ':id') }}".replace(':id', productId);
+
+            const formData = new FormData();
+            formData.append('quantity', quantity);
+
+            fetch(targetUrl, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: formData
+            })
+            .then(response => {
+                if (response.status === 401 || response.redirected) {
+                    window.location.href = "{{ route('login') }}";
+                    return null;
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data) return;
+
+                if (data.success) {
+                    // Update header cart badge
+                    const headerBadges = document.querySelectorAll('#headerCartBadge');
+                    headerBadges.forEach(badge => {
+                        badge.textContent = data.cartCount;
+                        badge.style.display = 'inline-block';
+                    });
+
+                    // Trigger modern SweetAlert2 toast
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: data.message || 'Produk dimasukkan ke keranjang!',
+                        showConfirmButton: true,
+                        confirmButtonText: '<i class="fa-solid fa-basket-shopping me-1"></i> Keranjang',
+                        confirmButtonColor: '#3B2314',
+                        timer: 4000,
+                        timerProgressBar: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{{ route('customer.cart') }}";
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Perhatian',
+                        text: data.message || 'Gagal menambahkan ke keranjang.',
+                        confirmButtonColor: '#3B2314'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Add to cart error:', error);
+                // Fallback to standard form submit if network/json issues
+                if (buttonElement && buttonElement.closest('form')) {
+                    buttonElement.closest('form').submit();
+                }
+            })
+            .finally(() => {
+                if (buttonElement) {
+                    buttonElement.disabled = false;
+                    buttonElement.innerHTML = originalHtml;
+                }
+            });
+        };
+    </script>
+
+    @stack('scripts')
+
 </body>
 </html>

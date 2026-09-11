@@ -15,14 +15,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #5d4037;
-            --secondary-color: #8d6e63;
-            --accent-color: #d7ccc8;
+            --primary-color: #3B2314;
+            --secondary-color: #5C3A21;
+            --accent-color: #FAF5F0;
         }
 
         body {
-            background: linear-gradient(135deg, var(--accent-color) 0%, #ffffff 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FAF5F0 0%, #E8DFD5 100%);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -31,19 +31,20 @@
         }
 
         .main-container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             border-radius: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(59, 35, 20, 0.12);
             display: flex;
             width: 100%;
             max-width: 900px;
             overflow: hidden;
+            border: 1px solid #E5E7EB;
         }
 
-        /* Kolom Kiri: Gambar */
+        /* Kolom Kiri: Gambar Mebel Asli */
         .auth-image {
             flex: 1;
-            background: url('https://images.unsplash.com/photo-1595428774223-ef52624120d3?q=80&w=1920') center/cover no-repeat;
+            background: url('{{ asset('produk/01_kursi-sofa-ukir-set.jpg') }}') center/cover no-repeat;
             position: relative;
         }
         
@@ -51,7 +52,7 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(93, 64, 55, 0.6);
+            background: rgba(59, 35, 20, 0.55);
         }
 
         /* Kolom Kanan: Form */
@@ -145,7 +146,7 @@
                     <input class="form-check-input" type="checkbox" name="remember" id="remember">
                     <label class="form-check-label" for="remember">Ingat Saya</label>
                 </div>
-                <a href="#" class="text-decoration-none text-muted">Lupa Password?</a>
+                <a href="{{ route('password.request') }}" class="text-decoration-none fw-semibold" style="color: var(--secondary-color);">Lupa Password?</a>
             </div>
 
             <button type="submit" class="btn btn-login w-100 mb-3">

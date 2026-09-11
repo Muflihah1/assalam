@@ -100,7 +100,7 @@ class OrderSeeder extends Seeder
         CustomDesign::updateOrCreate(
             ['order_id' => $orderRina->id],
             [
-                'category' => 'Meja Makan Minimalis Modern',
+                'category' => 'Meja Minimalis Modern',
                 'length_cm' => 160,
                 'width_cm' => 90,
                 'height_cm' => 78,

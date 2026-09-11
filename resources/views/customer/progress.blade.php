@@ -213,7 +213,7 @@
     }
 </style>
 
-<div class="container-fluid px-2 px-md-4 py-2">
+<div class="container-xl">
 
     @if(!$order)
         <div class="wireframe-card text-center py-5">

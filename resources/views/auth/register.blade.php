@@ -17,15 +17,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         :root {
-            --primary-color: #5d4037; /* Coklat Tua Kayu */
-            --secondary-color: #8d6e63; /* Coklat Muda */
-            --accent-color: #d7ccc8; /* Krem Lembut */
-            --input-border: #bcaaa4;
+            --primary-color: #3B2314; /* Coklat Tua Kayu */
+            --secondary-color: #5C3A21; /* Coklat Muda */
+            --accent-color: #FAF5F0; /* Krem Lembut */
+            --input-border: #E5E7EB;
         }
 
         body {
-            background: linear-gradient(135deg, var(--accent-color) 0%, #ffffff 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FAF5F0 0%, #E8DFD5 100%);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -34,19 +34,19 @@
         }
 
         .main-container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             border-radius: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(59, 35, 20, 0.12);
             overflow: hidden;
             display: flex;
             width: 100%;
             max-width: 1000px;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid #E5E7EB;
         }
 
         .auth-image {
             flex: 1;
-            background: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=1920') center/cover no-repeat;
+            background: url('{{ asset('produk/07_pendopo-gazebo-jati.jpg') }}') center/cover no-repeat;
             position: relative;
             min-height: 300px;
         }
@@ -55,7 +55,7 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(0deg, rgba(93,64,55,0.8) 0%, rgba(93,64,55,0.2) 100%);
+            background: linear-gradient(0deg, rgba(59,35,20,0.75) 0%, rgba(59,35,20,0.2) 100%);
         }
 
         .image-content {
