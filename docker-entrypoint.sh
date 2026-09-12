@@ -104,6 +104,7 @@ fi
 # 10. Pastikan direktori sesi WhatsApp Web Sidecar tersedia dan file sidecar ter-patch
 mkdir -p storage/app/whatsapp-sidecar/sessions
 mkdir -p storage/logs
+find storage/app/whatsapp-sidecar/sessions -name "Singleton*" -delete 2>/dev/null || true
 php scripts/patch-whatsapp-sidecar.php || true
 
 echo "=== Setup Selesai! Menjalankan perintah utama: $@ ==="

@@ -23,5 +23,22 @@ if (!str_contains($content, 'const SESSION_DIR =')) {
     file_put_contents($file, $content);
     echo "✔ Patched vendor/kstmostofa/laravel-whatsapp/sidecar/index.js (SESSION_DIR fix)\n";
 } else {
-    echo "✔ vendor/kstmostofa/laravel-whatsapp/sidecar/index.js is already patched.\n";
+    echo "✔ vendor/kstmostofa/laravel-whatsapp/sidecar/index.js is already patched (SESSION_DIR fix).\n";
+}
+
+if (!str_contains($content, 'SingletonLock')) {
+    $target = "  const client = new Client({";
+    $replacement = "  const sessionDir = path.join(SESSION_DIR, `session-\${sessionId}`);\n"
+        . "  if (fs.existsSync(sessionDir)) {\n"
+        . "    ['SingletonLock', 'SingletonCookie', 'SingletonSocket', 'DevToolsActivePort'].forEach((f) => {\n"
+        . "      try { fs.unlinkSync(path.join(sessionDir, f)); } catch (_) {}\n"
+        . "    });\n"
+        . "  }\n\n"
+        . "  const client = new Client({";
+
+    $content = str_replace($target, $replacement, $content);
+    file_put_contents($file, $content);
+    echo "✔ Patched vendor/kstmostofa/laravel-whatsapp/sidecar/index.js (SingletonLock cleanup fix)\n";
+} else {
+    echo "✔ vendor/kstmostofa/laravel-whatsapp/sidecar/index.js is already patched (SingletonLock cleanup fix).\n";
 }
