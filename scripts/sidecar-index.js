@@ -227,9 +227,13 @@ if (PID_FILE) {
   }
 }
 
-/** Remove stale Chromium locks from crashed instances (including broken symlinks) */
+/** Remove stale Chromium locks from crashed instances (including broken symlinks) and kill orphaned chromium */
 function cleanSessionLocks(sessionId) {
   const sessionDir = path.join(SESSION_DIR, `session-${sessionId}`);
+  try {
+    const { execSync } = require('child_process');
+    execSync(`pkill -9 -f "${sessionDir}" 2>/dev/null || true`);
+  } catch (_) {}
   const staleLockFiles = [
     'SingletonLock',
     'SingletonSocket',
@@ -305,7 +309,7 @@ function serializeMessage(m) {
 
 async function bootSession(sessionId, force = false) {
   const existing = sessions.get(sessionId);
-  if (!force && existing && existing.status !== 'error' && existing.status !== 'disconnected' && existing.client?.pupPage) {
+  if (!force && existing && existing.status !== 'error' && existing.status !== 'disconnected') {
     return existing;
   }
   if (existing) {
@@ -313,7 +317,7 @@ async function bootSession(sessionId, force = false) {
     sessions.delete(sessionId);
   }
 
-  // Clean stale singleton locks left by prior browser crashes
+  // Clean stale singleton locks left by prior browser crashes & kill zombie chromium
   cleanSessionLocks(sessionId);
 
   // Reuse a system Chrome/Chromium when PUPPETEER_EXECUTABLE_PATH is set
@@ -359,9 +363,13 @@ async function bootSession(sessionId, force = false) {
 
   client.on('qr', async (qr) => {
     console.log(`[laravel-wa-sidecar] session ${sessionId}: QR code received`);
-    session.qrDataUri = await qrcode.toDataURL(qr);
-    session.status = 'qr';
-    broadcast(sessionId, 'qr', { dataUri: session.qrDataUri });
+    try {
+      session.qrDataUri = await qrcode.toDataURL(qr);
+      session.status = 'qr';
+      broadcast(sessionId, 'qr', { dataUri: session.qrDataUri });
+    } catch (qrErr) {
+      console.error(`[laravel-wa-sidecar] session ${sessionId} qr generation error:`, qrErr.message || qrErr);
+    }
   });
 
   client.on('code', (code) => {
@@ -485,9 +493,12 @@ app.post('/sessions/:id/start', async (req, res, next) => {
 
 app.post('/sessions/:id/stop', async (req, res, next) => {
   try {
-    const s = getSession(req.params.id);
-    try { await s.client.destroy(); } catch (_) { /* already gone */ }
-    sessions.delete(req.params.id);
+    const s = sessions.get(req.params.id);
+    if (s) {
+      try { await s.client.destroy(); } catch (_) { /* already gone */ }
+      sessions.delete(req.params.id);
+    }
+    cleanSessionLocks(req.params.id);
     res.json({ ok: true });
   } catch (e) { next(e); }
 });
@@ -496,6 +507,7 @@ app.delete('/sessions/:id', async (req, res, next) => {
   try {
     const s = sessions.get(req.params.id);
     if (s) { try { await s.client.destroy(); } catch (_) {} sessions.delete(req.params.id); }
+    cleanSessionLocks(req.params.id);
     // Also wipe persisted auth so next start triggers a fresh QR.
     const authDir = path.join(SESSION_DIR, `session-${req.params.id}`);
     if (fs.existsSync(authDir)) fs.rmSync(authDir, { recursive: true, force: true });
@@ -506,7 +518,7 @@ app.delete('/sessions/:id', async (req, res, next) => {
 app.get('/sessions/:id/qr', async (req, res, next) => {
   try {
     let s = sessions.get(req.params.id);
-    if (!s || s.status === 'error') {
+    if (!s || s.status === 'error' || s.status === 'disconnected') {
       s = await bootSession(req.params.id, true);
     }
     res.json({ status: s.status, qr: s.qrDataUri, code: s.pairingCode });
