@@ -132,47 +132,84 @@
         padding: 20px;
     }
 
-    .color-swatch-btn {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        border: 2.5px solid #ffffff;
+    .wood-color-card {
+        background: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 0.85rem;
         cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        padding: 0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.14);
-    }
-
-    .color-swatch-btn:hover {
-        transform: scale(1.18);
-    }
-
-    .color-swatch-btn.active {
-        border-color: var(--primary-color) !important;
-        box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.4), 0 4px 10px rgba(0,0,0,0.2);
-        transform: scale(1.15);
-    }
-
-    .custom-color-picker-wrapper {
+        transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+        user-select: none;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        text-align: left;
         position: relative;
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        overflow: hidden;
-        cursor: pointer;
-        background: conic-gradient(from 0deg, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
-        border: 2.5px solid #ffffff;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+        outline: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
-    .custom-color-input {
-        position: absolute;
-        top: -10px;
-        left: -10px;
-        width: 60px;
-        height: 60px;
+    .wood-color-card:hover {
+        border-color: #cbd5e1;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .wood-color-card:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+
+    .wood-color-card.active {
+        border-color: var(--primary-color) !important;
+        background: #fffdf7;
+        box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.22), 0 4px 14px rgba(217, 119, 6, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .wood-swatch-circle {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 2.5px solid #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    .wood-check-badge {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
         opacity: 0;
-        cursor: pointer;
+        transform: scale(0.6);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .wood-color-card.active .wood-check-badge {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .wood-color-name {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1.25;
+        margin-bottom: 2px;
+    }
+
+    .wood-color-tag {
+        font-size: 0.72rem;
+        color: #64748b;
+        font-weight: 500;
+        line-height: 1.2;
     }
 
     /* File Upload Drop Area */
@@ -256,7 +293,7 @@
         <input type="hidden" name="product_id" id="inputProductId" value="{{ isset($selectedProduct) ? $selectedProduct->id : ($katalogs->first()->id ?? 1) }}">
         <input type="hidden" name="category" id="inputCategory" value="{{ $productCategory }}">
         <input type="hidden" name="wood_material" id="inputWoodMaterial" value="Kayu Jati Solid Grade A (Perhutani)">
-        <input type="hidden" name="color_name" id="color_name_input" value="Amber Gold (Jati Alami)">
+        <input type="hidden" name="color_name" id="color_name_input" value="Natural Jati">
         <input type="hidden" name="color_hex" id="final_color_hex_input" value="#d97706">
         <input type="hidden" name="tone_percent" id="tone_percent_input" value="100">
         <input type="hidden" id="rawBasePrice" value="{{ isset($selectedProduct) ? $selectedProduct->harga : 3500000 }}">
@@ -423,7 +460,7 @@
                                 <h5 class="custom-section-title">
                                     <i class="fa-solid fa-palette text-warning"></i> 2. Pilihan Warna Finishing Kayu Jati
                                 </h5>
-                                <small class="text-muted" style="font-size: 0.75rem;">Menggunakan cat melamine & wood stain khusus kayu jati solid</small>
+                                <small class="text-muted" style="font-size: 0.75rem;">Standar finishing wood stain & cat melamine khusus kayu jati solid</small>
                             </div>
                             <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small">
                                 <i class="fa-solid fa-certificate me-1"></i> Jati Grade A
@@ -449,49 +486,88 @@
                                 <div class="d-flex align-items-center gap-3">
                                     <div id="liveColorDot" style="width: 44px; height: 44px; border-radius: 50%; background-color: #d97706; border: 3px solid #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.18);"></div>
                                     <div>
-                                        <h6 class="fw-bold text-dark mb-0 fs-6" id="displayColorName">Amber Gold (Jati Alami)</h6>
+                                        <h6 class="fw-bold text-dark mb-0 fs-6" id="displayColorName">Natural Jati</h6>
                                         <small class="text-muted font-monospace fw-semibold" id="displayColorHex">HEX: #D97706</small>
                                     </div>
                                 </div>
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="small text-muted fw-bold d-none d-sm-inline">Warna Kustom:</span>
-                                    <div class="custom-color-picker-wrapper" title="Klik untuk memilih warna bebas">
-                                        <input type="color" class="custom-color-input" id="customColorPicker" value="#d97706" onchange="selectCustomColor(this.value)">
+                                <div>
+                                    <span class="badge rounded-pill px-2.5 py-1 text-dark border" style="background-color: #fef3c7; border-color: #fde68a !important; font-size: 0.72rem;">
+                                        <i class="fa-solid fa-tree text-warning me-1"></i> 4 Pilihan Warna Kayu
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- 4 Pilihan Warna Standar Kayu Jati -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="text-muted fw-bold" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                        <i class="fa-solid fa-swatchbook text-warning me-1"></i> Pilihan Warna Finishing Kayu:
+                                    </small>
+                                    <small class="text-muted" style="font-size: 0.72rem;">Wood Stain Melamine</small>
+                                </div>
+                                <div class="row g-2.5">
+                                    <!-- 1. Natural Jati -->
+                                    <div class="col-6 col-sm-3">
+                                        <button type="button" class="wood-color-card active" onclick="selectBaseColor('#d97706', 'Natural Jati', this)">
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span class="wood-swatch-circle" style="background-color: #d97706;"></span>
+                                                <span class="wood-check-badge"><i class="fa-solid fa-check"></i></span>
+                                            </div>
+                                            <div class="wood-color-name">Natural Jati</div>
+                                            <div class="wood-color-tag">Natural Terang</div>
+                                        </button>
+                                    </div>
+
+                                    <!-- 2. Salak Brown -->
+                                    <div class="col-6 col-sm-3">
+                                        <button type="button" class="wood-color-card" onclick="selectBaseColor('#b45309', 'Salak Brown', this)">
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span class="wood-swatch-circle" style="background-color: #b45309;"></span>
+                                                <span class="wood-check-badge"><i class="fa-solid fa-check"></i></span>
+                                            </div>
+                                            <div class="wood-color-name">Salak Brown</div>
+                                            <div class="wood-color-tag">Klasik Favorit</div>
+                                        </button>
+                                    </div>
+
+                                    <!-- 3. Dark Walnut -->
+                                    <div class="col-6 col-sm-3">
+                                        <button type="button" class="wood-color-card" onclick="selectBaseColor('#78350f', 'Dark Walnut', this)">
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span class="wood-swatch-circle" style="background-color: #78350f;"></span>
+                                                <span class="wood-check-badge"><i class="fa-solid fa-check"></i></span>
+                                            </div>
+                                            <div class="wood-color-name">Dark Walnut</div>
+                                            <div class="wood-color-tag">Modern Elegan</div>
+                                        </button>
+                                    </div>
+
+                                    <!-- 4. Salak Tua -->
+                                    <div class="col-6 col-sm-3">
+                                        <button type="button" class="wood-color-card" onclick="selectBaseColor('#3b2314', 'Salak Tua', this)">
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span class="wood-swatch-circle" style="background-color: #3b2314;"></span>
+                                                <span class="wood-check-badge"><i class="fa-solid fa-check"></i></span>
+                                            </div>
+                                            <div class="wood-color-name">Salak Tua</div>
+                                            <div class="wood-color-tag">Pekat Eksklusif</div>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Slider Kilau Finishing (Doff - Glossy) -->
-                            <div class="mb-3">
+                            <div class="pt-2 border-top">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <small class="text-muted fw-bold" style="font-size: 0.75rem;">Tingkat Kilau Finishing (Doff - Glossy):</small>
                                     <span class="badge bg-white text-dark border small shadow-2xs" id="badgeGlossiness">Semi-Gloss (100%)</span>
                                 </div>
                                 <input type="range" class="form-range" id="brightnessSlider" min="40" max="160" value="100" oninput="adjustBrightness(this.value)" style="accent-color: var(--primary-color);">
-                            </div>
-
-                            <!-- Preset Palet: Finishing Klasik Jati -->
-                            <small class="text-muted fw-bold d-block mb-1.5" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                                <i class="fa-solid fa-tree text-warning me-1"></i> Finishing Tradisional Natural Wood
-                            </small>
-                            <div class="d-flex flex-wrap gap-2 mb-3">
-                                <button type="button" class="color-swatch-btn" style="background-color: #f5deb3;" onclick="selectBaseColor('#f5deb3', 'Natural Jati Muda (Bleached)', this)" title="Natural Jati Muda"></button>
-                                <button type="button" class="color-swatch-btn active" style="background-color: #d97706;" onclick="selectBaseColor('#d97706', 'Amber Gold (Jati Alami)', this)" title="Amber Gold (Jati Alami)"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #b45309;" onclick="selectBaseColor('#b45309', 'Salak Brown Classic', this)" title="Salak Brown Classic"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #78350f;" onclick="selectBaseColor('#78350f', 'Dark Walnut Teak', this)" title="Dark Walnut Teak"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #3b2314;" onclick="selectBaseColor('#3b2314', 'Deep Teak Charcoal', this)" title="Deep Teak Charcoal"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #1f140e;" onclick="selectBaseColor('#1f140e', 'Espresso Dark Black', this)" title="Espresso Dark Black"></button>
-                            </div>
-
-                            <!-- Preset Palet: Finishing Duco Modern -->
-                            <small class="text-muted fw-bold d-block mb-1.5" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                                <i class="fa-solid fa-swatchbook text-warning me-1"></i> Finishing Duco Mewah
-                            </small>
-                            <div class="d-flex flex-wrap gap-2">
-                                <button type="button" class="color-swatch-btn" style="background-color: #ffffff;" onclick="selectBaseColor('#ffffff', 'Duco Pure White', this)" title="Duco Pure White"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #cbd5e1;" onclick="selectBaseColor('#cbd5e1', 'Light Platinum Grey', this)" title="Light Platinum Grey"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #1e293b;" onclick="selectBaseColor('#1e293b', 'Matte Navy Charcoal', this)" title="Matte Navy Charcoal"></button>
-                                <button type="button" class="color-swatch-btn" style="background-color: #166534;" onclick="selectBaseColor('#166534', 'Emerald Royal Green', this)" title="Emerald Royal Green"></button>
+                                <div class="d-flex justify-content-between text-muted" style="font-size: 0.68rem;">
+                                    <span>Doff (Matte Alami)</span>
+                                    <span>Semi-Gloss</span>
+                                    <span>High-Gloss (Kilau Mewah)</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -550,7 +626,7 @@
                         </div>
                         <div class="d-flex justify-content-between mb-1.5">
                             <span class="text-muted">Finishing:</span>
-                            <strong class="text-dark" id="summaryColorDisplay">Amber Gold (Jati Alami)</strong>
+                            <strong class="text-dark" id="summaryColorDisplay">Natural Jati (#D97706)</strong>
                         </div>
                         <div class="d-flex justify-content-between">
                             <span class="text-muted">Bahan Kayu:</span>
@@ -728,7 +804,7 @@
 <!-- CLIENT JAVASCRIPT LOGIC -->
 <script>
     let currentBaseHex = '#d97706';
-    let currentColorName = 'Amber Gold (Jati Alami)';
+    let currentColorName = 'Natural Jati';
     let currentTonePercent = 100;
 
     const stdLength = {{ $stdP }};
@@ -736,23 +812,14 @@
     const stdHeight = {{ $stdT }};
 
     /**
-     * Pilihan Warna Finishing
+     * Pilihan Warna Finishing Kayu Jati (4 Varian Standar)
      */
     function selectBaseColor(hex, name, element) {
-        document.querySelectorAll('.color-swatch-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.wood-color-card').forEach(btn => btn.classList.remove('active'));
         if (element) element.classList.add('active');
 
         currentBaseHex = hex;
         currentColorName = name;
-        document.getElementById('customColorPicker').value = hex;
-
-        updateColorDisplay(hex);
-    }
-
-    function selectCustomColor(hex) {
-        document.querySelectorAll('.color-swatch-btn').forEach(btn => btn.classList.remove('active'));
-        currentBaseHex = hex;
-        currentColorName = 'Custom Selection';
 
         updateColorDisplay(hex);
     }

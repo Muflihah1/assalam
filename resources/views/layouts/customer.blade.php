@@ -140,13 +140,18 @@
                                             <i class="fa-solid fa-shield-halved"></i> Panel Administrator
                                         </a>
                                     </li>
+                                    <li>
+                                        <a class="dropdown-item py-2 rounded-3 text-secondary d-flex align-items-center gap-2" href="{{ route('admin.pengaturan') }}">
+                                            <i class="fa-solid fa-gear"></i> Pengaturan Toko
+                                        </a>
+                                    </li>
                                 @endif
                                 <li><hr class="dropdown-divider my-1"></li>
                                 <li>
                                     <form action="{{ route('logout') }}" method="POST">
                                         @csrf
                                         <button type="submit" class="dropdown-item py-2 rounded-3 text-danger d-flex align-items-center gap-2">
-                                            <i class="fa-solid fa-power-off"></i> Keluar
+                                            <i class="fa-solid fa-power-off"></i> Keluar / Logout
                                         </button>
                                     </form>
                                 </li>

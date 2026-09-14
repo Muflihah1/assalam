@@ -23,6 +23,7 @@ class OrderSeeder extends Seeder
             ['order_number' => 'ORD-8821'],
             [
                 'user_id' => $budi->id,
+                'tipe_pesanan' => 'pre_order',
                 'total_price' => 4500000,
                 'dp_amount' => 2250000,
                 'shipping_cost' => 50000,
@@ -82,6 +83,7 @@ class OrderSeeder extends Seeder
             ['order_number' => 'ORD-10025'],
             [
                 'user_id' => $rina->id,
+                'tipe_pesanan' => 'pre_order',
                 'total_price' => 3800000,
                 'dp_amount' => 1900000,
                 'shipping_cost' => 50000,
@@ -140,6 +142,7 @@ class OrderSeeder extends Seeder
                 ['order_number' => 'ORD-10018'],
                 [
                     'user_id' => $ahmad->id,
+                    'tipe_pesanan' => 'pre_order',
                     'total_price' => 6000000,
                     'dp_amount' => 3000000,
                     'shipping_cost' => 50000,
@@ -180,6 +183,59 @@ class OrderSeeder extends Seeder
                     ]
                 );
             }
+        }
+
+        // 4. Pesanan Ready Stock Budi - Sedang Pengemasan (5 Tahapan Tanpa Produksi)
+        $orderReady = Order::updateOrCreate(
+            ['order_number' => 'ORD-RDY01'],
+            [
+                'user_id' => $budi->id,
+                'tipe_pesanan' => 'ready',
+                'total_price' => 2200000,
+                'dp_amount' => 2200000,
+                'shipping_cost' => 50000,
+                'remaining_payment' => 0,
+                'payment_method' => 'transfer',
+                'payment_status' => 'Lunas',
+                'production_status' => 'Siap Dikemas',
+                'current_stage' => 'Pengemasan Barang',
+                'recipient_name' => $budi->name,
+                'recipient_phone' => $budi->whatsapp_number,
+                'shipping_address' => $budi->alamat,
+                'customer_notes' => 'Barang ready stock, mohon dicek packingnya agar aman sampai tujuan.',
+                'admin_notes' => 'Stok produk diperiksa dari gudang display, saat ini sedang proses packing bubble wrap & kardus tebal.',
+            ]
+        );
+
+        \App\Models\OrderItem::updateOrCreate(
+            ['order_id' => $orderReady->id, 'produk_id' => 5],
+            [
+                'product_name' => 'Lemari 2 Pintu Sliding',
+                'quantity' => 1,
+                'price' => 2200000,
+                'subtotal' => 2200000,
+                'tipe_produk' => 'ready',
+            ]
+        );
+
+        $stagesReady = [
+            ['step' => 1, 'name' => 'Konfirmasi Pesanan', 'status' => 'Selesai', 'completed_at' => now()->subDays(2)],
+            ['step' => 2, 'name' => 'Validasi Pembayaran', 'status' => 'Selesai', 'completed_at' => now()->subDay()],
+            ['step' => 3, 'name' => 'Pengemasan Barang', 'status' => 'Sedang Berjalan', 'completed_at' => null],
+            ['step' => 4, 'name' => 'Pengiriman', 'status' => 'Pending', 'completed_at' => null],
+            ['step' => 5, 'name' => 'Pesanan Selesai', 'status' => 'Pending', 'completed_at' => null],
+        ];
+
+        foreach ($stagesReady as $st) {
+            OrderProgress::updateOrCreate(
+                ['order_id' => $orderReady->id, 'step_number' => $st['step']],
+                [
+                    'stage_name' => $st['name'],
+                    'status' => $st['status'],
+                    'completed_at' => $st['completed_at'],
+                    'notes' => $st['step'] === 3 ? 'Unit lemari dicek kondisi mulus dan dikemas dengan pelindung sudut kayu' : null,
+                ]
+            );
         }
     }
 }

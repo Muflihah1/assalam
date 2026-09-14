@@ -116,13 +116,17 @@ class OrderManagementController extends Controller
     {
         $order = Order::findOrFail($id);
 
+        $defaultNotes = $order->isReadyStock()
+            ? 'Pesanan produk ready stock telah diperiksa dan disetujui admin. Silakan lakukan pembayaran agar mebel segera dikemas dan dikirim.'
+            : 'Pesanan telah diperiksa dan disetujui oleh admin. Silakan lakukan pembayaran DP untuk memulai persiapan bahan & produksi.';
+
         $adminNotes = $request->filled('admin_notes')
             ? $request->admin_notes
-            : 'Pesanan telah diperiksa dan disetujui oleh admin. Silakan lakukan pembayaran DP untuk memulai persiapan bahan & produksi.';
+            : $defaultNotes;
 
         $order->update([
             'order_status' => 'Pesanan Diterima',
-            'production_status' => 'Menunggu Pembayaran DP',
+            'production_status' => $order->isReadyStock() ? 'Menunggu Pembayaran' : 'Menunggu Pembayaran DP',
             'payment_status' => 'Menunggu Pembayaran DP',
             'current_stage' => 'Validasi Pembayaran',
             'admin_notes' => $adminNotes,
@@ -190,11 +194,42 @@ class OrderManagementController extends Controller
     }
 
     /**
-     * 3. Verifikasi Pembayaran DP & Masuk Antrean Produksi
+     * 3. Verifikasi Pembayaran DP & Masuk Antrean Produksi / Pengemasan
      */
     public function verifyDP(Request $request, $id)
     {
         $order = Order::findOrFail($id);
+
+        if ($order->isReadyStock()) {
+            $order->update([
+                'order_status' => 'Diproses',
+                'payment_status' => 'DP Terverifikasi',
+                'production_status' => 'Siap Dikemas',
+                'current_stage' => 'Pengemasan Barang',
+                'rejection_reason' => null,
+                'admin_notes' => 'Pembayaran telah diverifikasi sah. Produk ready stock sedang disiapkan dan dikemas dari gudang mebel.',
+            ]);
+
+            // Update step 2 selesai & step 3 (Pengemasan Barang) aktif
+            OrderProgress::where('order_id', $order->id)->where('step_number', 2)->update([
+                'status' => 'Selesai', 
+                'completed_at' => now(),
+                'notes' => 'Pembayaran diverifikasi oleh admin'
+            ]);
+            OrderProgress::where('order_id', $order->id)->where('step_number', 3)->update([
+                'status' => 'Sedang Berjalan',
+                'notes' => 'Produk ready stock sedang disiapkan dan dikemas aman dari gudang mebel'
+            ]);
+
+            // Trigger Notifikasi WhatsApp
+            try {
+                app(\App\Services\WhatsAppNotificationService::class)->sendDPVerified($order);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::info("WA Notification trigger error: " . $e->getMessage());
+            }
+
+            return back()->with('success', 'Pembayaran pesanan Ready Stock #' . $order->order_number . ' BERHASIL DIVERIFIKASI! Pesanan masuk ke tahap Pengemasan Barang.');
+        }
 
         $order->update([
             'order_status' => 'Diproses',
@@ -331,30 +366,43 @@ class OrderManagementController extends Controller
             'media.*' => 'nullable|file|mimes:jpeg,png,jpg,webp,mp4,mov|max:20480',
         ]);
 
-        $stageMap = [
-            'Konfirmasi Pesanan' => 1,
-            'Validasi Pembayaran' => 2,
-            'Pesanan Diterima' => 3,
-            'Menyiapkan Bahan' => 4,
-            'Perakitan' => 5,
-            'Penyelesaian' => 6,
-            'Pengiriman' => 7,
-            'Pesanan Selesai' => 8,
-        ];
+        if ($order->isReadyStock()) {
+            $stageMap = [
+                'Konfirmasi Pesanan' => 1,
+                'Validasi Pembayaran' => 2,
+                'Pengemasan Barang' => 3,
+                'Pengiriman' => 4,
+                'Pesanan Selesai' => 5,
+            ];
+            $maxStep = 5;
+        } else {
+            $stageMap = [
+                'Konfirmasi Pesanan' => 1,
+                'Validasi Pembayaran' => 2,
+                'Pesanan Diterima' => 3,
+                'Menyiapkan Bahan' => 4,
+                'Perakitan' => 5,
+                'Penyelesaian' => 6,
+                'Pengiriman' => 7,
+                'Pesanan Selesai' => 8,
+            ];
+            $maxStep = 8;
+        }
 
         $currentStage = $order->current_stage ?? 'Konfirmasi Pesanan';
         $currentStepNum = $stageMap[$currentStage] ?? 1;
         $targetStepNum = $stageMap[$request->tahap] ?? $currentStepNum;
 
-        // 1. Validasi Locking: Tahap fisik 4 s/d 8 terkunci jika DP belum terverifikasi
-        if ($targetStepNum >= 4 && !in_array($order->payment_status, ['DP Terverifikasi', 'Lunas'])) {
-            return back()->with('error', 'Tahapan pengerjaan fisik (' . $request->tahap . ') terkunci! Pembayaran uang muka (DP) wajib diverifikasi terlebih dahulu.');
+        // 1. Validasi Locking: Terkunci jika pembayaran belum diverifikasi
+        $lockStep = $order->isReadyStock() ? 3 : 4;
+        if ($targetStepNum >= $lockStep && !in_array($order->payment_status, ['DP Terverifikasi', 'Lunas'])) {
+            return back()->with('error', 'Tahapan (' . $request->tahap . ') terkunci! Pembayaran uang muka (DP) wajib diverifikasi terlebih dahulu.');
         }
 
         // 2. Validasi Sequential: Mencegah loncat tahapan sembarangan
         if ($targetStepNum > $currentStepNum + 1) {
             $nextStageName = array_search($currentStepNum + 1, $stageMap) ?: 'tahap berikutnya';
-            return back()->with('error', 'Tahapan produksi harus berjalan secara berurutan! Anda saat ini berada di tahap "' . $currentStage . '". Silakan lanjutkan ke "' . $nextStageName . '" terlebih dahulu.');
+            return back()->with('error', 'Tahapan harus berjalan secara berurutan! Anda saat ini berada di tahap "' . $currentStage . '". Silakan lanjutkan ke "' . $nextStageName . '" terlebih dahulu.');
         }
 
         // Upload media files jika ada
@@ -371,15 +419,17 @@ class OrderManagementController extends Controller
             ->where('step_number', $targetStepNum)
             ->first();
 
+        $isFinished = ($targetStepNum == $maxStep);
+
         if ($progressStep) {
             $existingMedia = $progressStep->media_files ?? [];
             $allMedia = array_merge($existingMedia, $uploadedMedia);
 
             $progressStep->update([
-                'status' => $targetStepNum == 8 ? 'Selesai' : 'Sedang Berjalan',
+                'status' => $isFinished ? 'Selesai' : 'Sedang Berjalan',
                 'media_files' => $allMedia,
                 'notes' => $request->catatan ?: $progressStep->notes,
-                'completed_at' => $targetStepNum == 8 ? now() : $progressStep->completed_at,
+                'completed_at' => $isFinished ? now() : $progressStep->completed_at,
             ]);
         }
 
@@ -395,26 +445,42 @@ class OrderManagementController extends Controller
         }
 
         // Sinkronisasi status pesanan dan produksi
-        $productionStatus = 'Antrean Produksi';
-        if ($targetStepNum == 8) {
-            $productionStatus = 'Selesai';
-        } elseif ($targetStepNum == 7) {
-            $productionStatus = 'Pengiriman';
-        } elseif ($targetStepNum == 6) {
-            $productionStatus = 'Penyelesaian';
-        } elseif ($targetStepNum >= 4) {
-            $productionStatus = 'Dalam Pengerjaan';
-        } elseif ($targetStepNum == 3) {
+        if ($order->isReadyStock()) {
+            if ($targetStepNum == 5) {
+                $productionStatus = 'Selesai';
+                $orderStatus = 'Selesai';
+            } elseif ($targetStepNum == 4) {
+                $productionStatus = 'Pengiriman';
+                $orderStatus = 'Dikirim';
+            } elseif ($targetStepNum == 3) {
+                $productionStatus = 'Siap Dikemas';
+                $orderStatus = 'Diproses';
+            } else {
+                $productionStatus = 'Menunggu Konfirmasi';
+                $orderStatus = $order->order_status;
+            }
+        } else {
             $productionStatus = 'Antrean Produksi';
-        }
+            if ($targetStepNum == 8) {
+                $productionStatus = 'Selesai';
+            } elseif ($targetStepNum == 7) {
+                $productionStatus = 'Pengiriman';
+            } elseif ($targetStepNum == 6) {
+                $productionStatus = 'Penyelesaian';
+            } elseif ($targetStepNum >= 4) {
+                $productionStatus = 'Dalam Pengerjaan';
+            } elseif ($targetStepNum == 3) {
+                $productionStatus = 'Antrean Produksi';
+            }
 
-        $orderStatus = $order->order_status;
-        if ($targetStepNum == 8) {
-            $orderStatus = 'Selesai';
-        } elseif ($targetStepNum == 7) {
-            $orderStatus = 'Dikirim';
-        } elseif ($targetStepNum >= 3 && $targetStepNum <= 6) {
-            $orderStatus = 'Diproses';
+            $orderStatus = $order->order_status;
+            if ($targetStepNum == 8) {
+                $orderStatus = 'Selesai';
+            } elseif ($targetStepNum == 7) {
+                $orderStatus = 'Dikirim';
+            } elseif ($targetStepNum >= 3 && $targetStepNum <= 6) {
+                $orderStatus = 'Diproses';
+            }
         }
 
         $order->update([
@@ -427,7 +493,7 @@ class OrderManagementController extends Controller
         // Trigger Notifikasi WhatsApp Otomatis
         try {
             $waService = app(\App\Services\WhatsAppNotificationService::class);
-            if ($targetStepNum == 8) {
+            if ($isFinished) {
                 $waService->sendOrderFinished($order);
             } else {
                 $waService->sendProgressUpdated($order, $request->tahap, $request->catatan);
@@ -437,7 +503,7 @@ class OrderManagementController extends Controller
         }
 
         $msg = ($targetStepNum > $currentStepNum)
-            ? 'Pengerjaan berhasil dimajukan ke tahap "' . $request->tahap . '"!'
+            ? 'Tahapan berhasil dimajukan ke "' . $request->tahap . '"!'
             : 'Dokumentasi & catatan tahap "' . $request->tahap . '" berhasil diperbarui!';
 
         return back()->with('success', $msg);

@@ -85,6 +85,8 @@ class CartController extends Controller
                 'quantity' => $qtyToAdd,
                 'image' => $produk->foto,
                 'description' => $produk->deskripsi,
+                'tipe_produk' => $produk->tipe_produk ?? 'pre_order',
+                'estimasi_po' => $produk->estimasi_po,
             ];
         }
 
@@ -190,7 +192,9 @@ class CartController extends Controller
         // Hitung total belanja
         $subtotal = 0;
         foreach ($cart as $item) {
-            $subtotal += ($item['price'] * $item['quantity']);
+            $pPrice = (float) ($item['price'] ?? $item['harga'] ?? 0);
+            $pQty = (int) ($item['quantity'] ?? $item['jumlah'] ?? 1);
+            $subtotal += ($pPrice * $pQty);
         }
 
         $shippingCost = (float) $request->shipping_cost;
@@ -199,6 +203,21 @@ class CartController extends Controller
         $remainingPayment = $totalPrice - $dpAmount;
 
         $orderNumber = 'ORD-' . strtoupper(Str::random(4)) . rand(1000, 9999);
+
+        // Evaluasi tipe pesanan: Jika ada item yang pre_order, maka pesanan adalah pre_order. Jika semua ready, maka pesanan adalah ready stock
+        $isPreOrder = false;
+        foreach ($cart as $item) {
+            $itemTipe = $item['tipe_produk'] ?? null;
+            if (!$itemTipe && !empty($item['product_id'])) {
+                $p = Produk::find($item['product_id']);
+                $itemTipe = $p ? $p->tipe_produk : 'pre_order';
+            }
+            if ($itemTipe === 'pre_order') {
+                $isPreOrder = true;
+                break;
+            }
+        }
+        $tipePesanan = $isPreOrder ? 'pre_order' : 'ready';
 
         // 1. Buat Header Pesanan
         $order = Order::create([
@@ -210,8 +229,9 @@ class CartController extends Controller
             'remaining_payment' => $remainingPayment,
             'payment_method' => $request->payment_method,
             'order_status' => 'Menunggu Konfirmasi',
+            'tipe_pesanan' => $tipePesanan,
             'payment_status' => 'Belum Bayar',
-            'production_status' => 'Menunggu Konfirmasi',
+            'production_status' => $tipePesanan === 'ready' ? 'Menunggu Konfirmasi' : 'Menunggu Konfirmasi',
             'current_stage' => 'Konfirmasi Pesanan',
             'recipient_name' => $request->recipient_name,
             'recipient_phone' => $request->recipient_phone,
@@ -221,28 +241,51 @@ class CartController extends Controller
 
         // 2. Simpan Item-Item Belanja
         foreach ($cart as $item) {
+            $itemTipe = $item['tipe_produk'] ?? null;
+            $productId = $item['product_id'] ?? $item['id'] ?? null;
+            if (!$itemTipe && !empty($productId)) {
+                $p = Produk::find($productId);
+                $itemTipe = $p ? $p->tipe_produk : 'pre_order';
+            }
+
+            $pPrice = (float) ($item['price'] ?? $item['harga'] ?? 0);
+            $pQty = (int) ($item['quantity'] ?? $item['jumlah'] ?? 1);
+
             OrderItem::create([
                 'order_id' => $order->id,
-                'produk_id' => $item['product_id'] ?? null,
-                'product_name' => $item['name'],
-                'price' => $item['price'],
-                'quantity' => $item['quantity'],
-                'subtotal' => $item['price'] * $item['quantity'],
-                'image' => $item['image'] ?? null,
+                'produk_id' => $productId,
+                'product_name' => $item['name'] ?? ($item['nama'] ?? 'Mebel Jati'),
+                'price' => $pPrice,
+                'quantity' => $pQty,
+                'subtotal' => $pPrice * $pQty,
+                'image' => $item['image'] ?? ($item['foto'] ?? null),
+                'tipe_produk' => $itemTipe ?? 'pre_order',
             ]);
         }
 
-        // 3. Inisialisasi 8 Tahapan Progres
-        $stages = [
-            ['step' => 1, 'name' => 'Konfirmasi Pesanan', 'status' => 'Sedang Berjalan', 'completed_at' => null],
-            ['step' => 2, 'name' => 'Validasi Pembayaran', 'status' => 'Pending', 'completed_at' => null],
-            ['step' => 3, 'name' => 'Pesanan Diterima', 'status' => 'Pending', 'completed_at' => null],
-            ['step' => 4, 'name' => 'Menyiapkan Bahan', 'status' => 'Pending', 'completed_at' => null],
-            ['step' => 5, 'name' => 'Perakitan', 'status' => 'Pending', 'completed_at' => null],
-            ['step' => 6, 'name' => 'Penyelesaian', 'status' => 'Pending', 'completed_at' => null],
-            ['step' => 7, 'name' => 'Pengiriman', 'status' => 'Pending', 'completed_at' => null],
-            ['step' => 8, 'name' => 'Pesanan Selesai', 'status' => 'Pending', 'completed_at' => null],
-        ];
+        // 3. Inisialisasi Tahapan Progres:
+        // Produk Ready Stock: 5 tahapan (tanpa tahapan produksi kayu: Menyiapkan Bahan, Perakitan, Penyelesaian)
+        // Produk Pre-Order: 8 tahapan produksi lengkap
+        if ($tipePesanan === 'ready') {
+            $stages = [
+                ['step' => 1, 'name' => 'Konfirmasi Pesanan', 'status' => 'Sedang Berjalan', 'completed_at' => null, 'notes' => 'Pengecekan ketersediaan stok fisik mebel oleh admin'],
+                ['step' => 2, 'name' => 'Validasi Pembayaran', 'status' => 'Pending', 'completed_at' => null, 'notes' => null],
+                ['step' => 3, 'name' => 'Pengemasan Barang', 'status' => 'Pending', 'completed_at' => null, 'notes' => null],
+                ['step' => 4, 'name' => 'Pengiriman', 'status' => 'Pending', 'completed_at' => null, 'notes' => null],
+                ['step' => 5, 'name' => 'Pesanan Selesai', 'status' => 'Pending', 'completed_at' => null, 'notes' => null],
+            ];
+        } else {
+            $stages = [
+                ['step' => 1, 'name' => 'Konfirmasi Pesanan', 'status' => 'Sedang Berjalan', 'completed_at' => null, 'notes' => 'Menunggu peninjauan dan konfirmasi pesanan oleh admin'],
+                ['step' => 2, 'name' => 'Validasi Pembayaran', 'status' => 'Pending', 'completed_at' => null, 'notes' => null],
+                ['step' => 3, 'name' => 'Pesanan Diterima', 'status' => 'Pending', 'completed_at' => null, 'notes' => null],
+                ['step' => 4, 'name' => 'Menyiapkan Bahan', 'status' => 'Pending', 'completed_at' => null, 'notes' => null],
+                ['step' => 5, 'name' => 'Perakitan', 'status' => 'Pending', 'completed_at' => null, 'notes' => null],
+                ['step' => 6, 'name' => 'Penyelesaian', 'status' => 'Pending', 'completed_at' => null, 'notes' => null],
+                ['step' => 7, 'name' => 'Pengiriman', 'status' => 'Pending', 'completed_at' => null, 'notes' => null],
+                ['step' => 8, 'name' => 'Pesanan Selesai', 'status' => 'Pending', 'completed_at' => null, 'notes' => null],
+            ];
+        }
 
         foreach ($stages as $stage) {
             OrderProgress::create([
@@ -251,7 +294,7 @@ class CartController extends Controller
                 'stage_name' => $stage['name'],
                 'status' => $stage['status'],
                 'completed_at' => $stage['completed_at'],
-                'notes' => $stage['step'] === 1 ? 'Menunggu peninjauan dan konfirmasi pesanan oleh admin' : null,
+                'notes' => $stage['notes'],
             ]);
         }
 

@@ -214,15 +214,24 @@
                     <span class="badge px-3 py-1 rounded-pill small fw-bold" style="background-color: var(--wood-bg); color: var(--text-dark);">
                         #{{ $item->order_number }}
                     </span>
+                    @if($item->isReadyStock())
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-0.5 rounded-pill fw-bold" style="font-size: 0.72rem;">
+                            <i class="fa-solid fa-bolt me-1"></i> Ready Stock
+                        </span>
+                    @else
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2.5 py-0.5 rounded-pill fw-bold" style="font-size: 0.72rem;">
+                            <i class="fa-solid fa-hammer me-1"></i> Pre-Order
+                        </span>
+                    @endif
                     <span class="small text-muted">
                         <i class="fa-regular fa-clock me-1"></i> {{ $item->created_at ? $item->created_at->translatedFormat('d F Y, H:i') : '-' }} WIB
                     </span>
                 </div>
 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <!-- Status Produksi Badge -->
+                    <!-- Status Produksi / Pengiriman Badge -->
                     <span class="badge px-2.5 py-1 rounded-pill small border" style="background-color: #fdfbf7; color: var(--primary-color); border-color: var(--wood-border) !important;">
-                        <i class="fa-solid fa-hammer me-1"></i> {{ $item->current_stage ?? 'Tahap 1' }}
+                        <i class="fa-solid {{ $item->isReadyStock() ? 'fa-truck-fast' : 'fa-hammer' }} me-1"></i> {{ $item->current_stage ?? 'Tahap 1' }}
                     </span>
 
                     <!-- Payment Status Badge -->

@@ -5,11 +5,11 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Produk;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class AdminTransactionGuardTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     protected function setUp(): void
     {
@@ -115,8 +115,8 @@ class AdminTransactionGuardTest extends TestCase
 
         $response->assertRedirect();
         $response->assertSessionHas('error');
-        $this->assertDatabaseCount('orders', 0);
-        $this->assertDatabaseCount('custom_designs', 0);
+        $this->assertDatabaseMissing('orders', ['user_id' => $admin->id]);
+        $this->assertDatabaseMissing('custom_designs', ['color_name' => 'Natural', 'color_hex' => '#C8A165']);
     }
 
     public function test_customer_can_still_add_to_cart()

@@ -242,27 +242,44 @@
             </form>
 
             <!-- TABS SWITCHER: TABEL vs GRID -->
-            <ul class="nav nav-pills bg-light p-1 rounded-3 border" id="viewModeTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active py-1.5 px-3 rounded-2 fw-semibold small" id="tab-table-btn" data-bs-toggle="pill" data-bs-target="#tab-table-content" type="button" role="tab">
-                        <i class="fa-solid fa-table-list me-1"></i> Tabel
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link py-1.5 px-3 rounded-2 fw-semibold small" id="tab-grid-btn" data-bs-toggle="pill" data-bs-target="#tab-grid-content" type="button" role="tab">
-                        <i class="fa-solid fa-grip me-1"></i> Galeri Grid
-                    </button>
-                </li>
-            </ul>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="btn-group" role="group">
+                    <a href="{{ route('admin.katalog', array_merge(request()->except('tipe'), [])) }}" class="btn btn-sm {{ !request('tipe') ? 'btn-dark' : 'btn-outline-secondary' }} rounded-start-3 fw-semibold">
+                        Semua
+                    </a>
+                    <a href="{{ route('admin.katalog', array_merge(request()->except('tipe'), ['tipe' => 'ready'])) }}" class="btn btn-sm {{ request('tipe') === 'ready' ? 'btn-success text-white' : 'btn-outline-secondary' }} fw-semibold">
+                        <i class="fa-solid fa-bolt me-1"></i> Ready Stock
+                    </a>
+                    <a href="{{ route('admin.katalog', array_merge(request()->except('tipe'), ['tipe' => 'pre_order'])) }}" class="btn btn-sm {{ request('tipe') === 'pre_order' ? 'btn-warning text-dark' : 'btn-outline-secondary' }} rounded-end-3 fw-semibold">
+                        <i class="fa-solid fa-clock me-1"></i> Pre-Order
+                    </a>
+                </div>
+
+                <ul class="nav nav-pills bg-light p-1 rounded-3 border" id="viewModeTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active py-1.5 px-3 rounded-2 fw-semibold small" id="tab-table-btn" data-bs-toggle="pill" data-bs-target="#tab-table-content" type="button" role="tab">
+                            <i class="fa-solid fa-table-list me-1"></i> Tabel
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-1.5 px-3 rounded-2 fw-semibold small" id="tab-grid-btn" data-bs-toggle="pill" data-bs-target="#tab-grid-content" type="button" role="tab">
+                            <i class="fa-solid fa-grip me-1"></i> Galeri Grid
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </div>
 
-        @if(request('q'))
+        @if(request('q') || request('tipe'))
             <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top flex-wrap gap-2">
                 <div class="small text-muted">
-                    <i class="fa-solid fa-filter me-1 text-primary"></i> Menampilkan hasil pencarian untuk: <strong>"{{ request('q') }}"</strong> ({{ $listProduk->count() }} produk ditemukan)
+                    <i class="fa-solid fa-filter me-1 text-primary"></i> Menampilkan mebel 
+                    @if(request('tipe') === 'ready') <span class="badge bg-success text-white">Ready Stock</span> @elseif(request('tipe') === 'pre_order') <span class="badge bg-warning text-dark">Pre-Order</span> @endif
+                    @if(request('q')) untuk pencarian: <strong>"{{ request('q') }}"</strong> @endif
+                    ({{ $listProduk->count() }} produk ditemukan)
                 </div>
                 <a href="{{ route('admin.katalog') }}" class="small text-decoration-none fw-bold" style="color: var(--primary-color);">
-                    <i class="fa-solid fa-rotate-left me-1"></i> Tampilkan Semua Produk
+                    <i class="fa-solid fa-rotate-left me-1"></i> Reset Filter & Pencarian
                 </a>
             </div>
         @endif
@@ -280,7 +297,7 @@
                             <tr>
                                 <th class="text-center" style="width: 50px;">No</th>
                                 <th style="width: 80px;">Foto</th>
-                                <th>Nama Produk & Material</th>
+                                <th>Nama Produk & Tipe Stok</th>
                                 <th>Deskripsi Mebel</th>
                                 <th>Harga Standar</th>
                                 <th class="text-center" style="width: 80px;">Aksi</th>
@@ -303,7 +320,16 @@
                                 </td>
                                 <td>
                                     <strong class="text-dark d-block fs-6">{{ $item->nama }}</strong>
-                                    <div class="d-flex align-items-center gap-1 mt-1">
+                                    <div class="d-flex align-items-center gap-1 mt-1 flex-wrap">
+                                        @if($item->isReady())
+                                            <span class="badge bg-success text-white" style="font-size: 0.72rem;">
+                                                <i class="fa-solid fa-bolt me-1"></i> Ready Stock
+                                            </span>
+                                        @else
+                                            <span class="badge text-dark" style="background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; font-size: 0.72rem;">
+                                                <i class="fa-solid fa-clock me-1"></i> PO ({{ $item->estimasi_po ?? 14 }} Hari)
+                                            </span>
+                                        @endif
                                         <span class="badge bg-success-subtle text-success border border-success" style="font-size: 0.72rem;">
                                             <i class="fa-solid fa-tree me-1"></i> Kayu Jati Solid
                                         </span>
@@ -340,7 +366,9 @@
                                                         data-nama="{{ $item->nama }}" 
                                                         data-harga="{{ $item->harga }}" 
                                                         data-deskripsi="{{ $item->deskripsi }}"
-                                                        data-foto="{{ $item->foto_url }}">
+                                                        data-foto="{{ $item->foto_url }}"
+                                                        data-tipe="{{ $item->tipe_produk ?? 'pre_order' }}"
+                                                        data-estimasi-po="{{ $item->estimasi_po ?? 14 }}">
                                                     <i class="fa-solid fa-pen-to-square text-warning" style="width: 18px;"></i>
                                                     <span>Edit Data & Harga</span>
                                                 </button>
@@ -369,12 +397,12 @@
                             @empty
                             <tr>
                                 <td colspan="6" class="text-center py-5 text-muted">
-                                    <i class="fa-solid {{ request('q') ? 'fa-magnifying-glass' : 'fa-box-open' }} fa-3x mb-3 text-secondary"></i>
-                                    @if(request('q'))
+                                    <i class="fa-solid {{ request('q') || request('tipe') ? 'fa-magnifying-glass' : 'fa-box-open' }} fa-3x mb-3 text-secondary"></i>
+                                    @if(request('q') || request('tipe'))
                                         <h5 class="fw-bold text-dark mb-1">Produk Tidak Ditemukan</h5>
-                                        <p class="text-muted small mb-3">Tidak ada produk katalog yang cocok dengan pencarian "<strong>{{ request('q') }}</strong>".</p>
+                                        <p class="text-muted small mb-3">Tidak ada produk katalog yang cocok dengan kriteria pencarian/filter saat ini.</p>
                                         <a href="{{ route('admin.katalog') }}" class="btn btn-outline-dark btn-sm rounded-3 px-3">
-                                            <i class="fa-solid fa-rotate-left me-1"></i> Reset Pencarian
+                                            <i class="fa-solid fa-rotate-left me-1"></i> Reset Filter & Pencarian
                                         </a>
                                     @else
                                         <h5 class="fw-bold text-dark mb-1">Belum Ada Produk di Katalog</h5>
@@ -408,6 +436,15 @@
                                 <span class="position-absolute top-0 start-0 m-2 badge bg-success-subtle text-success border border-success small">
                                     <i class="fa-solid fa-tree me-1"></i> Kayu Jati
                                 </span>
+                                @if($item->isReady())
+                                    <span class="position-absolute top-0 end-0 m-2 badge bg-success text-white small shadow-sm">
+                                        <i class="fa-solid fa-bolt me-1"></i> Ready Stock
+                                    </span>
+                                @else
+                                    <span class="position-absolute top-0 end-0 m-2 badge text-dark small shadow-sm" style="background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a;">
+                                        <i class="fa-solid fa-clock me-1"></i> PO {{ $item->estimasi_po ?? 14 }} Hari
+                                    </span>
+                                @endif
                             </div>
 
                             <div class="d-flex justify-content-between align-items-start mb-1">
@@ -425,7 +462,8 @@
                                         </li>
                                         <li>
                                             <button class="dropdown-item py-1.5 small" data-bs-toggle="modal" data-bs-target="#modalEditProduk"
-                                                    data-id="{{ $item->id }}" data-nama="{{ $item->nama }}" data-harga="{{ $item->harga }}" data-deskripsi="{{ $item->deskripsi }}" data-foto="{{ $item->foto_url }}">
+                                                    data-id="{{ $item->id }}" data-nama="{{ $item->nama }}" data-harga="{{ $item->harga }}" data-deskripsi="{{ $item->deskripsi }}" data-foto="{{ $item->foto_url }}"
+                                                    data-tipe="{{ $item->tipe_produk ?? 'pre_order' }}" data-estimasi-po="{{ $item->estimasi_po ?? 14 }}">
                                                 <i class="fa-solid fa-pen-to-square me-2 text-warning"></i> Edit
                                             </button>
                                         </li>
@@ -455,7 +493,8 @@
                         <div class="d-flex justify-content-between gap-2 border-top pt-3" style="border-color: var(--light-border) !important;">
                             <button type="button" class="btn btn-outline-dark btn-sm rounded-3 px-3 w-50 fw-semibold" 
                                     data-bs-toggle="modal" data-bs-target="#modalEditProduk"
-                                    data-id="{{ $item->id }}" data-nama="{{ $item->nama }}" data-harga="{{ $item->harga }}" data-deskripsi="{{ $item->deskripsi }}" data-foto="{{ $item->foto_url }}">
+                                    data-id="{{ $item->id }}" data-nama="{{ $item->nama }}" data-harga="{{ $item->harga }}" data-deskripsi="{{ $item->deskripsi }}" data-foto="{{ $item->foto_url }}"
+                                    data-tipe="{{ $item->tipe_produk ?? 'pre_order' }}" data-estimasi-po="{{ $item->estimasi_po ?? 14 }}">
                                 <i class="fa fa-pen-to-square me-1"></i> Edit
                             </button>
                             
@@ -499,10 +538,21 @@
                 </div>
 
                 <div class="text-start">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge bg-success-subtle text-success border border-success px-2.5 py-1">
-                            <i class="fa-solid fa-tree me-1"></i> Kayu Jati Solid Grade A
-                        </span>
+                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                            @if($item->isReady())
+                                <span class="badge bg-success text-white px-2.5 py-1">
+                                    <i class="fa-solid fa-bolt me-1"></i> Ready Stock (Siap Kirim)
+                                </span>
+                            @else
+                                <span class="badge px-2.5 py-1 text-dark" style="background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a;">
+                                    <i class="fa-solid fa-clock me-1"></i> Pre-Order (PO {{ $item->estimasi_po ?? 14 }} Hari)
+                                </span>
+                            @endif
+                            <span class="badge bg-success-subtle text-success border border-success px-2.5 py-1">
+                                <i class="fa-solid fa-tree me-1"></i> Kayu Jati Solid Grade A
+                            </span>
+                        </div>
                         <h4 class="fw-extrabold mb-0" style="color: var(--primary-color);">Rp {{ number_format($item->harga, 0, ',', '.') }}</h4>
                     </div>
                     <label class="small fw-bold text-muted d-block mb-1">Deskripsi Produk:</label>
@@ -515,7 +565,8 @@
                     </a>
                     <button type="button" class="btn btn-dark w-50 py-2 rounded-3 fw-bold small" style="background-color: var(--primary-color); border: none;"
                             data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalEditProduk"
-                            data-id="{{ $item->id }}" data-nama="{{ $item->nama }}" data-harga="{{ $item->harga }}" data-deskripsi="{{ $item->deskripsi }}" data-foto="{{ $item->foto_url }}">
+                            data-id="{{ $item->id }}" data-nama="{{ $item->nama }}" data-harga="{{ $item->harga }}" data-deskripsi="{{ $item->deskripsi }}" data-foto="{{ $item->foto_url }}"
+                            data-tipe="{{ $item->tipe_produk ?? 'pre_order' }}" data-estimasi-po="{{ $item->estimasi_po ?? 14 }}">
                         <i class="fa-solid fa-pen-to-square me-1"></i> Edit Produk
                     </button>
                 </div>
@@ -539,6 +590,20 @@
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Nama Produk Mebel:</label>
                         <input type="text" name="nama" class="form-control rounded-3" placeholder="Contoh: Kursi Sofa Ukir Jepara" required>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Tipe Ketersediaan:</label>
+                            <select name="tipe_produk" id="tambah_tipe_produk" class="form-select rounded-3" required onchange="toggleEstimasiPo('tambah')">
+                                <option value="pre_order" selected>Pre-Order (PO)</option>
+                                <option value="ready">Ready Stock (Siap Kirim)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="tambah_box_estimasi">
+                            <label class="form-label small fw-bold">Estimasi PO (Hari):</label>
+                            <input type="number" name="estimasi_po" id="tambah_estimasi_po" class="form-control rounded-3" value="14" min="1">
+                            <small class="text-muted" style="font-size: 0.72rem;">Waktu pengerjaan bengkel</small>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Bahan Kayu:</label>
@@ -593,6 +658,20 @@
                         <label class="form-label small fw-bold">Nama Produk:</label>
                         <input type="text" id="edit_nama" name="nama" class="form-control rounded-3" required>
                     </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Tipe Ketersediaan:</label>
+                            <select name="tipe_produk" id="edit_tipe_produk" class="form-select rounded-3" required onchange="toggleEstimasiPo('edit')">
+                                <option value="pre_order">Pre-Order (PO)</option>
+                                <option value="ready">Ready Stock (Siap Kirim)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="edit_box_estimasi">
+                            <label class="form-label small fw-bold">Estimasi PO (Hari):</label>
+                            <input type="number" name="estimasi_po" id="edit_estimasi_po" class="form-control rounded-3" min="1">
+                            <small class="text-muted" style="font-size: 0.72rem;">Waktu pengerjaan bengkel</small>
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Harga Standar (Rp):</label>
                         <div class="input-group">
@@ -626,6 +705,17 @@
 </div>
 
 <script>
+function toggleEstimasiPo(prefix) {
+    const select = document.getElementById(prefix + '_tipe_produk');
+    const box = document.getElementById(prefix + '_box_estimasi');
+    if (!select || !box) return;
+    if (select.value === 'ready') {
+        box.style.display = 'none';
+    } else {
+        box.style.display = 'block';
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const modalEdit = document.getElementById('modalEditProduk');
     if (modalEdit) {
@@ -635,6 +725,12 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('edit_deskripsi').value = button.getAttribute('data-deskripsi') || '';
             document.getElementById('edit_harga').value = button.getAttribute('data-harga') || '';
             document.getElementById('formEditProduk').action = '/admin/katalog/' + button.getAttribute('data-id');
+
+            let tipe = button.getAttribute('data-tipe') || 'pre_order';
+            let estimasi = button.getAttribute('data-estimasi-po') || '14';
+            document.getElementById('edit_tipe_produk').value = tipe;
+            document.getElementById('edit_estimasi_po').value = estimasi;
+            toggleEstimasiPo('edit');
 
             let currentFoto = button.getAttribute('data-foto');
             let previewImg = document.getElementById('editPreviewImg');

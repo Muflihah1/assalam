@@ -123,6 +123,7 @@ class OrderController extends Controller
             'remaining_payment' => $remainingPayment,
             'payment_method' => 'dana',
             'order_status' => 'Menunggu Konfirmasi',
+            'tipe_pesanan' => 'pre_order',
             'payment_status' => 'Belum Bayar',
             'production_status' => 'Menunggu Konfirmasi',
             'current_stage' => 'Konfirmasi Pesanan',
@@ -308,7 +309,10 @@ class OrderController extends Controller
         // 3. Validasi: Mebel harus sudah mencapai tahap pengiriman / selesai dikerjakan
         $allowedStages = ['Pengiriman', 'Penyelesaian', 'Pesanan Selesai'];
         if (!in_array($order->current_stage, $allowedStages) && !in_array($order->production_status, ['Pengiriman', 'Selesai'])) {
-            return back()->with('error', 'Pesanan belum dapat diselesaikan karena produk mebel masih dalam proses pengerjaan di workshop (' . $order->current_stage . ').');
+            $errText = $order->isReadyStock()
+                ? 'Pesanan belum dapat diselesaikan karena produk masih dalam proses penyiapan / pengemasan (' . $order->current_stage . ').'
+                : 'Pesanan belum dapat diselesaikan karena produk mebel masih dalam proses pengerjaan di workshop (' . $order->current_stage . ').';
+            return back()->with('error', $errText);
         }
 
         $order->update([
@@ -317,10 +321,10 @@ class OrderController extends Controller
             'current_stage' => 'Pesanan Selesai'
         ]);
 
-        // Tandai step 8 selesai
-        $step8 = OrderProgress::where('order_id', $order->id)->where('step_number', 8)->first();
-        if ($step8) {
-            $step8->update([
+        // Tandai step terakhir (Pesanan Selesai) menjadi selesai
+        $finalStep = OrderProgress::where('order_id', $order->id)->where('stage_name', 'Pesanan Selesai')->first();
+        if ($finalStep) {
+            $finalStep->update([
                 'status' => 'Selesai',
                 'completed_at' => now(),
                 'notes' => 'Pesanan telah diterima dengan baik dan diselesaikan oleh pelanggan.'

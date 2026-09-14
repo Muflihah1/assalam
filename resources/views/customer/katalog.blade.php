@@ -59,9 +59,28 @@
         @endforeach
     </div>
 
+    <!-- Filter Ketersediaan Stok (Ready Stock vs Pre-Order) -->
+    <div class="d-flex align-items-center gap-2 mb-3 overflow-x-auto pb-1">
+        <span class="small fw-bold text-muted me-1 d-none d-sm-inline"><i class="fa-solid fa-boxes-stacked me-1"></i>Status Stok:</span>
+        <a href="{{ route('customer.katalog', array_merge(request()->except('tipe'), ['tipe' => null])) }}" 
+           class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold {{ empty($tipe) ? 'btn-dark' : 'btn-outline-secondary bg-white' }}"
+           style="{{ empty($tipe) ? 'background-color: var(--primary-color); border-color: var(--primary-color);' : '' }}">
+           Semua Mebel
+        </a>
+        <a href="{{ route('customer.katalog', array_merge(request()->except('tipe'), ['tipe' => 'ready'])) }}" 
+           class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold {{ ($tipe ?? '') === 'ready' ? 'btn-success text-white shadow-sm' : 'btn-outline-success bg-white' }}">
+           <i class="fa-solid fa-bolt me-1"></i> Ready Stock
+        </a>
+        <a href="{{ route('customer.katalog', array_merge(request()->except('tipe'), ['tipe' => 'pre_order'])) }}" 
+           class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold {{ ($tipe ?? '') === 'pre_order' ? 'btn-warning text-dark shadow-sm' : 'btn-outline-warning text-dark bg-white' }}">
+           <i class="fa-solid fa-clock me-1"></i> Pre-Order
+        </a>
+    </div>
+
     <!-- 3. SEARCH & SORTING TOOLBAR -->
     <div class="card border-0 shadow-sm rounded-4 mb-4 p-3 bg-white" style="border: 1px solid var(--border-color) !important;">
         <form action="{{ route('customer.katalog') }}" method="GET" class="row g-2 align-items-center">
+            <input type="hidden" name="tipe" value="{{ $tipe ?? '' }}">
             
             <!-- Search Keyword Input -->
             <div class="col-md-7 col-lg-8">
@@ -92,7 +111,7 @@
                     </select>
                 </div>
 
-                @if(!empty($keyword))
+                @if(!empty($keyword) || !empty($tipe))
                     <a href="{{ route('customer.katalog') }}" class="btn btn-outline-secondary rounded-pill px-3" title="Reset Filter">
                         <i class="fa-solid fa-xmark"></i>
                     </a>
@@ -113,7 +132,11 @@
                         <div class="product-card-thumb">
                             <a href="{{ route('customer.produk.detail', $item->id) }}">
                                 @if($item->foto_url)
-                                    <img src="{{ $item->foto_url }}" alt="{{ $item->nama }}" loading="lazy">
+                                    <img src="{{ $item->foto_url }}" alt="{{ $item->nama }}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('d-none');">
+                                    <div class="product-thumb-placeholder d-none">
+                                        <i class="fa-solid fa-couch fa-2x mb-2" style="color: var(--primary-light);"></i>
+                                        <span class="small text-muted fw-bold">Assalam Mebel</span>
+                                    </div>
                                 @else
                                     <div class="product-thumb-placeholder">
                                         <i class="fa-solid fa-couch fa-2x mb-2" style="color: var(--primary-light);"></i>
@@ -124,7 +147,16 @@
 
                             <!-- Overlay Badges -->
                             <div class="product-badge-overlay">
-                                <span class="badge-tag-solid">Kayu Solid</span>
+                                @if($item->isReady())
+                                    <span class="badge-tag-ready" style="background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 800; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);">
+                                        <i class="fa-solid fa-bolt"></i> Ready Stock
+                                    </span>
+                                @else
+                                    <span class="badge-tag-po" style="background: linear-gradient(135deg, #d97706, #b45309); color: white; font-weight: 800; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3);">
+                                        <i class="fa-solid fa-clock"></i> Pre-Order
+                                    </span>
+                                @endif
+
                                 @if($item->rating_count > 0)
                                     <span class="badge-tag-rating">
                                         <i class="fa-solid fa-star text-warning"></i> {{ number_format($item->rating_average, 1) }}
@@ -135,7 +167,18 @@
 
                         <!-- Card Body -->
                         <div class="product-card-body">
-                            <span class="product-card-category">{{ $item->kategori }}</span>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="product-card-category">{{ $item->kategori }}</span>
+                                @if($item->isReady())
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0.5 rounded-pill" style="font-size: 0.65rem;">
+                                        Siap Kirim
+                                    </span>
+                                @else
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-0.5 rounded-pill" style="font-size: 0.65rem;">
+                                        PO {{ $item->estimasi_po ? $item->estimasi_po : 'Pengerjaan' }}
+                                    </span>
+                                @endif
+                            </div>
                             <h6 class="product-card-title">
                                 <a href="{{ route('customer.produk.detail', $item->id) }}" title="{{ $item->nama }}">
                                     {{ $item->nama }}

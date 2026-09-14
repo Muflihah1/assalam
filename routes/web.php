@@ -39,6 +39,11 @@ Route::get('/katalog', function (\Illuminate\Http\Request $request) {
     $query = Produk::query();
     $rawKeyword = $request->input('keyword', $request->input('q', $request->input('kategori', $request->input('category', ''))));
     $keyword = trim($rawKeyword);
+    $tipe = $request->input('tipe');
+
+    if ($tipe && in_array($tipe, ['ready', 'pre_order'])) {
+        $query->where('tipe_produk', $tipe);
+    }
 
     if ($keyword !== '') {
         $terms = array_filter(preg_split('/\s+/', $keyword));
@@ -74,7 +79,7 @@ Route::get('/katalog', function (\Illuminate\Http\Request $request) {
     }
 
     $katalogs = $query->get();
-    return view('customer.katalog', compact('katalogs', 'keyword', 'sort'));
+    return view('customer.katalog', compact('katalogs', 'keyword', 'sort', 'tipe'));
 })->name('customer.katalog');
 
 // Studio Desain Interaktif (Bebas Dieksplorasi Tamu/Publik)

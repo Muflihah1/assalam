@@ -302,15 +302,22 @@
                                    data-search="{{ strtolower($o->order_number . ' ' . $custName . ' ' . $custPhone . ' ' . $category . ' ' . $stage . ' ' . $o->production_status) }}">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <strong class="text-dark small">#{{ $o->order_number }}</strong>
-                                        @if($isSelected)
-                                            <span class="badge bg-success text-white rounded-pill" style="font-size: 0.65rem;">
-                                                <i class="fa-solid fa-check me-1"></i>Sedang Dibuka
-                                            </span>
-                                        @else
-                                            <span class="badge bg-light text-muted border" style="font-size: 0.65rem;">
-                                                {{ $o->created_at ? $o->created_at->format('d/m/y') : '-' }}
-                                            </span>
-                                        @endif
+                                        <div class="d-flex align-items-center gap-1">
+                                            @if($o->isReadyStock())
+                                                <span class="badge bg-success text-white rounded-pill px-1.5 py-0.5" style="font-size: 0.62rem;">READY</span>
+                                            @else
+                                                <span class="badge rounded-pill px-1.5 py-0.5 text-dark" style="background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; font-size: 0.62rem;">PO</span>
+                                            @endif
+                                            @if($isSelected)
+                                                <span class="badge bg-success text-white rounded-pill" style="font-size: 0.65rem;">
+                                                    <i class="fa-solid fa-check me-1"></i>Dibuka
+                                                </span>
+                                            @else
+                                                <span class="badge bg-light text-muted border" style="font-size: 0.65rem;">
+                                                    {{ $o->created_at ? $o->created_at->format('d/m/y') : '-' }}
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
                                     <div class="small fw-semibold text-truncate text-dark mb-1" style="font-size: 0.82rem;">
                                         {{ $custName }}
@@ -355,32 +362,52 @@
         </div>
     @else
         @php
-            $stageMap = [
-                'Konfirmasi Pesanan' => 1,
-                'Validasi Pembayaran' => 2,
-                'Pesanan Diterima' => 3,
-                'Menyiapkan Bahan' => 4,
-                'Perakitan' => 5,
-                'Penyelesaian' => 6,
-                'Pengiriman' => 7,
-                'Pesanan Selesai' => 8,
-            ];
+            if ($progres->isReadyStock()) {
+                $stageMap = [
+                    'Konfirmasi Pesanan' => 1,
+                    'Validasi Pembayaran' => 2,
+                    'Pengemasan Barang' => 3,
+                    'Pengiriman' => 4,
+                    'Pesanan Selesai' => 5,
+                ];
 
-            $stageList = [
-                1 => ['name' => 'Konfirmasi Pesanan', 'desc' => 'Admin meninjau dan menyetujui pesanan', 'icon' => 'fa-clipboard-check'],
-                2 => ['name' => 'Validasi Pembayaran', 'desc' => 'Pelanggan transfer DP & admin memverifikasi', 'icon' => 'fa-receipt'],
-                3 => ['name' => 'Pesanan Diterima', 'desc' => 'DP sah, pesanan masuk antrean workshop', 'icon' => 'fa-box-archive'],
-                4 => ['name' => 'Menyiapkan Bahan', 'desc' => 'Pemotongan, oven pengeringan kayu jati solid', 'icon' => 'fa-tree'],
-                5 => ['name' => 'Perakitan', 'desc' => 'Penyambungan purus kayu & ukiran khas Madura', 'icon' => 'fa-hammer'],
-                6 => ['name' => 'Penyelesaian', 'desc' => 'Finishing amplas, melamin, busa & pelunasan', 'icon' => 'fa-spray-can-sparkles'],
-                7 => ['name' => 'Pengiriman', 'desc' => 'Packing kayu/kardus tebal & muat armada kargo', 'icon' => 'fa-truck-fast'],
-                8 => ['name' => 'Pesanan Selesai', 'desc' => 'Mebel diterima oleh pelanggan di lokasi', 'icon' => 'fa-circle-check'],
-            ];
+                $stageList = [
+                    1 => ['name' => 'Konfirmasi Pesanan', 'desc' => 'Admin meninjau dan menyetujui pesanan siap jual', 'icon' => 'fa-clipboard-check'],
+                    2 => ['name' => 'Validasi Pembayaran', 'desc' => 'Pelanggan transfer pembayaran & diverifikasi admin', 'icon' => 'fa-receipt'],
+                    3 => ['name' => 'Pengemasan Barang', 'desc' => 'Pengecekan kualitas mebel & packing siap kirim', 'icon' => 'fa-box-open'],
+                    4 => ['name' => 'Pengiriman', 'desc' => 'Mebel dimuat ke armada ekspedisi / kurir mebel', 'icon' => 'fa-truck-fast'],
+                    5 => ['name' => 'Pesanan Selesai', 'desc' => 'Mebel diterima oleh pelanggan dalam kondisi baik', 'icon' => 'fa-circle-check'],
+                ];
+                $maxSteps = 5;
+            } else {
+                $stageMap = [
+                    'Konfirmasi Pesanan' => 1,
+                    'Validasi Pembayaran' => 2,
+                    'Pesanan Diterima' => 3,
+                    'Menyiapkan Bahan' => 4,
+                    'Perakitan' => 5,
+                    'Penyelesaian' => 6,
+                    'Pengiriman' => 7,
+                    'Pesanan Selesai' => 8,
+                ];
+
+                $stageList = [
+                    1 => ['name' => 'Konfirmasi Pesanan', 'desc' => 'Admin meninjau dan menyetujui pesanan', 'icon' => 'fa-clipboard-check'],
+                    2 => ['name' => 'Validasi Pembayaran', 'desc' => 'Pelanggan transfer DP & admin memverifikasi', 'icon' => 'fa-receipt'],
+                    3 => ['name' => 'Pesanan Diterima', 'desc' => 'DP sah, pesanan masuk antrean workshop', 'icon' => 'fa-box-archive'],
+                    4 => ['name' => 'Menyiapkan Bahan', 'desc' => 'Pemotongan, oven pengeringan kayu jati solid', 'icon' => 'fa-tree'],
+                    5 => ['name' => 'Perakitan', 'desc' => 'Penyambungan purus kayu & ukiran khas Madura', 'icon' => 'fa-hammer'],
+                    6 => ['name' => 'Penyelesaian', 'desc' => 'Finishing amplas, melamin, busa & pelunasan', 'icon' => 'fa-spray-can-sparkles'],
+                    7 => ['name' => 'Pengiriman', 'desc' => 'Packing kayu/kardus tebal & muat armada kargo', 'icon' => 'fa-truck-fast'],
+                    8 => ['name' => 'Pesanan Selesai', 'desc' => 'Mebel diterima oleh pelanggan di lokasi', 'icon' => 'fa-circle-check'],
+                ];
+                $maxSteps = 8;
+            }
 
             $currentStageName = $progres->current_stage ?? 'Konfirmasi Pesanan';
             $currentStepNumber = $stageMap[$currentStageName] ?? 1;
             $isDpVerified = in_array($progres->payment_status, ['DP Terverifikasi', 'Lunas']);
-            $nextStepNumber = $currentStepNumber < 8 ? $currentStepNumber + 1 : null;
+            $nextStepNumber = $currentStepNumber < $maxSteps ? $currentStepNumber + 1 : null;
             $nextStageName = $nextStepNumber ? $stageList[$nextStepNumber]['name'] : null;
 
             // Cari data OrderProgress untuk tahap aktif saat ini
@@ -398,7 +425,18 @@
                 <!-- 1. IDENTITAS PESANAN -->
                 <div class="order-sidebar-card shadow-sm">
                     <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                        <span class="small fw-bold text-muted text-uppercase">No. Pesanan</span>
+                        <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                            <span class="small fw-bold text-muted text-uppercase">No. Pesanan</span>
+                            @if($progres->isReadyStock())
+                                <span class="badge bg-success text-white px-2 py-0.5 rounded-pill" style="font-size: 0.68rem;">
+                                    <i class="fa-solid fa-bolt me-1"></i> READY STOCK
+                                </span>
+                            @else
+                                <span class="badge rounded-pill px-2 py-0.5 text-dark" style="background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; font-size: 0.68rem;">
+                                    <i class="fa-solid fa-clock me-1"></i> PRE-ORDER
+                                </span>
+                            @endif
+                        </div>
                         <span class="badge px-2.5 py-1 rounded-pill" style="background-color: var(--primary-color); color: #ffffff;">
                             #{{ $progres->order_number }}
                         </span>
@@ -531,7 +569,11 @@
 
                     @if(!$isDpVerified)
                         <div class="alert alert-warning small p-2 mb-0 mt-3 border-0 rounded-3">
-                            <i class="fa-solid fa-lock me-1"></i> Tahapan pengerjaan fisik kayu (Tahap 4 s/d 8) <strong>terkunci</strong> hingga pembayaran DP diverifikasi di Pesanan Masuk.
+                            @if($progres->isReadyStock())
+                                <i class="fa-solid fa-lock me-1"></i> Tahapan pengemasan & pengiriman (Tahap 3 s/d 5) <strong>terkunci</strong> hingga pembayaran diverifikasi di Pesanan Masuk.
+                            @else
+                                <i class="fa-solid fa-lock me-1"></i> Tahapan pengerjaan fisik kayu (Tahap 4 s/d 8) <strong>terkunci</strong> hingga pembayaran DP diverifikasi di Pesanan Masuk.
+                            @endif
                         </div>
                     @endif
                 </div>
@@ -543,14 +585,25 @@
                  ============================================== -->
             <div class="col-lg-8">
                 
-                <!-- 1. TIMELINE STEPPER BERURUTAN (1 S/D 8) -->
+                <!-- 1. TIMELINE STEPPER BERURUTAN -->
                 <div class="admin-card mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                         <div>
                             <h5 class="fw-bold text-dark mb-1">
-                                <i class="fa-solid fa-timeline me-1" style="color: var(--primary-color);"></i> Alur Tahapan Workshop
+                                <i class="fa-solid fa-timeline me-1" style="color: var(--primary-color);"></i> 
+                                @if($progres->isReadyStock())
+                                    Alur Pengemasan & Pemenuhan Stok
+                                @else
+                                    Alur Tahapan Workshop Produksi
+                                @endif
                             </h5>
-                            <span class="small text-muted">Tahapan pengerjaan berjalan secara berurutan dan terdata rapi.</span>
+                            <span class="small text-muted">
+                                @if($progres->isReadyStock())
+                                    Pesanan produk mebel siap kirim (tanpa tahapan pembuatan kayu mentah di bengkel).
+                                @else
+                                    Tahapan pengerjaan fisik berjalan secara berurutan dan terdata rapi.
+                                @endif
+                            </span>
                         </div>
                         <div>
                             <span class="badge px-3 py-2 rounded-pill fw-bold" style="background-color: var(--wood-bg); color: var(--primary-color); border: 1px solid var(--wood-border);">
@@ -565,7 +618,8 @@
                                 $isCompleted = $stepNo < $currentStepNumber;
                                 $isActive = $stepNo == $currentStepNumber;
                                 $isNext = $stepNo == $currentStepNumber + 1;
-                                $isLocked = ($stepNo >= 4 && !$isDpVerified) || ($stepNo > $currentStepNumber + 1);
+                                $lockThreshold = $progres->isReadyStock() ? 3 : 4;
+                                $isLocked = ($stepNo >= $lockThreshold && !$isDpVerified) || ($stepNo > $currentStepNumber + 1);
                                 $progressRecord = $progres->progresses->where('step_number', $stepNo)->first();
                             @endphp
 
@@ -709,12 +763,13 @@
                         <!-- Tombol 2: Maju ke Tahap Berikutnya -->
                         @if($nextStepNumber)
                             @php
-                                $isNextLocked = ($nextStepNumber >= 4 && !$isDpVerified);
+                                $nextLockThreshold = $progres->isReadyStock() ? 3 : 4;
+                                $isNextLocked = ($nextStepNumber >= $nextLockThreshold && !$isDpVerified);
                             @endphp
 
                             @if($isNextLocked)
-                                <button type="button" class="btn btn-secondary btn-sm rounded-3 px-3 py-2 disabled" title="Terkunci: Pembayaran DP belum diverifikasi">
-                                    <i class="fa-solid fa-lock me-1"></i> Lanjut: {{ $nextStageName }} (Terkunci DP)
+                                <button type="button" class="btn btn-secondary btn-sm rounded-3 px-3 py-2 disabled" title="Terkunci: Pembayaran belum diverifikasi">
+                                    <i class="fa-solid fa-lock me-1"></i> Lanjut: {{ $nextStageName }} (Terkunci Pembayaran)
                                 </button>
                             @else
                                 <button type="button" class="btn btn-success btn-sm rounded-3 px-4 py-2 fw-bold shadow-sm" 

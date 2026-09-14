@@ -6,13 +6,13 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Produk;
 use App\Models\ProductReview;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 class ProductReviewTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     protected function setUp(): void
     {
@@ -137,7 +137,7 @@ class ProductReviewTest extends TestCase
 
         $response->assertRedirect();
         $response->assertSessionHas('error');
-        $this->assertEquals(0, ProductReview::count());
+        $this->assertEquals(0, ProductReview::where('user_id', $admin->id)->count());
     }
 
     public function test_verified_buyer_flag_detected_from_order_history()

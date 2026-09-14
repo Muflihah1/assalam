@@ -182,13 +182,19 @@ class PaymentAndCustomRedesignTest extends TestCase
         $this->assertEquals(130, $prodDoor->default_dimensions['width']);
         $this->assertEquals(4, $prodDoor->default_dimensions['height']);
 
-        // 4. Test studio custom page loads product dimensions
+        // 4. Test studio custom page loads product dimensions and 4 wood-only colors
         $respStudio = $this->actingAs($customer)->get(route('customer.design', ['product_id' => $prodDoor->id]));
         $respStudio->assertStatus(200);
         $respStudio->assertSee('value="250"', false);
         $respStudio->assertSee('value="130"', false);
         $respStudio->assertSee('value="4"', false);
         $respStudio->assertSee('Catatan');
+        $respStudio->assertSee('Natural Jati');
+        $respStudio->assertSee('Salak Brown');
+        $respStudio->assertSee('Dark Walnut');
+        $respStudio->assertSee('Salak Tua');
+        $respStudio->assertDontSee('customColorPicker');
+        $respStudio->assertDontSee('Warna Kustom');
 
         // 5. Submit custom order with special notes
         $specialNoteText = 'Tolong ukiran kaligrafi pada bagian atas pintu dihaluskan ekstra presisi!';

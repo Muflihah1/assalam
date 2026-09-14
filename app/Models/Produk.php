@@ -15,9 +15,60 @@ class Produk extends Model
         'deskripsi',
         'harga',
         'foto',
+        'tipe_produk',
+        'estimasi_po',
     ];
 
-    protected $appends = ['foto_url', 'kategori', 'default_dimensions', 'rating_average', 'rating_count', 'sold_count'];
+    protected $appends = [
+        'foto_url', 
+        'kategori', 
+        'default_dimensions', 
+        'rating_average', 
+        'rating_count', 
+        'sold_count',
+        'tipe_label',
+        'is_ready',
+        'is_preorder'
+    ];
+
+    /**
+     * Cek apakah produk Ready Stock
+     */
+    public function isReady(): bool
+    {
+        return ($this->tipe_produk ?? 'pre_order') === 'ready';
+    }
+
+    /**
+     * Cek apakah produk Pre-Order
+     */
+    public function isPreOrder(): bool
+    {
+        return ($this->tipe_produk ?? 'pre_order') === 'pre_order';
+    }
+
+    public function getIsReadyAttribute(): bool
+    {
+        return $this->isReady();
+    }
+
+    public function getIsPreorderAttribute(): bool
+    {
+        return $this->isPreOrder();
+    }
+
+    public function getTipeLabelAttribute(): string
+    {
+        return $this->isReady() ? 'Ready Stock' : 'Pre-Order';
+    }
+
+    public function getEstimasiPoLabelAttribute(): string
+    {
+        if ($this->isReady()) {
+            return 'Siap Kirim';
+        }
+        return !empty($this->estimasi_po) ? $this->estimasi_po : '14-21 Hari Kerja';
+    }
 
     /**
      * Kategori dinamis mebel berdasarkan nama produk
@@ -64,17 +115,25 @@ class Produk extends Model
             return $this->foto;
         }
 
-        // 1. Prioritaskan jika file berada langsung di folder public/ (misal "produk/01_...")
-        if (file_exists(public_path($this->foto))) {
-            return '/' . ltrim($this->foto, '/');
+        $clean = ltrim($this->foto, '/');
+
+        // 1. File berada langsung di public/ (misal "produk/01_kursi-sofa-ukir-set.jpg")
+        if (file_exists(public_path($clean))) {
+            return '/' . $clean;
         }
 
-        // 2. Cek jika file tersimpan di storage/app/public/
-        if (Storage::disk('public')->exists($this->foto)) {
-            return '/storage/' . ltrim($this->foto, '/');
+        // 2. File tersimpan di storage/app/public/ (misal "katalog/xxx.jpg" atau "produk/xxx.jpg")
+        if (Storage::disk('public')->exists($clean)) {
+            return '/storage/' . $clean;
         }
 
-        return '/' . ltrim($this->foto, '/');
+        // 3. File dengan path storage/ di public/
+        if (str_starts_with($clean, 'storage/') && file_exists(public_path($clean))) {
+            return '/' . $clean;
+        }
+
+        // Jika file tidak ada secara fisik di disk, jangan return broken URL 404
+        return null;
     }
 
     /**

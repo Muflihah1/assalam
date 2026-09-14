@@ -332,9 +332,18 @@
                 <h4 class="fw-bold text-dark mb-0" style="color: var(--primary-color);">
                     <i class="fa-solid fa-file-lines me-2"></i>Spesifikasi Pesanan #{{ $order->order_number }}
                 </h4>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 flex-wrap">
+                    @if($order->isReadyStock())
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-bold">
+                            <i class="fa-solid fa-bolt me-1"></i> Ready Stock
+                        </span>
+                    @else
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2 rounded-pill fw-bold">
+                            <i class="fa-solid fa-hammer me-1"></i> Pre-Order / Custom
+                        </span>
+                    @endif
                     <span class="badge px-3 py-2 rounded-pill fw-bold" style="background-color: rgba(93, 64, 55, 0.1); color: var(--primary-color); border: 1px solid var(--wood-border);">
-                        Progres: {{ $order->production_status }}
+                        Status: {{ $order->production_status }}
                     </span>
                     @if($order->order_status === 'Ditolak')
                         <span class="badge bg-danger px-3 py-2 rounded-pill fw-bold">Ditolak</span>
@@ -351,6 +360,11 @@
                             @foreach($order->items as $it)
                                 <li class="text-muted small mb-1">
                                     <i class="fa-solid fa-box text-secondary me-1"></i> <strong>{{ $it->product_name }}</strong> (x{{ $it->quantity }}) - Rp {{ number_format($it->subtotal, 0, ',', '.') }}
+                                    @if(($it->tipe_produk ?? '') === 'ready')
+                                        <span class="badge bg-success-subtle text-success ms-1" style="font-size: 0.65rem;">Ready Stock</span>
+                                    @elseif(($it->tipe_produk ?? '') === 'pre_order')
+                                        <span class="badge bg-warning-subtle text-warning-emphasis ms-1" style="font-size: 0.65rem;">Pre-Order</span>
+                                    @endif
                                 </li>
                             @endforeach
                         </ul>
@@ -379,16 +393,35 @@
             </div>
         </div>
 
-        <!-- 2. TIMELINE 8 TAHAPAN (SHOPEE STYLE CONNECTED STEPPER) -->
+        <!-- 2. TIMELINE PELACAKAN PROGRES -->
         <div class="wireframe-card">
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <h5 class="fw-bold text-dark mb-0 text-uppercase tracking-wider" style="color: var(--primary-color);">
-                    <i class="fa-solid fa-route me-2"></i>TIMELINE PROGRES PRODUKSI
-                </h5>
-                <span class="small text-muted">
-                    <i class="fa-solid fa-circle-info me-1 text-primary"></i> Klik tahapan untuk rincian &amp; bukti pengerjaan
-                </span>
+                @if($order->isReadyStock())
+                    <h5 class="fw-bold text-dark mb-0 text-uppercase tracking-wider" style="color: var(--primary-color);">
+                        <i class="fa-solid fa-truck-fast me-2"></i>ALUR PENGIRIMAN PRODUK READY STOCK
+                    </h5>
+                    <span class="small text-muted">
+                        <i class="fa-solid fa-bolt text-success me-1"></i> Siap kirim tanpa pengerjaan produksi fisik
+                    </span>
+                @else
+                    <h5 class="fw-bold text-dark mb-0 text-uppercase tracking-wider" style="color: var(--primary-color);">
+                        <i class="fa-solid fa-route me-2"></i>TIMELINE PROGRES PRODUKSI WORKSHOP
+                    </h5>
+                    <span class="small text-muted">
+                        <i class="fa-solid fa-circle-info me-1 text-primary"></i> Klik tahapan untuk rincian &amp; bukti pengerjaan
+                    </span>
+                @endif
             </div>
+
+            @if($order->isReadyStock())
+                <div class="p-3 rounded-3 mb-3 border border-success-subtle bg-success-subtle d-flex align-items-center gap-2.5 small">
+                    <i class="fa-solid fa-boxes-packing text-success fs-5"></i>
+                    <div>
+                        <strong class="text-success d-block">Produk Ready Stock Tersedia</strong>
+                        <span class="text-secondary">Barang sudah tersedia fisik di showroom/gudang mebel kami. Pesanan Anda tidak melalui proses pembuatan workshop dan akan langsung disiapkan, dicek, serta dikemas rapi untuk pengiriman setelah pembayaran diverifikasi.</span>
+                    </div>
+                </div>
+            @endif
 
             <div class="shopee-stepper-wrapper">
                 <div class="shopee-stepper">
@@ -528,29 +561,50 @@
                     @elseif($order->payment_status === 'Menunggu Pembayaran DP')
                         <div class="py-2 w-100">
                             <i class="fa-solid fa-receipt text-warning fa-3x mb-2"></i>
-                            <h5 class="fw-bold text-dark mb-1">Menunggu Pembayaran DP</h5>
-                            <p class="text-muted small mb-3">Silakan bayar uang muka (DP) 50% di panel sebelah kiri agar pesanan mulai dikerjakan pengrajin.</p>
+                            <h5 class="fw-bold text-dark mb-1">Menunggu Pembayaran</h5>
+                            <p class="text-muted small mb-3">
+                                @if($order->isReadyStock())
+                                    Silakan selesaikan pembayaran di panel sebelah kiri agar mebel segera dikemas dan dikirim.
+                                @else
+                                    Silakan bayar uang muka (DP) 50% di panel sebelah kiri agar pesanan mulai dikerjakan pengrajin.
+                                @endif
+                            </p>
                             <button class="btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold small" disabled style="opacity: 0.65;">
-                                <i class="fa-solid fa-lock me-1"></i> Bayar DP Terlebih Dahulu
+                                <i class="fa-solid fa-lock me-1"></i> Bayar Terlebih Dahulu
                             </button>
                         </div>
                     @elseif($order->payment_status === 'Menunggu Verifikasi DP')
                         <div class="py-2 w-100">
                             <i class="fa-solid fa-spinner fa-spin text-info fa-3x mb-2"></i>
-                            <h5 class="fw-bold text-dark mb-1">Verifikasi Pembayaran DP</h5>
-                            <p class="text-muted small mb-3">Bukti transfer DP Anda sedang diverifikasi oleh admin sebelum masuk antrean workshop.</p>
+                            <h5 class="fw-bold text-dark mb-1">Verifikasi Pembayaran</h5>
+                            <p class="text-muted small mb-3">
+                                @if($order->isReadyStock())
+                                    Bukti transfer Anda sedang diverifikasi oleh admin sebelum barang dikemas.
+                                @else
+                                    Bukti transfer DP Anda sedang diverifikasi oleh admin sebelum masuk antrean workshop.
+                                @endif
+                            </p>
                             <button class="btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold small" disabled style="opacity: 0.65;">
-                                <i class="fa-solid fa-lock me-1"></i> Verifikasi DP Berjalan
+                                <i class="fa-solid fa-lock me-1"></i> Verifikasi Pembayaran Berjalan
                             </button>
                         </div>
                     @elseif(!$isDeliveredOrShipped)
                         <div class="py-2 w-100">
-                            <i class="fa-solid fa-hammer text-primary fa-3x mb-2"></i>
-                            <h5 class="fw-bold text-dark mb-1">Mebel Dalam Produksi</h5>
-                            <p class="text-muted small mb-3">Pesanan sedang dibuat di workshop (Tahap: <strong>{{ $order->current_stage }}</strong>). Tombol konfirmasi akan aktif setelah produk dikirim.</p>
-                            <button class="btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold small" disabled style="opacity: 0.65;">
-                                <i class="fa-solid fa-lock me-1"></i> Produksi Sedang Berjalan
-                            </button>
+                            @if($order->isReadyStock())
+                                <i class="fa-solid fa-boxes-packing text-primary fa-3x mb-2"></i>
+                                <h5 class="fw-bold text-dark mb-1">Mebel Sedang Disiapkan</h5>
+                                <p class="text-muted small mb-3">Pesanan ready stock sedang disiapkan dan dikemas dari gudang kami (Tahap: <strong>{{ $order->current_stage }}</strong>). Tombol konfirmasi akan aktif setelah mebel dikirim.</p>
+                                <button class="btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold small" disabled style="opacity: 0.65;">
+                                    <i class="fa-solid fa-lock me-1"></i> Pengemasan Gudang Berjalan
+                                </button>
+                            @else
+                                <i class="fa-solid fa-hammer text-primary fa-3x mb-2"></i>
+                                <h5 class="fw-bold text-dark mb-1">Mebel Dalam Produksi</h5>
+                                <p class="text-muted small mb-3">Pesanan sedang dibuat di workshop (Tahap: <strong>{{ $order->current_stage }}</strong>). Tombol konfirmasi akan aktif setelah produk dikirim.</p>
+                                <button class="btn btn-secondary w-100 py-2.5 rounded-3 fw-semibold small" disabled style="opacity: 0.65;">
+                                    <i class="fa-solid fa-lock me-1"></i> Produksi Sedang Berjalan
+                                </button>
+                            @endif
                         </div>
                     @elseif(!$isPaidOff)
                         <div class="py-2 w-100">

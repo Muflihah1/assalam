@@ -312,7 +312,16 @@
                                     <span class="small text-muted" style="font-size: 0.78rem;">
                                         {{ $item->created_at ? $item->created_at->format('d M Y H:i') : '-' }}
                                     </span>
-                                    <div class="mt-1">
+                                    <div class="mt-1 d-flex gap-1 flex-wrap align-items-center">
+                                        @if($item->isReadyStock())
+                                            <span class="badge bg-success text-white px-2 py-0.5 rounded-pill" style="font-size: 0.7rem;">
+                                                <i class="fa-solid fa-bolt me-1"></i> READY STOCK
+                                            </span>
+                                        @else
+                                            <span class="badge px-2 py-0.5 rounded-pill text-dark" style="background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; font-size: 0.7rem;">
+                                                <i class="fa-solid fa-clock me-1"></i> PRE-ORDER
+                                            </span>
+                                        @endif
                                         <span class="badge px-2 py-0.5 rounded-pill small border" style="background-color: var(--wood-bg); color: var(--text-dark); font-size: 0.72rem;">
                                             {{ $item->current_stage ?? 'Tahap 1' }}
                                         </span>
@@ -572,6 +581,15 @@
                                 <strong class="text-dark">{{ $item->created_at ? $item->created_at->translatedFormat('d F Y, H:i') : '-' }} WIB</strong>
                             </div>
                             <div class="d-flex gap-2 align-items-center flex-wrap">
+                                @if($item->isReadyStock())
+                                    <span class="badge bg-success text-white px-3 py-1.5 rounded-pill shadow-xs">
+                                        <i class="fa-solid fa-bolt me-1"></i> READY STOCK
+                                    </span>
+                                @else
+                                    <span class="badge px-3 py-1.5 rounded-pill text-dark border" style="background-color: #fef3c7; color: #92400e; border-color: #fde68a !important;">
+                                        <i class="fa-solid fa-clock me-1"></i> PRE-ORDER
+                                    </span>
+                                @endif
                                 <span class="badge px-3 py-1.5 rounded-pill border" style="background-color: var(--wood-bg); color: var(--text-dark);">
                                     Tahap: {{ $item->current_stage ?? 'Tahap 1' }}
                                 </span>

@@ -26,10 +26,27 @@ class Order extends Model
         'dp_receipt_proof',
         'final_receipt_proof',
         'order_status',
+        'tipe_pesanan',
         'rejection_reason',
         'admin_notes',
         'customer_notes',
     ];
+
+    /**
+     * Cek apakah pesanan Ready Stock (tidak melalui proses produksi pengerjaan kayu)
+     */
+    public function isReadyStock(): bool
+    {
+        return ($this->tipe_pesanan ?? 'pre_order') === 'ready';
+    }
+
+    /**
+     * Cek apakah pesanan Pre-Order / Custom (memerlukan tahapan produksi workshop)
+     */
+    public function isPreOrder(): bool
+    {
+        return ($this->tipe_pesanan ?? 'pre_order') === 'pre_order';
+    }
 
     protected $casts = [
         'total_price' => 'decimal:2',

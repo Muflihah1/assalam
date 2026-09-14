@@ -89,7 +89,21 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <h6 class="fw-bold text-dark mb-1">{{ $item['name'] }}</h6>
+                                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                            <h6 class="fw-bold text-dark mb-0">{{ $item['name'] }}</h6>
+                                            @php
+                                                $isReadyItem = ($item['tipe_produk'] ?? '') === 'ready';
+                                            @endphp
+                                            @if($isReadyItem)
+                                                <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill" style="font-size: 0.68rem;">
+                                                    <i class="fa-solid fa-bolt me-1"></i> Ready Stock
+                                                </span>
+                                            @else
+                                                <span class="badge bg-warning-subtle text-warning-emphasis px-2 py-0.5 rounded-pill" style="font-size: 0.68rem;">
+                                                    <i class="fa-solid fa-clock me-1"></i> Pre-Order {{ !empty($item['estimasi_po']) ? '(' . $item['estimasi_po'] . ')' : '' }}
+                                                </span>
+                                            @endif
+                                        </div>
                                         <div class="fw-bold small mb-1" style="color: var(--primary-color);">
                                             Rp {{ number_format($item['price'], 0, ',', '.') }} / unit
                                         </div>
@@ -199,7 +213,7 @@
                     </div>
 
                     <!-- DP 50% Callout -->
-                    <div class="p-3 rounded-3 mb-4" style="background-color: rgba(217, 119, 6, 0.1); border: 1.5px solid var(--accent-gold);">
+                    <div class="p-3 rounded-3 mb-3" style="background-color: rgba(217, 119, 6, 0.1); border: 1.5px solid var(--accent-gold);">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <small class="text-muted d-block fw-bold" style="font-size: 0.72rem;">Uang Muka (DP 50%)</small>
@@ -210,6 +224,28 @@
                             </strong>
                         </div>
                     </div>
+
+                    @php
+                        $cartHasPreorder = false;
+                        foreach ($cart as $cItem) {
+                            if (($cItem['tipe_produk'] ?? 'pre_order') === 'pre_order') {
+                                $cartHasPreorder = true;
+                                break;
+                            }
+                        }
+                    @endphp
+
+                    @if($cartHasPreorder)
+                        <div class="p-2.5 rounded-3 mb-3 border border-warning-subtle bg-warning-subtle text-dark small d-flex align-items-center gap-2" style="font-size: 0.78rem;">
+                            <i class="fa-solid fa-clock text-warning-emphasis"></i>
+                            <span>Pesanan mencakup produk <strong>Pre-Order</strong> yang akan dibuat oleh pengrajin mebel.</span>
+                        </div>
+                    @else
+                        <div class="p-2.5 rounded-3 mb-3 border border-success-subtle bg-success-subtle text-success small d-flex align-items-center gap-2" style="font-size: 0.78rem;">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span><strong>Semua Ready Stock</strong>: Siap langsung dikemas & dikirim tanpa antrean pengerjaan kayu.</span>
+                        </div>
+                    @endif
 
                     <!-- Checkout Form (If Logged In) -->
                     @auth

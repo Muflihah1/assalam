@@ -42,6 +42,8 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Set kursi tamu ukir kayu jati, terdiri dari sofa besar, sepasang kursi kecil, dan meja tengah, ukiran motif bunga dan sulur khas Madura. Ukuran: Sofa: P150×L60×T95 cm; kursi kecil: P70×60 cm; meja: P120×L55×T45 cm.',
                 'harga' => 32000000,
                 'foto' => 'produk/01_kursi-sofa-ukir-set.jpg',
+                'tipe_produk' => 'pre_order',
+                'estimasi_po' => 21,
             ],
             [
                 'id' => 2,
@@ -49,6 +51,8 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Podium kayu jati dengan lambang Garuda Pancasila berwarna emas dan papan nama "DESA PAKAMBAN LAOK", motif ukir batik pada badan podium.',
                 'harga' => 4500000,
                 'foto' => 'produk/02_podium-desa-pakamban-laok.jpg',
+                'tipe_produk' => 'ready',
+                'estimasi_po' => null,
             ],
             [
                 'id' => 3,
@@ -56,6 +60,8 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Sepasang pintu kayu jati ukir penuh motif bunga dan sulur daun, bagian atas melengkung (arch top). Ukuran: 250×130 cm, tebal 4 cm.',
                 'harga' => 8000000,
                 'foto' => 'produk/03_pintu-tarung-full-ukir.jpg',
+                'tipe_produk' => 'pre_order',
+                'estimasi_po' => 14,
             ],
             [
                 'id' => 4,
@@ -63,6 +69,8 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Panel kayu ukir logo Nahdlatul Ulama (NU) dengan finishing prada emas, dilengkapi kaligrafi Arab dan bintang sembilan. Ukuran: 150×100 cm, tebal 3 cm.',
                 'harga' => 2000000,
                 'foto' => 'produk/04_logo-NU.jpg',
+                'tipe_produk' => 'pre_order',
+                'estimasi_po' => 10,
             ],
             [
                 'id' => 5,
@@ -70,6 +78,8 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Lemari pakaian pintu geser (sliding) 2 pintu dengan 2 laci bawah, motif garis minimalis, finishing coklat tua.',
                 'harga' => 2200000,
                 'foto' => 'produk/05_lemari-2-pintu-sliding.jpg',
+                'tipe_produk' => 'ready',
+                'estimasi_po' => null,
             ],
             [
                 'id' => 6,
@@ -77,6 +87,8 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Meja dan 5 kursi sidang ukir kayu jati dengan jok bludru biru, ukiran prada warna-warni dan logo lambang di tengah meja.',
                 'harga' => 16500000,
                 'foto' => 'produk/06_kursi-sidang-5-set-meja.jpg',
+                'tipe_produk' => 'pre_order',
+                'estimasi_po' => 25,
             ],
             [
                 'id' => 7,
@@ -84,6 +96,8 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Bangunan pendopo terbuka kayu jati dengan atap joglo genteng tanah liat, tiang-tiang penyangga berukir.',
                 'harga' => 45000000,
                 'foto' => 'produk/07_pendopo-gazebo-jati.jpg',
+                'tipe_produk' => 'pre_order',
+                'estimasi_po' => 30,
             ],
             [
                 'id' => 8,
@@ -91,6 +105,8 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Set sofa 3 buah (1 sofa panjang + 2 kursi single) dengan meja tengah, ukiran prada warna-warni motif bunga.',
                 'harga' => 10000000,
                 'foto' => 'produk/08_kursi-sofa-motif-1-set-3.jpg',
+                'tipe_produk' => 'pre_order',
+                'estimasi_po' => 18,
             ],
             [
                 'id' => 9,
@@ -98,6 +114,8 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Panel ukir gantung (blawong) sepasang burung phoenix/merak dengan motif sulur, kayu jati. Ukuran: 65×45 cm, tebal 2 cm.',
                 'harga' => 250000,
                 'foto' => 'produk/09_blawong-65x45.jpg',
+                'tipe_produk' => 'ready',
+                'estimasi_po' => null,
             ],
             [
                 'id' => 10,
@@ -105,6 +123,8 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Lemari serbaguna minimalis 10 pintu dengan rak kaca dan ruang terbuka tengah, finishing natural kayu. Ukuran: P200×L65 cm, tinggi 190 cm.',
                 'harga' => 2500000,
                 'foto' => 'produk/10_lemari-minimalis-10-pintu.jpg',
+                'tipe_produk' => 'ready',
+                'estimasi_po' => null,
             ],
             [
                 'id' => 11,
@@ -112,6 +132,8 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Sepasang panel ukir gantung motif burung dan bunga, warna prada emas dan ungu.',
                 'harga' => 500000,
                 'foto' => 'produk/11_blawong-set-2-motif.jpg',
+                'tipe_produk' => 'ready',
+                'estimasi_po' => null,
             ],
             [
                 'id' => 12,
@@ -119,6 +141,8 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Panel ukir persegi motif bunga dan sulur daun, kayu jati, dijual berpasangan. Ukuran: 30×30 cm, tebal 2 cm.',
                 'harga' => 150000,
                 'foto' => 'produk/12_ukiran-30x30-set-2.jpg',
+                'tipe_produk' => 'ready',
+                'estimasi_po' => null,
             ],
             [
                 'id' => 13,
@@ -126,16 +150,20 @@ class ProdukSeeder extends Seeder
                 'deskripsi' => 'Lemari rias dengan cermin besar berlampu, 2 lemari kaca samping dan 4 laci tengah. Ukuran: P150×L55 cm, tinggi 160 cm.',
                 'harga' => 2200000,
                 'foto' => 'produk/13_lemari-rias-kaca.jpg',
+                'tipe_produk' => 'pre_order',
+                'estimasi_po' => 14,
             ],
         ];
 
         // 3. Reset dan isi ulang tabel produks
         Schema::disableForeignKeyConstraints();
-        Produk::truncate();
+        Produk::query()->delete();
         Schema::enableForeignKeyConstraints();
 
-        foreach ($produks as $p) {
-            Produk::create($p);
-        }
+        Produk::unguarded(function () use ($produks) {
+            foreach ($produks as $p) {
+                Produk::create($p);
+            }
+        });
     }
 }

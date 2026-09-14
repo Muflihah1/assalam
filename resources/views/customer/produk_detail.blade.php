@@ -24,7 +24,12 @@
                              alt="{{ $produk->nama }}" 
                              class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
                              id="mainProductImage"
-                             loading="lazy">
+                             loading="lazy"
+                             onerror="this.style.display='none'; this.nextElementSibling.classList.remove('d-none');">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center text-muted d-none">
+                            <i class="fa-solid fa-couch fa-3x mb-2" style="color: var(--primary-light);"></i>
+                            <span class="small fw-bold">Assalam Mebel Karduluk</span>
+                        </div>
                     @else
                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center text-muted">
                             <i class="fa-solid fa-couch fa-3x mb-2" style="color: var(--primary-light);"></i>
@@ -55,11 +60,20 @@
         <div class="col-lg-7">
             <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white h-100" style="border: 1px solid var(--border-color) !important;">
                 
-                <!-- Category / Material Tag -->
-                <div class="mb-2">
+                <!-- Category & Stock Status Badge -->
+                <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
                     <span class="badge px-3 py-2 rounded-pill text-uppercase fw-bold" style="background-color: var(--primary-subtle); color: var(--primary-color); font-size: 0.75rem; letter-spacing: 0.05em;">
                         {{ $produk->kategori }} • Kayu Jati Solid Sentra Karduluk (Madura)
                     </span>
+                    @if($produk->isReady())
+                        <span class="badge px-3 py-2 rounded-pill text-uppercase fw-bold bg-success text-white shadow-2xs" style="font-size: 0.75rem;">
+                            <i class="fa-solid fa-bolt me-1"></i> Ready Stock • Siap Kirim
+                        </span>
+                    @else
+                        <span class="badge px-3 py-2 rounded-pill text-uppercase fw-bold bg-warning text-dark shadow-2xs" style="font-size: 0.75rem;">
+                            <i class="fa-solid fa-clock me-1"></i> Pre-Order • {{ $produk->estimasi_po_label }}
+                        </span>
+                    @endif
                 </div>
 
                 <!-- Product Name -->
@@ -84,7 +98,7 @@
                 </div>
 
                 <!-- Price Box -->
-                <div class="p-3 px-4 rounded-4 mb-4" style="background: linear-gradient(135deg, #FAF5F0 0%, #F5EBE1 100%); border: 1.5px solid var(--border-color);">
+                <div class="p-3 px-4 rounded-4 mb-3" style="background: linear-gradient(135deg, #FAF5F0 0%, #F5EBE1 100%); border: 1.5px solid var(--border-color);">
                     <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.72rem; letter-spacing: 0.05em;">Harga Produk Jadi</small>
                     <div class="d-flex align-items-baseline gap-2">
                         <h2 class="fw-extrabold mb-0" style="color: var(--primary-color); font-size: 2rem;">
@@ -93,6 +107,29 @@
                         <small class="text-muted">(Bisa bayar DP 50%)</small>
                     </div>
                 </div>
+
+                <!-- Informational Stock Status Banner -->
+                @if($produk->isReady())
+                    <div class="p-3 rounded-4 mb-4 d-flex align-items-start gap-3 border shadow-2xs" style="background-color: #f0fdf4; border-color: #bbf7d0 !important;">
+                        <div class="p-2 rounded-circle bg-success text-white flex-shrink-0" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-boxes-packing"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-success mb-1 fs-6">Produk Ready Stock (Siap Kirim)</h6>
+                            <p class="small text-secondary mb-0" style="line-height: 1.5;">Mebel ini sudah tersedia fisik di showroom/gudang kami. Pesanan akan langsung disiapkan, dicek kualitasnya, dan dikemas rapi untuk pengiriman tanpa melalui proses pembuatan kayu.</p>
+                        </div>
+                    </div>
+                @else
+                    <div class="p-3 rounded-4 mb-4 d-flex align-items-start gap-3 border shadow-2xs" style="background-color: #fffbeb; border-color: #fde68a !important;">
+                        <div class="p-2 rounded-circle bg-warning text-dark flex-shrink-0" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-hammer"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1 fs-6">Produk Pre-Order (Pengerjaan Pengrajin)</h6>
+                            <p class="small text-secondary mb-0" style="line-height: 1.5;">Mebel dibuat khusus oleh pengrajin kayu jati handal kami dengan estimasi pengerjaan <strong>{{ $produk->estimasi_po_label }}</strong>. Anda dapat memantau setiap tahap pengerjaannya di halaman Progres setelah pembayaran DP diverifikasi.</p>
+                        </div>
+                    </div>
+                @endif
 
                 <!-- Short Description -->
                 <div class="mb-4">
@@ -419,7 +456,10 @@
                             <div class="product-card-thumb">
                                 <a href="{{ route('customer.produk.detail', $related->id) }}">
                                     @if($related->foto_url)
-                                        <img src="{{ $related->foto_url }}" alt="{{ $related->nama }}" loading="lazy">
+                                        <img src="{{ $related->foto_url }}" alt="{{ $related->nama }}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('d-none');">
+                                        <div class="product-thumb-placeholder d-none">
+                                            <i class="fa-solid fa-couch fa-2x mb-2" style="color: var(--primary-light);"></i>
+                                        </div>
                                     @else
                                         <div class="product-thumb-placeholder">
                                             <i class="fa-solid fa-couch fa-2x mb-2" style="color: var(--primary-light);"></i>

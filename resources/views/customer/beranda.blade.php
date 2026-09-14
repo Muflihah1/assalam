@@ -220,7 +220,11 @@
                         <div class="product-card-thumb">
                             <a href="{{ route('customer.produk.detail', $item->id) }}">
                                 @if($item->foto_url)
-                                    <img src="{{ $item->foto_url }}" alt="{{ $item->nama }}" loading="lazy">
+                                    <img src="{{ $item->foto_url }}" alt="{{ $item->nama }}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('d-none');">
+                                    <div class="product-thumb-placeholder d-none">
+                                        <i class="fa-solid fa-couch fa-2x mb-2" style="color: var(--primary-light);"></i>
+                                        <span class="small text-muted fw-bold">Assalam Mebel</span>
+                                    </div>
                                 @else
                                     <div class="product-thumb-placeholder">
                                         <i class="fa-solid fa-couch fa-2x mb-2" style="color: var(--primary-light);"></i>
@@ -231,7 +235,16 @@
 
                             <!-- Overlay Badges -->
                             <div class="product-badge-overlay">
-                                <span class="badge-tag-solid">Kayu Solid</span>
+                                @if($item->isReady())
+                                    <span class="badge-tag-ready" style="background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 800; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);">
+                                        <i class="fa-solid fa-bolt"></i> Ready
+                                    </span>
+                                @else
+                                    <span class="badge-tag-po" style="background: linear-gradient(135deg, #d97706, #b45309); color: white; font-weight: 800; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3);">
+                                        <i class="fa-solid fa-clock"></i> PO
+                                    </span>
+                                @endif
+
                                 @if($item->rating_count > 0)
                                     <span class="badge-tag-rating">
                                         <i class="fa-solid fa-star text-warning"></i> {{ number_format($item->rating_average, 1) }}
@@ -242,7 +255,18 @@
 
                         <!-- Card Body Details -->
                         <div class="product-card-body">
-                            <span class="product-card-category">{{ $item->kategori }}</span>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="product-card-category">{{ $item->kategori }}</span>
+                                @if($item->isReady())
+                                    <span class="badge bg-success-subtle text-success px-1.5 py-0.5 rounded-pill" style="font-size: 0.65rem;">
+                                        Ready Stock
+                                    </span>
+                                @else
+                                    <span class="badge bg-warning-subtle text-warning-emphasis px-1.5 py-0.5 rounded-pill" style="font-size: 0.65rem;">
+                                        Pre-Order
+                                    </span>
+                                @endif
+                            </div>
                             <h6 class="product-card-title">
                                 <a href="{{ route('customer.produk.detail', $item->id) }}" title="{{ $item->nama }}">
                                     {{ $item->nama }}
